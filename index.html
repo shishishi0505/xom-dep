@@ -719,13 +719,11 @@
           const platformKey = (product.platform || '').toLowerCase().trim();
           const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
           
-          // TEXT BUTTON: ĐỒ ĐIỆN TỬ dùng MUA NGAY/Tên nền tảng. REVIEW (cũ) dùng XEM BÀI REVIEW.
+          // TEXT BUTTON: ĐỒ ĐIỆN TỬ dùng MUA NGAY/Tên nền tảng.
           const buttonText = isElectronic ? platformInfo.text : platformInfo.text; 
           
           // ICON BUTTON: ĐỒ ĐIỆN TỬ dùng ICON nền tảng.
-          const iconHtml = isElectronic 
-            ? `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`
-            : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
+          const iconHtml = `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
           
           buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
           buyButton.className = `buy-button`; // Đảm bảo class chính xác
@@ -740,7 +738,7 @@
               let htmlToEmbed = '';
               const trimmedInput = videoInput.trim();
 
-              // Logic nhúng video (giữ nguyên và tối ưu)
+              // Logic nhúng video
               if (trimmedInput.startsWith('<')) {
                   htmlToEmbed = trimmedInput;
               } else if (trimmedInput.length === 11 && !trimmedInput.includes(' ') && !trimmedInput.includes('/') && !trimmedInput.includes('.')) {
