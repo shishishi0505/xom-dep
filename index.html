@@ -277,19 +277,19 @@
     .modal-content {
         background: var(--white); padding: 30px; border-radius: 20px;
         width: 90%; max-width: 850px; max-height: 90vh;
-        overflow-y: auto; 
+        overflow-y: auto; /* QUAN TRỌNG: Cho phép cuộn nội dung modal */
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         position: relative; transform: scale(0.95); transition: transform 0.3s ease;
     }
     .modal-overlay.visible .modal-content {
-        transform: scale(1); 
+        transform: scale(1); /* Hiệu ứng mở modal */
     }
     .modal-content h2 { color: var(--deep-pink); margin-top: 0; font-size: 28px; text-align: center; } 
     .modal-content p#modal-price { 
         text-align: center; 
         color: var(--deep-pink); 
         font-weight: 900; 
-        font-size: 18px; 
+        font-size: 18px; /* Làm cho giá trong modal nổi bật */
     } 
     .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; }
     .close-btn:hover { color: var(--deep-pink); }
@@ -311,27 +311,8 @@
     }
     .modal-view { display: none; }
     .modal-view.active { display: block; }
-
-    /* Container cho Ảnh Chính (khi click vào ảnh nhỏ) */
-    #main-image-viewer {
-        position: relative;
-        padding-bottom: 56.25%; /* Tỷ lệ 16:9 */
-        height: 0; 
-        overflow: hidden; 
-        border-radius: 12px;
-        margin-bottom: 20px; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
-        background: var(--cream);
-        display: none; /* Ẩn mặc định, sẽ hiển thị khi có ảnh */
-    }
-    #main-image-viewer img {
-        position: absolute; 
-        top: 0; left: 0; 
-        width: 100%; height: 100%; 
-        object-fit: contain; /* Ảnh không bị cắt, giữ nguyên tỷ lệ */
-    }
     
-    /* Căn giữa Gallery (Các ảnh nhỏ) */
+    /* Căn giữa Gallery */
     .gallery-wrapper {
         display: inline-grid;
         grid-template-columns: repeat(3, 1fr); 
@@ -341,18 +322,13 @@
     .gallery-wrapper img {
         width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 16 / 16;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        cursor: pointer; /* Thêm con trỏ */
-        transition: transform 0.2s;
-    }
-    .gallery-wrapper img:hover {
-        transform: scale(0.98);
     }
     
     /* Container cho video nhúng (iframe/video tag/tiktok embed) */
     #video-container-embed {
         position: relative;
         /* Áp dụng padding-bottom cho container cha để tạo tỉ lệ 16:9 */
-        padding-bottom: 56.25%; 
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
         height: 0; 
         overflow: hidden; 
         border-radius: 12px;
@@ -367,18 +343,19 @@
     blockquote.tiktok-embed {
         position: static !important;
         /* Điều chỉnh kích thước hiển thị TikTok embed */
-        max-width: 325px; 
-        margin: 20px auto 0 !important; 
+        max-width: 325px; /* Chiều rộng mặc định của TikTok */
+        /* Cần override lại style do logic JS: */
+        margin: 20px auto 0 !important; /* Căn giữa và tạo khoảng cách */
         padding-bottom: 0 !important;
     }
 
     /* BUY BUTTON */
     .modal-footer { text-align: center; margin-top: 25px; border-top: 1px solid var(--pink); padding-top: 25px; }
     .modal-footer .buy-button {
-        display: inline-flex; 
+        display: inline-flex; /* Thay đổi để căn giữa icon */
         align-items: center;
         justify-content: center;
-        gap: 10px; 
+        gap: 10px; /* Khoảng cách giữa text và icon */
         background: var(--deep-pink); color: var(--white); text-decoration: none;
         padding: 12px 30px; border-radius: 30px; font-weight: 800; font-size: 18px;
         transition: background 0.2s;
@@ -396,7 +373,7 @@
         font-size: 14px;
         color: var(--deep-pink);
     }
-    /* Các màu nền tảng cụ thể */
+    /* Các màu nền tảng cụ thể (có thể thêm nhiều hơn) */
     .platform-shopee { background-color: #ee4d2d !important; color: var(--white) !important; }
     .platform-lazada { background-color: #1a1b41 !important; color: var(--white) !important; }
     .platform-tiki { background-color: #0088ff !important; color: var(--white) !important; }
@@ -413,47 +390,34 @@
       .product-grid { grid-template-columns: repeat(2, 1fr); }
       .gallery-wrapper { grid-template-columns: repeat(2, 1fr); }
       blockquote, .contact-info a { width: 100%; }
+      /* Ẩn tiêu đề nếu nav quá chật (Tùy chọn) */
       header h1, header p { font-size: 90%; }
     }
     
-    /* --- TỐI ƯU MODAL CHO ĐIỆN THOẠI (Dưới 550px) --- */
+    /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE
+    * - Modal rộng hơn (95%)
+    * - Gallery 1 cột (cho ảnh lớn hơn)
+    */
     @media (max-width: 550px) { 
-        .product-grid { 
+        .product-grid { grid-template-columns: 1fr; display: grid; margin: 20px 0; }
+        .gallery-wrapper { 
+            /* Gallery 1 cột trên điện thoại */
             grid-template-columns: 1fr; 
             display: grid; 
-            margin: 20px 0;
-        }
-        /* Giảm lưới ảnh nhỏ thành 2 cột trên điện thoại để ảnh to hơn */
-        .gallery-wrapper {
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 10px;
+            margin: 20px auto; 
         }
         .modal-content { 
-            /* MODAL FULLSCREEN */
-            width: 100%; 
-            height: 100%;
-            max-width: none; 
-            max-height: none;
-            padding: 20px 10px 10px; /* Giảm padding */
-            border-radius: 0; /* Bỏ bo góc */
-        }
+            padding: 15px; 
+            /* Modal chiếm 95% chiều rộng trên mobile nhỏ */
+            width: 95%; 
+            max-width: 95%; 
+        } 
         .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
         nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; }
         
-        /* Căn giữa nút đóng modal trên cùng bên phải */
-        .close-btn { 
-            top: 10px; 
-            right: 10px; 
-            z-index: 10; 
-            background: var(--pink); 
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
+        /* Optional: Small adjustments for better flow (Added for better mobile UX) */
+        #modal-desc { margin: 10px 0; font-size: 14px; }
+        #modal-price { font-size: 16px; margin: 5px 0 15px; }
     }
   </style>
 </head>
@@ -471,7 +435,6 @@
     <a href="#vay" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-female"></i></span> VÁY</a>
     <a href="#quanao" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-tshirt"></i></span> QUẦN ÁO</a>
     <a href="#bikini" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-swimmer"></i></span> BIKINI</a>
-    <a href="#review" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-star"></i></span> REVIEW</a>
     <a href="#contact" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-envelope"></i></span> LIÊN HỆ</a>
   </nav>
 
@@ -507,8 +470,6 @@
       <section id="vay" class="card"><div class="section-title"><h2>VÁY</h2></div><p>Bộ sưu tập Váy thiết kế và gợi ý mix & match các kiểu Váy A, Váy suông, Váy maxi cho mọi sự kiện.</p><div class="product-grid" id="vay-products"></div></section>
       <section id="quanao" class="card"><div class="section-title"><h2>QUẦN ÁO</h2></div><p>Gợi ý các set Quần áo thanh lịch, cá tính, từ đồ công sở đến đồ đi chơi cuối tuần.</p><div class="product-grid" id="quanao-products"></div></section>
       <section id="bikini" class="card"><div class="section-title"><h2>BIKINI</h2></div><p>Bikini và đồ bơi: Xu hướng màu sắc, kiểu dáng giúp bạn tự tin tỏa sáng trên bãi biển.</p><div class="product-grid" id="bikini-products"></div></section>
-      <section id="review" class="card"><div class="section-title"><h2>REVIEW</h2></div><p>Đánh giá khách quan các sản phẩm làm đẹp và thời trang mới nhất trên thị trường.</p><div class="product-grid" id="review-products"></div></section>
-
       <section id="contact" class="card">
         <div class="section-title"><h2>LIÊN HỆ</h2></div>
         <p>Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ trực tiếp với chúng tôi qua các kênh sau:</p>
@@ -533,9 +494,6 @@
           </div>
           
           <div id="modal-view-gallery" class="modal-view active">
-            <div id="main-image-viewer">
-                <img id="main-product-image" src="" alt="Ảnh lớn sản phẩm" />
-            </div>
             <div id="modal-gallery-container" class="gallery-wrapper">
                 </div>
           </div>
@@ -560,7 +518,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       
       // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
-      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
+      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSdOXVYpI/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -572,11 +530,8 @@
       const viewVideo = document.getElementById('modal-view-video');
       const socialContainer = document.getElementById('social-links-container');
       const contactContainer = document.querySelector('#contact .contact-info');
+      // Thẻ chứa nội dung nhúng mới (thay thế cho video tag cũ)
       const videoContainerEmbed = document.getElementById('video-container-embed');
-      
-      // KHAI BÁO BIẾN CHO TÍNH NĂNG MỚI
-      const mainImageViewer = document.getElementById('main-image-viewer');
-      const mainProductImage = document.getElementById('main-product-image');
       
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
@@ -606,10 +561,10 @@
       function parseTsvToArray(tsvText) {
           const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
           const data = parsed.data;
-          console.log('Parsed data:', data); 
+          console.log('Parsed data:', data); // Debug: Xem data parse được gì
           if (data.length > 0) {
-              CONFIG_DATA = data[0]; 
-              return data.slice(1); 
+              CONFIG_DATA = data[0]; // Hàng đầu tiên là config
+              return data.slice(1); // Products từ hàng tiếp theo
           }
           return [];
       }
@@ -622,7 +577,7 @@
                   throw new Error(`HTTP error! status: ${response.status}`);
               }
               const tsvText = await response.text();
-              console.log('Raw TSV text:', tsvText); 
+              console.log('Raw TSV text:', tsvText); // Debug: Xem text tải về
               
               PRODUCT_DATA = parseTsvToArray(tsvText);
               
@@ -642,9 +597,10 @@
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS (Giữ nguyên logic giá) ---
+      // --- HÀM 3: RENDER PRODUCTS (Đã sửa giá) ---
       function renderProducts(data) {
-          const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'review-products'];
+          // ĐÃ XÓA 'review-products' KHỎI DANH SÁCH CONTAINER
+          const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products']; 
           containers.forEach(id => {
               const container = document.getElementById(id);
               if (container) container.innerHTML = '';
@@ -681,6 +637,7 @@
           socialContainer.innerHTML = ''; 
           SOCIAL_LINKS_MAP.forEach(item => {
               const url = config[item.key] || item.default_url;
+              // Chỉ hiển thị link nếu có dữ liệu hoặc sử dụng link mặc định
               if (url) { 
                   const linkHTML = `
                       <a href="${url}" class="icon-fa" target="_blank" title="Kết nối với ${item.name}">
@@ -702,25 +659,29 @@
           contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL (ĐÃ TỐI ƯU CẢ PHẦN GALLERY) ---
+      // --- HÀM XỬ LÝ MODAL (ĐÃ CẬP NHẬT GIÁ) ---
       function switchModalView(view) {
-          // Tắt video khi chuyển tab
-          if (view === 'gallery') {
-               videoContainerEmbed.innerHTML = ''; 
-          }
-          // Áp dụng lớp 'active' cho nút và view tương ứng
-          tabGalleryBtn.classList.toggle('active', view === 'gallery');
-          tabVideoBtn.classList.toggle('active', view === 'video');
-          viewGallery.classList.toggle('active', view === 'gallery');
-          viewVideo.classList.toggle('active', view === 'video');
+          tabGalleryBtn.classList.remove('active');
+          tabVideoBtn.classList.remove('active');
+          viewGallery.classList.remove('active');
+          viewVideo.classList.remove('active');
           
-          // Khi chuyển sang tab video, nếu là TikTok, cần đảm bảo script nhúng chạy lại
-          if (view === 'video' && videoContainerEmbed.innerHTML.includes('tiktok-embed')) {
-               if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
-                    const script = document.createElement('script');
-                    script.src = 'https://www.tiktok.com/embed.js';
-                    document.body.appendChild(script); 
-               }
+          if (view === 'gallery') {
+              tabGalleryBtn.classList.add('active');
+              viewGallery.classList.add('active');
+              // Tắt video khi chuyển tab (quan trọng để dừng video nền)
+              videoContainerEmbed.innerHTML = ''; 
+          } else if (view === 'video') {
+              tabVideoBtn.classList.add('active');
+              viewVideo.classList.add('active');
+              // Khi chuyển sang tab video, đảm bảo script TikTok chạy lại nếu cần
+              if (videoContainerEmbed.innerHTML.includes('tiktok-embed')) {
+                   if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
+                        const script = document.createElement('script');
+                        script.src = 'https://www.tiktok.com/embed.js';
+                        document.body.appendChild(script); 
+                   }
+              }
           }
       }
       
@@ -728,7 +689,7 @@
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
           
-          // HIỂN THỊ GIÁ TRONG MODAL
+          // HIỂN THỊ GIÁ TRONG MODAL (CÓ VNĐ NẾU KHÔNG PHẢI REVIEW)
           const modalPriceDisplay = product.section === 'review' 
             ? product.price 
             : (product.price ? `${product.price} VNĐ` : '');
@@ -736,29 +697,11 @@
 
           const galleryContainer = document.getElementById('modal-gallery-container');
           galleryContainer.innerHTML = ''; 
-          
-          // Xử lý link ảnh chính (nếu có) và ảnh phụ (gallery)
-          const images = [];
-          if (product.img && product.img.trim()) {
-            images.push(product.img.trim());
-          }
-          const galleryUrls = (product.gallery || '').split(',').map(url => url.trim()).filter(url => url.length > 0);
-          images.push(...galleryUrls);
-
-          // --- LOGIC ẢNH CHÍNH & ẢNH NHỎ ---
-          if (images.length > 0) {
-              mainImageViewer.style.display = 'block'; 
-              mainProductImage.src = images[0]; // Ảnh đầu tiên là ảnh chính
-              mainProductImage.alt = product.title;
-
-              images.forEach(url => {
-                  // Dùng data-src để lưu URL của ảnh nhỏ
-                  galleryContainer.innerHTML += `<img src="${url}" data-src="${url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />`;
-              });
-          } else {
-              mainImageViewer.style.display = 'none'; // Ẩn khu vực ảnh chính nếu không có ảnh
-          }
-          // --- KẾT THÚC LOGIC ẢNH ---
+          // Xử lý chuỗi link ảnh phụ (gallery)
+          const images = (product.gallery || '').split(',').map(url => url.trim()).filter(url => url.length > 0);
+          images.forEach(url => {
+              galleryContainer.innerHTML += `<img src="${url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />`;
+          });
           
           const buyButton = document.getElementById('modal-buy-button');
           const isReview = product.section === 'review';
@@ -767,77 +710,105 @@
           // --- XỬ LÝ NỀN TẢNG (PLATFORM) ---
           const platformKey = (product.platform || '').toLowerCase().trim();
           const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
-          
-          const buttonText = isReview ? 'XEM BÀI REVIEW' : platformInfo.text; 
-          const iconHtml = isReview ? 
-            `<i class="fas fa-star" style="color: white; background: orange; border-radius: 50%; padding: 4px;"></i>` : // Icon REVIEW
-            `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`; // Icon nền tảng
+          const buttonText = isReview ? 'XEM BÀI REVIEW' : platformInfo.text;
+          const iconHtml = isReview ? `<i class="fas fa-star" style="color: orange;"></i>` : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
           
           buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
-          buyButton.className = `buy-button`; 
+          buyButton.className = `buy-button`; // Đảm bảo không có class nền tảng dư thừa
 
-          // --- XỬ LÝ VIDEO ---
+          // --- XỬ LÝ VIDEO (Giữ nguyên) ---
           const videoInput = product.video_id || ''; 
-          videoContainerEmbed.innerHTML = ''; 
+          videoContainerEmbed.innerHTML = ''; // Dọn dẹp nội dung cũ
 
-          if (videoInput && videoInput.trim() !== '') {
+          if (videoInput) {
               tabVideoBtn.style.display = 'inline-block';
-              // (Giữ nguyên logic nhúng video cũ)
+
               let htmlToEmbed = '';
               const trimmedInput = videoInput.trim();
 
+              // 1. Nhúng HTML trực tiếp (TikTok Embed Code, Facebook iFrame, iFrame bất kỳ)
               if (trimmedInput.startsWith('<')) {
                   htmlToEmbed = trimmedInput;
-              } else if (trimmedInput.length === 11 && !trimmedInput.includes(' ') && !trimmedInput.includes('/') && !trimmedInput.includes('.')) {
+              } 
+              // 2. ID YouTube (11 ký tự không khoảng trắng)
+              else if (trimmedInput.length === 11 && !trimmedInput.includes(' ') && !trimmedInput.includes('/') && !trimmedInput.includes('.')) {
                   const youtubeURL = `https://www.youtube.com/embed/${trimmedInput}?autoplay=1&rel=0&showinfo=0`;
                   htmlToEmbed = `<iframe src="${youtubeURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
-              } else if (trimmedInput.startsWith('http') && (/\.(mp4|mov|webm|ogg)$/i.test(trimmedInput))) {
+              } 
+              // 3. Link Video Trực tiếp (MP4, MOV, WEBM)
+              else if (trimmedInput.startsWith('http') && (trimmedInput.includes('.mp4') || trimmedInput.includes('.mov') || trimmedInput.includes('.webm') || trimmedInput.includes('.ogg'))) {
+                  // Sử dụng thẻ <video> cho link file trực tiếp
                   htmlToEmbed = `<video controls autoplay preload="auto" style="width: 100%; height: 100%; object-fit: cover;" src="${trimmedInput}"></video>`;
-              } else if (trimmedInput.startsWith('http')) {
-                  let embedURL = trimmedInput;
+              }
+              // 4. Các URL nhúng/xem khác (YouTube URL, Facebook URL, Vimeo URL...)
+              else if (trimmedInput.startsWith('http')) {
+                  // Xử lý đặc biệt nếu người dùng dán link youtube đầy đủ (ví dụ: watch?v=)
                   if (trimmedInput.includes('youtube.com/watch?v=')) {
                        const youtubeID = new URL(trimmedInput).searchParams.get('v');
-                       if (youtubeID) embedURL = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0&showinfo=0`;
-                  } 
-                  htmlToEmbed = `<iframe src="${embedURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
+                       if (youtubeID) {
+                            htmlToEmbed = `<iframe src="https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0&showinfo=0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
+                       } else {
+                            // Link YouTube không có ID, dùng iframe tổng quát
+                            htmlToEmbed = `<iframe src="${trimmedInput}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
+                       }
+                  } else {
+                       // Mặc định dùng iframe cho các link http khác (Facebook, Vimeo, etc.)
+                       htmlToEmbed = `<iframe src="${trimmedInput}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
+                  }
               }
+
               videoContainerEmbed.innerHTML = htmlToEmbed;
+              
+              // Xử lý đặc biệt cho script nhúng của TikTok
+              if (htmlToEmbed.includes('tiktok-embed') && !document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
+                  const script = document.createElement('script');
+                  script.src = 'https://www.tiktok.com/embed.js';
+                  document.body.appendChild(script); 
+              }
+              
           } else {
               tabVideoBtn.style.display = 'none';
           }
           
-          // Hiển thị và chuyển tab mặc định
-          if (images.length > 0) {
+          // Luôn hiển thị tab gallery nếu có ảnh gallery hoặc ảnh chính
+          if (images.length > 0 || product.img) {
               tabGalleryBtn.style.display = 'inline-block';
               switchModalView('gallery');
-          } else if (videoInput && videoInput.trim() !== '') {
+          } else if (videoInput) {
+              // Nếu không có ảnh nào nhưng có video, mặc định mở tab video
               tabGalleryBtn.style.display = 'none';
               switchModalView('video');
           } else {
-              tabGalleryBtn.style.display = 'none';
-              return; 
+              // Nếu không có cả ảnh lẫn video, đóng modal (trường hợp hiếm)
+              closeModal();
+              return;
           }
 
           modal.classList.add('visible');
           document.body.style.overflow = 'hidden'; 
-          attachModalListeners(); // Phải gọi lại để gán sự kiện cho các ảnh nhỏ mới được render
       }
 
       function closeModal() {
           modal.classList.remove('visible');
           document.body.style.overflow = ''; 
+          
+          // Dọn dẹp nội dung container để dừng tất cả video/iframe
           videoContainerEmbed.innerHTML = '';
       }
       
-      // --- GẮN SỰ KIỆN LẮNG NGHE (ĐÃ CẬP NHẬT) ---
+      // --- GẮN SỰ KIỆN LẮNG NGHE (Giữ nguyên) ---
       function attachModalListeners() {
-          // 1. Cards
           document.querySelectorAll('.open-modal-btn').forEach(card => {
               card.removeEventListener('click', handleCardClick); 
               card.addEventListener('click', handleCardClick); 
           });
           
-          // 2. Tabs, Close, Overlay
+          function handleCardClick() {
+              const id = this.dataset.productId; // Giữ là string vì id trong sheet có thể là string/number
+              const product = PRODUCT_DATA.find(p => p.id === id); 
+              if (product) openModal(product);
+          }
+          
           tabGalleryBtn.removeEventListener('click', handleSwitchGallery); 
           tabVideoBtn.removeEventListener('click', handleSwitchVideo);
           document.querySelector('.close-btn').removeEventListener('click', closeModal);
@@ -850,26 +821,6 @@
           modal.addEventListener('click', handleModalOverlayClick);
           document.addEventListener('keydown', handleEscapeKey);
 
-          // 3. ẢNH TRONG GALLERY (MỚI)
-          document.querySelectorAll('.gallery-wrapper img').forEach(img => {
-              img.removeEventListener('click', handleGalleryImageClick);
-              img.addEventListener('click', handleGalleryImageClick);
-          });
-          
-          function handleCardClick() {
-              const id = this.dataset.productId; 
-              const product = PRODUCT_DATA.find(p => p.id === id); 
-              if (product) openModal(product);
-          }
-
-          function handleGalleryImageClick() {
-              const src = this.getAttribute('data-src'); 
-              mainProductImage.src = src; 
-              mainImageViewer.style.display = 'block'; 
-              // Cuộn lên đầu để người dùng thấy ảnh chính được cập nhật
-              mainImageViewer.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
-          }
-
           function handleSwitchGallery() { switchModalView('gallery'); }
           function handleSwitchVideo() { switchModalView('video'); }
           function handleModalOverlayClick(e) { if (e.target === modal) closeModal(); }
@@ -879,6 +830,7 @@
       // --- LOGIC CHUYỂN VIEW VÀ CUỘN (Giữ nguyên) ---
       function showSection(targetId) {
           navLinks.forEach(link => {
+              // Xử lý active link
               if (link.getAttribute('href') === targetId) {
                   link.style.background = 'var(--pink)';
               } else {
@@ -895,6 +847,7 @@
           });
           const scrollTarget = document.getElementById(targetId.substring(1));
           if (scrollTarget && targetId !== '#home') {
+                  // Cuộn đến vị trí mới, trừ đi chiều cao của nav bar + margin
                   window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'smooth' });
           } else {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -902,17 +855,17 @@
       }
       
       // Hàm tự động tải lại dữ liệu sau 5 phút
-      const POLLING_INTERVAL = 300000; 
+      const POLLING_INTERVAL = 300000; // 5 phút (300,000 miligiây)
 
       function startPolling() {
           renderSocialLinks({});
           updateContactInfo({});
           
-          fetchAndRenderProducts(); 
-          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); 
+          fetchAndRenderProducts(); // Tải lần đầu từ sheet
+          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); // Tải lặp lại
       }
 
-      // 🚨 KHỞI TẠO
+      // 🚨 KHỞI TẠO: Bắt đầu tải dữ liệu khi trang load
       startPolling(); 
       showSection('#home');
 
@@ -923,6 +876,7 @@
               e.preventDefault();
               document.body.classList.remove('page-enter-active');
               document.body.classList.add('page-exit-active');
+              // Thêm timeout để tạo hiệu ứng chuyển trang mượt mà
               setTimeout(() => {
                   showSection(href); 
                   document.body.classList.remove('page-exit-active');
