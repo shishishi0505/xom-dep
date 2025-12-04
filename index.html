@@ -243,6 +243,11 @@
         width: 100%; height: auto; border-radius: 12px; margin-bottom: 10px; 
         object-fit: cover; aspect-ratio: 1 / 1; 
     }
+    /* Thêm div chứa details để áp dụng bố cục mobile */
+    .product-card-details {
+      /* Dành cho desktop, chi tiết căn giữa */
+      text-align: center; 
+    }
     .product-card h3 { color: var(--title); font-size: 16px; margin: 8px 0 5px; font-weight: 900; min-height: 40px; }
     
     /* Mô tả cắt ngắn 2 dòng trên lưới sản phẩm */
@@ -291,7 +296,7 @@
         font-weight: 900; 
         font-size: 18px; /* Làm cho giá trong modal nổi bật */
     } 
-    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; }
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; z-index: 1001; }
     .close-btn:hover { color: var(--deep-pink); }
     
     /* MODAL TABS & VIDEO */
@@ -319,9 +324,15 @@
         gap: 15px; 
         margin: 20px auto; 
     }
+    /* Ảnh trong gallery giờ có thể click để zoom */
     .gallery-wrapper img {
         width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 16 / 16;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        cursor: zoom-in; /* Thêm con trỏ zoom-in */
+        transition: transform 0.2s ease;
+    }
+    .gallery-wrapper img:hover {
+        transform: scale(0.98);
     }
     
     /* Container cho video nhúng (iframe/video tag/tiktok embed) */
@@ -348,6 +359,48 @@
         margin: 20px auto 0 !important; /* Căn giữa và tạo khoảng cách */
         padding-bottom: 0 !important;
     }
+    
+    /* NEW: Zoom Lightbox for detailed viewing (Ảnh phóng to) */
+    #zoom-lightbox {
+        z-index: 2000; /* Cao hơn modal chính */
+        background: rgba(0, 0, 0, 0.95); /* Nền đen mờ */
+    }
+    #zoom-lightbox .lightbox-content {
+        background: transparent;
+        padding: 0;
+        width: auto;
+        max-width: 95vw;
+        height: auto;
+        max-height: 95vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Re-use modal-content scale animation logic */
+        position: relative; 
+        transform: scale(0.95); transition: transform 0.3s ease;
+    }
+    .modal-overlay.visible #zoom-lightbox .lightbox-content {
+        transform: scale(1);
+    }
+    #zoom-lightbox img {
+        max-width: 100%;
+        max-height: 95vh;
+        width: auto;
+        height: auto;
+        object-fit: contain; /* Đảm bảo ảnh vừa vặn */
+        cursor: zoom-out; /* Dùng zoom-out để chỉ ra có thể nhấp để đóng */
+        border-radius: 0; 
+    }
+    /* Reposition close button for lightbox */
+    #lightbox-close-btn {
+        color: white;
+        text-shadow: 0 0 5px black;
+        top: 10px;
+        right: 15px;
+        z-index: 2001; 
+    }
+
 
     /* BUY BUTTON */
     .modal-footer { text-align: center; margin-top: 25px; border-top: 1px solid var(--pink); padding-top: 25px; }
@@ -394,12 +447,67 @@
       header h1, header p { font-size: 90%; }
     }
     
-    /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE
-    * - Modal rộng hơn (95%)
-    * - Gallery 1 cột (cho ảnh lớn hơn)
-    */
+    /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE */
     @media (max-width: 550px) { 
-        .product-grid { grid-template-columns: 1fr; display: grid; margin: 20px 0; }
+        
+        /* Điều chỉnh header, nav, layout cho mobile tốt hơn */
+        header { margin-top: 20px; }
+        header h1 { font-size: 32px; }
+        header p { font-size: 14px; }
+        nav a { font-size: 13px; padding: 6px 8px; }
+        nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; }
+        .layout { margin: 15px auto; width: 98%; }
+        
+        /* 1. Giao diện Sản phẩm Dạng Danh sách (List View) */
+        .product-grid { 
+            grid-template-columns: 1fr; 
+            display: grid; 
+            margin: 20px 0; 
+            padding: 0 10px; /* Thêm padding nhẹ để các card không dính vào mép */
+        }
+        
+        .product-card {
+            display: flex; /* Bố cục ngang */
+            text-align: left; /* Text căn trái */
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px; 
+            align-items: center; /* Căn giữa theo chiều dọc */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Bóng nhẹ hơn */
+        }
+        .product-card:hover { transform: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); } /* Giảm hiệu ứng hover */
+        
+        .product-card img {
+            width: 90px; /* Cố định ảnh nhỏ */
+            min-width: 90px;
+            height: 90px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            aspect-ratio: 1 / 1; 
+        }
+        .product-card-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            min-height: auto; 
+        }
+        .product-card h3 { 
+            font-size: 14px; 
+            margin: 0 0 5px; 
+            min-height: auto; 
+            -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
+        }
+        .product-card p {
+            display: none; /* Ẩn mô tả để tiết kiệm không gian */
+        }
+        .product-price-display {
+            font-size: 13px; /* Giá nhỏ hơn một chút */
+            margin-top: 5px;
+        }
+
+        /* 2. Điều chỉnh Modal/Gallery */
         .gallery-wrapper { 
             /* Gallery 1 cột trên điện thoại */
             grid-template-columns: 1fr; 
@@ -413,7 +521,6 @@
             max-width: 95%; 
         } 
         .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
-        nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; }
         
         /* Optional: Small adjustments for better flow (Added for better mobile UX) */
         #modal-desc { margin: 10px 0; font-size: 14px; }
@@ -510,6 +617,14 @@
       </div>
   </div>
 
+  <div id="zoom-lightbox" class="modal-overlay">
+      <div class="lightbox-content">
+          <button id="lightbox-close-btn" class="close-btn" aria-label="Đóng ảnh phóng to">&times;</button>
+          <img id="lightbox-image" src="" alt="Ảnh sản phẩm phóng to">
+      </div>
+  </div>
+
+
   <footer>
     © 2025 XÓM ĐẸP – HỘI TỤ TINH HOA CỦA PHÁI ĐẸP
   </footer>
@@ -518,7 +633,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       
       // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
-      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
+      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSdOXVYpI/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -530,8 +645,12 @@
       const viewVideo = document.getElementById('modal-view-video');
       const socialContainer = document.getElementById('social-links-container');
       const contactContainer = document.querySelector('#contact .contact-info');
-      // Thẻ chứa nội dung nhúng mới (thay thế cho video tag cũ)
       const videoContainerEmbed = document.getElementById('video-container-embed');
+
+      // NEW: Khai báo biến cho Lightbox Zoom
+      const lightbox = document.getElementById('zoom-lightbox');
+      const lightboxImage = document.getElementById('lightbox-image');
+
       
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
@@ -561,7 +680,7 @@
       function parseTsvToArray(tsvText) {
           const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
           const data = parsed.data;
-          console.log('Parsed data:', data); // Debug: Xem data parse được gì
+          // console.log('Parsed data:', data); // Debug: Xem data parse được gì
           if (data.length > 0) {
               CONFIG_DATA = data[0]; // Hàng đầu tiên là config
               return data.slice(1); // Products từ hàng tiếp theo
@@ -577,7 +696,7 @@
                   throw new Error(`HTTP error! status: ${response.status}`);
               }
               const tsvText = await response.text();
-              console.log('Raw TSV text:', tsvText); // Debug: Xem text tải về
+              // console.log('Raw TSV text:', tsvText); // Debug: Xem text tải về
               
               PRODUCT_DATA = parseTsvToArray(tsvText);
               
@@ -597,9 +716,8 @@
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS (Đã sửa giá) ---
+      // --- HÀM 3: RENDER PRODUCTS (ĐÃ CẬP NHẬT DẠNG MOBILE LIST VIEW) ---
       function renderProducts(data) {
-          // ĐÃ XÓA 'review-products' KHỎI DANH SÁCH CONTAINER
           const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products']; 
           containers.forEach(id => {
               const container = document.getElementById(id);
@@ -620,9 +738,11 @@
                   const html = `
                       <div data-product-id="${product.id}" class="product-card open-modal-btn">
                           <img src="${img_url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />
-                          <h3>${product.title}</h3>
-                          <p>${product.desc}</p> 
-                          <span class="product-price-display" style="color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'};">${priceDisplay}</span>
+                          <div class="product-card-details">
+                            <h3>${product.title}</h3>
+                            <p>${product.desc}</p> 
+                            <span class="product-price-display" style="color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'};">${priceDisplay}</span>
+                          </div>
                       </div>
                   `;
                   container.innerHTML += html;
@@ -659,7 +779,34 @@
           contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL (ĐÃ CẬP NHẬT GIÁ) ---
+      // --- HÀM XỬ LÝ LIGHTBOX (ZOOM ẢNH) ---
+      function openLightbox(imageUrl) {
+          lightboxImage.src = imageUrl;
+          lightbox.classList.add('visible');
+          // document.body.style.overflow = 'hidden'; // Đã được xử lý trong openModal
+      }
+      
+      function closeLightbox() {
+          lightbox.classList.remove('visible');
+          // Nếu modal chính cũng đóng thì mới khôi phục overflow
+          if (!modal.classList.contains('visible')) {
+             document.body.style.overflow = '';
+          }
+      }
+      
+      function handleLightboxOverlayClick(e) { 
+          if (e.target === lightbox || e.target === lightboxImage) {
+             closeLightbox(); 
+          } 
+      }
+      
+      function handleEscapeKeyLightbox(e) {
+         if (e.key === 'Escape' && lightbox.classList.contains('visible')) {
+             closeLightbox();
+         }
+      }
+      
+      // --- HÀM XỬ LÝ MODAL (ĐÃ CẬP NHẬT GẮN LISTENER CHO ZOOM) ---
       function switchModalView(view) {
           tabGalleryBtn.classList.remove('active');
           tabVideoBtn.classList.remove('active');
@@ -686,39 +833,61 @@
       }
       
       function openModal(product) {
+          // 1. Cập nhật thông tin Modal
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
           
-          // HIỂN THỊ GIÁ TRONG MODAL (CÓ VNĐ NẾU KHÔNG PHẢI REVIEW)
           const modalPriceDisplay = product.section === 'review' 
             ? product.price 
             : (product.price ? `${product.price} VNĐ` : '');
           document.getElementById('modal-price').textContent = modalPriceDisplay;
 
-          const galleryContainer = document.getElementById('modal-gallery-container');
-          galleryContainer.innerHTML = ''; 
-          // Xử lý chuỗi link ảnh phụ (gallery)
-          const images = (product.gallery || '').split(',').map(url => url.trim()).filter(url => url.length > 0);
-          images.forEach(url => {
-              galleryContainer.innerHTML += `<img src="${url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />`;
-          });
-          
+          // 2. Xử lý nút MUA HÀNG
           const buyButton = document.getElementById('modal-buy-button');
           const isReview = product.section === 'review';
           buyButton.href = product.link || '#'; 
           
-          // --- XỬ LÝ NỀN TẢNG (PLATFORM) ---
           const platformKey = (product.platform || '').toLowerCase().trim();
           const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
           const buttonText = isReview ? 'XEM BÀI REVIEW' : platformInfo.text;
           const iconHtml = isReview ? `<i class="fas fa-star" style="color: orange;"></i>` : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
           
           buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
-          buyButton.className = `buy-button`; // Đảm bảo không có class nền tảng dư thừa
+          buyButton.className = `buy-button`; 
 
-          // --- XỬ LÝ VIDEO (Giữ nguyên) ---
+          // 3. Xử lý GALLERY và GẮN LISTENER CHO ZOOM
+          const galleryContainer = document.getElementById('modal-gallery-container');
+          galleryContainer.innerHTML = ''; 
+          
+          // Lấy tất cả ảnh, bao gồm ảnh chính và ảnh phụ
+          const allImages = [];
+          if (product.img) {
+              allImages.push(product.img.trim());
+          }
+          const secondaryImages = (product.gallery || '').split(',').map(url => url.trim()).filter(url => url.length > 0);
+          allImages.push(...secondaryImages);
+          
+          // Xử lý ảnh trùng lặp và render
+          const uniqueImages = [...new Set(allImages)].filter(url => url.length > 0);
+          
+          uniqueImages.forEach(url => {
+              // Thêm class 'gallery-image' để dễ dàng gắn listener zoom
+              galleryContainer.innerHTML += `<img src="${url}" alt="${product.title}" loading="lazy" class="gallery-image" data-full-url="${url}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />`;
+          });
+
+          // Gắn listener cho tất cả ảnh trong gallery (để mở lightbox)
+          setTimeout(() => {
+              document.querySelectorAll('#modal-gallery-container .gallery-image').forEach(img => {
+                  img.addEventListener('click', (e) => {
+                      e.stopPropagation(); 
+                      openLightbox(img.dataset.fullUrl);
+                  });
+              });
+          }, 0); 
+
+          // 4. Xử lý VIDEO
           const videoInput = product.video_id || ''; 
-          videoContainerEmbed.innerHTML = ''; // Dọn dẹp nội dung cũ
+          videoContainerEmbed.innerHTML = ''; 
 
           if (videoInput) {
               tabVideoBtn.style.display = 'inline-block';
@@ -726,40 +895,31 @@
               let htmlToEmbed = '';
               const trimmedInput = videoInput.trim();
 
-              // 1. Nhúng HTML trực tiếp (TikTok Embed Code, Facebook iFrame, iFrame bất kỳ)
               if (trimmedInput.startsWith('<')) {
                   htmlToEmbed = trimmedInput;
               } 
-              // 2. ID YouTube (11 ký tự không khoảng trắng)
               else if (trimmedInput.length === 11 && !trimmedInput.includes(' ') && !trimmedInput.includes('/') && !trimmedInput.includes('.')) {
                   const youtubeURL = `https://www.youtube.com/embed/${trimmedInput}?autoplay=1&rel=0&showinfo=0`;
                   htmlToEmbed = `<iframe src="${youtubeURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
               } 
-              // 3. Link Video Trực tiếp (MP4, MOV, WEBM)
               else if (trimmedInput.startsWith('http') && (trimmedInput.includes('.mp4') || trimmedInput.includes('.mov') || trimmedInput.includes('.webm') || trimmedInput.includes('.ogg'))) {
-                  // Sử dụng thẻ <video> cho link file trực tiếp
                   htmlToEmbed = `<video controls autoplay preload="auto" style="width: 100%; height: 100%; object-fit: cover;" src="${trimmedInput}"></video>`;
               }
-              // 4. Các URL nhúng/xem khác (YouTube URL, Facebook URL, Vimeo URL...)
               else if (trimmedInput.startsWith('http')) {
-                  // Xử lý đặc biệt nếu người dùng dán link youtube đầy đủ (ví dụ: watch?v=)
                   if (trimmedInput.includes('youtube.com/watch?v=')) {
                        const youtubeID = new URL(trimmedInput).searchParams.get('v');
                        if (youtubeID) {
                             htmlToEmbed = `<iframe src="https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0&showinfo=0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
                        } else {
-                            // Link YouTube không có ID, dùng iframe tổng quát
                             htmlToEmbed = `<iframe src="${trimmedInput}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
                        }
                   } else {
-                       // Mặc định dùng iframe cho các link http khác (Facebook, Vimeo, etc.)
                        htmlToEmbed = `<iframe src="${trimmedInput}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
                   }
               }
 
               videoContainerEmbed.innerHTML = htmlToEmbed;
               
-              // Xử lý đặc biệt cho script nhúng của TikTok
               if (htmlToEmbed.includes('tiktok-embed') && !document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
                   const script = document.createElement('script');
                   script.src = 'https://www.tiktok.com/embed.js';
@@ -770,16 +930,14 @@
               tabVideoBtn.style.display = 'none';
           }
           
-          // Luôn hiển thị tab gallery nếu có ảnh gallery hoặc ảnh chính
-          if (images.length > 0 || product.img) {
+          // 5. Hiển thị modal và chọn tab mặc định
+          if (uniqueImages.length > 0 || product.img) {
               tabGalleryBtn.style.display = 'inline-block';
               switchModalView('gallery');
           } else if (videoInput) {
-              // Nếu không có ảnh nào nhưng có video, mặc định mở tab video
               tabGalleryBtn.style.display = 'none';
               switchModalView('video');
           } else {
-              // Nếu không có cả ảnh lẫn video, đóng modal (trường hợp hiếm)
               closeModal();
               return;
           }
@@ -790,13 +948,14 @@
 
       function closeModal() {
           modal.classList.remove('visible');
+          // Đảm bảo đóng cả lightbox nếu nó đang mở
+          lightbox.classList.remove('visible'); 
           document.body.style.overflow = ''; 
           
-          // Dọn dẹp nội dung container để dừng tất cả video/iframe
           videoContainerEmbed.innerHTML = '';
       }
       
-      // --- GẮN SỰ KIỆN LẮNG NGHE (Giữ nguyên) ---
+      // --- GẮN SỰ KIỆN LẮNG NGHE (ĐÃ CẬP NHẬT CHO LIGHTBOX) ---
       function attachModalListeners() {
           document.querySelectorAll('.open-modal-btn').forEach(card => {
               card.removeEventListener('click', handleCardClick); 
@@ -804,27 +963,43 @@
           });
           
           function handleCardClick() {
-              const id = this.dataset.productId; // Giữ là string vì id trong sheet có thể là string/number
+              const id = this.dataset.productId; 
               const product = PRODUCT_DATA.find(p => p.id === id); 
               if (product) openModal(product);
           }
           
           tabGalleryBtn.removeEventListener('click', handleSwitchGallery); 
           tabVideoBtn.removeEventListener('click', handleSwitchVideo);
-          document.querySelector('.close-btn').removeEventListener('click', closeModal);
+          document.querySelector('#gallery-modal .close-btn').removeEventListener('click', closeModal);
+          document.querySelector('#zoom-lightbox .close-btn').removeEventListener('click', closeLightbox); // NEW
           modal.removeEventListener('click', handleModalOverlayClick);
+          lightbox.removeEventListener('click', handleLightboxOverlayClick); // NEW
           document.removeEventListener('keydown', handleEscapeKey);
           
           tabGalleryBtn.addEventListener('click', handleSwitchGallery);
           tabVideoBtn.addEventListener('click', handleSwitchVideo);
-          document.querySelector('.close-btn').addEventListener('click', closeModal);
+          document.querySelector('#gallery-modal .close-btn').addEventListener('click', closeModal);
+          document.querySelector('#zoom-lightbox .close-btn').addEventListener('click', closeLightbox); // NEW
           modal.addEventListener('click', handleModalOverlayClick);
-          document.addEventListener('keydown', handleEscapeKey);
+          lightbox.addEventListener('click', handleLightboxOverlayClick); // NEW
+          // Chỉ gắn 1 listener duy nhất cho Escape (đã được quản lý trong hàm open/close lightbox)
+          document.addEventListener('keydown', handleEscapeKey); 
 
           function handleSwitchGallery() { switchModalView('gallery'); }
           function handleSwitchVideo() { switchModalView('video'); }
-          function handleModalOverlayClick(e) { if (e.target === modal) closeModal(); }
-          function handleEscapeKey(e) { if (e.key === 'Escape' && modal.classList.contains('visible')) closeModal(); }
+          function handleModalOverlayClick(e) { 
+              // Đảm bảo chỉ đóng modal khi click vào nền overlay, không phải nội dung modal
+              if (e.target === modal) closeModal(); 
+          }
+          function handleEscapeKey(e) { 
+              if (e.key === 'Escape') {
+                  if (lightbox.classList.contains('visible')) {
+                      closeLightbox(); // Ưu tiên đóng lightbox trước
+                  } else if (modal.classList.contains('visible')) {
+                      closeModal(); // Sau đó đóng modal chính
+                  }
+              }
+          }
       }
       
       // --- LOGIC CHUYỂN VIEW VÀ CUỘN (Giữ nguyên) ---
@@ -893,4 +1068,4 @@
     });
   </script>
 </body>
-</html>	
+</html>
