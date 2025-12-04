@@ -471,7 +471,7 @@
     <a href="#vay" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-female"></i></span> VÁY</a>
     <a href="#quanao" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-tshirt"></i></span> QUẦN ÁO</a>
     <a href="#bikini" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-swimmer"></i></span> BIKINI</a>
-    
+    <a href="#review" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-star"></i></span> REVIEW</a>
     <a href="#contact" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-envelope"></i></span> LIÊN HỆ</a>
   </nav>
 
@@ -507,7 +507,7 @@
       <section id="vay" class="card"><div class="section-title"><h2>VÁY</h2></div><p>Bộ sưu tập Váy thiết kế và gợi ý mix & match các kiểu Váy A, Váy suông, Váy maxi cho mọi sự kiện.</p><div class="product-grid" id="vay-products"></div></section>
       <section id="quanao" class="card"><div class="section-title"><h2>QUẦN ÁO</h2></div><p>Gợi ý các set Quần áo thanh lịch, cá tính, từ đồ công sở đến đồ đi chơi cuối tuần.</p><div class="product-grid" id="quanao-products"></div></section>
       <section id="bikini" class="card"><div class="section-title"><h2>BIKINI</h2></div><p>Bikini và đồ bơi: Xu hướng màu sắc, kiểu dáng giúp bạn tự tin tỏa sáng trên bãi biển.</p><div class="product-grid" id="bikini-products"></div></section>
-      
+      <section id="review" class="card"><div class="section-title"><h2>REVIEW</h2></div><p>Đánh giá khách quan các sản phẩm làm đẹp và thời trang mới nhất trên thị trường.</p><div class="product-grid" id="review-products"></div></section>
 
       <section id="contact" class="card">
         <div class="section-title"><h2>LIÊN HỆ</h2></div>
@@ -643,7 +643,8 @@
       }
 
       // --- HÀM 3: RENDER PRODUCTS (Giữ nguyên logic giá) ---
-     const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products'];
+      function renderProducts(data) {
+          const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'review-products'];
           containers.forEach(id => {
               const container = document.getElementById(id);
               if (container) container.innerHTML = '';
