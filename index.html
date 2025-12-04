@@ -10,6 +10,9 @@
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   
+  <!-- Thêm thư viện PapaParse để parse TSV/CSV an toàn hơn -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  
   <style>
     /* ------------------------------------ */
     /* CSS CHỦ ĐỀ XÓM ĐẸP & HỒNG PHẤN */
@@ -303,11 +306,34 @@
     /* BUY BUTTON */
     .modal-footer { text-align: center; margin-top: 25px; border-top: 1px solid var(--pink); padding-top: 25px; }
     .modal-footer .buy-button {
-        display: inline-block; background: var(--deep-pink); color: var(--white); text-decoration: none;
+        display: inline-flex; /* Thay đổi để căn giữa icon */
+        align-items: center;
+        justify-content: center;
+        gap: 10px; /* Khoảng cách giữa text và icon */
+        background: var(--deep-pink); color: var(--white); text-decoration: none;
         padding: 12px 30px; border-radius: 30px; font-weight: 800; font-size: 18px;
         transition: background 0.2s;
     }
     .modal-footer .buy-button:hover { background: #c51152; }
+    /* Nền tảng Icon */
+    .platform-icon {
+        width: 24px;
+        height: 24px;
+        background-color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: var(--deep-pink);
+    }
+    /* Các màu nền tảng cụ thể (có thể thêm nhiều hơn) */
+    .platform-shopee { background-color: #ee4d2d !important; color: var(--white) !important; }
+    .platform-lazada { background-color: #1a1b41 !important; color: var(--white) !important; }
+    .platform-tiki { background-color: #0088ff !important; color: var(--white) !important; }
+    .platform-tiktok { background-color: #000000 !important; color: var(--white) !important; }
+    .platform-website { background-color: var(--soft-pink) !important; color: var(--deep-pink) !important; }
+
     
     footer { text-align:center; padding:22px; margin-top:36px; background: linear-gradient(90deg,var(--soft-pink),var(--cream)); border-top-left-radius:40px; border-top-right-radius:40px; color:var(--title); }
 
@@ -335,7 +361,7 @@
   <header>
     <h1>XÓM ĐẸP</h1>
     
-    <p>𝒳ó𝓂 Đ𝑒̣̂𝓅 ✿ 𝒩𝑜̛𝒾 𝒽𝑜̣̂𝒾 𝓉𝓊̣ 𝓉𝒾𝓃𝒽 𝒽𝑜𝒶 𝒸𝓊̉𝒶 𝒫𝒽𝒶́𝒾 Đ𝑒̣̂𝓅</p>
+    <p>𝒳ó𝓂 Đ𝑒̣̂𝓅 ✿ 𝒩𝑜̛𝒾 𝒽𝑜̣̂𝒾 𝓉𝓊̣ 𝓉𝓲𝓃𝒽 𝒽𝑜𝒶 𝒸𝓊̉𝒶 𝒫𝒽𝒶́𝒾 Đ𝑒̣̂𝓅</p>
   </header>
 
   <nav aria-label="Chuyển mục">
@@ -429,8 +455,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       
-      // ⚠️ ĐẶT URL CSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
-      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQSAh2AjLYB3trpG3NLNSy71aQiUsmiEVW-LR0Ob3o_9uGsEv7g12-UVyPZNYKiMVOiNlC50OLAYsYe/pub?gid=0&single=true&output=csv'; 
+      // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
+      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -454,79 +480,53 @@
           { key: 'tiktok_url', icon: 'fab fa-tiktok', name: 'TikTok', default_url: 'https://www.tiktok.com/@kenh_tiktok_cua_ban/' },
           { key: 'facebook_url', icon: 'fab fa-facebook-f', name: 'Facebook', default_url: 'https://www.facebook.com/trang_facebook_cua_ban/' }, 
       ];
+
+      // --- BẢN ĐỒ ICON NỀN TẢNG ---
+      const PLATFORM_ICONS = {
+        'shopee': { icon: 'fas fa-store', className: 'platform-shopee', text: 'SHOPEE' },
+        'lazada': { icon: 'fas fa-box', className: 'platform-lazada', text: 'LAZADA' },
+        'tiki': { icon: 'fas fa-feather-alt', className: 'platform-tiki', text: 'TIKI' },
+        'tiktok shop': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
+        'tiktok': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
+        'website': { icon: 'fas fa-globe', className: 'platform-website', text: 'WEBSITE' },
+        'sendo': { icon: 'fas fa-hand-holding-usd', className: 'platform-website', text: 'SENDO' },
+        // Thêm các nền tảng khác tại đây
+        '': { icon: 'fas fa-shopping-cart', className: '', text: 'MUA NGAY' }
+      };
+
       
-      // --- HÀM 1: PHÂN TÍCH DỮ LIỆU CSV (Xử lý Hàng Config) ---
-      function csvToArray(csvText) {
-          const lines = csvText.split('\n');
-          const headers = lines[0].trim().split(',').map(header => header.trim());
-          const result = [];
-          
-          if (lines.length > 1) {
-              const configLine = lines[1].trim().split(',');
-              if (configLine.length === headers.length) {
-                  for (let j = 0; j < headers.length; j++) {
-                      // Thay thế dấu nháy kép cho giá trị có chứa dấu phẩy
-                      let value = configLine[j].replace(/^"|"$/g, '').trim(); 
-                      if (value) {
-                         CONFIG_DATA[headers[j]] = value; 
-                      }
-                  }
-              }
+      // --- HÀM 1: PHÂN TÍCH DỮ LIỆU TSV (Sử dụng PapaParse) ---
+      function parseTsvToArray(tsvText) {
+          const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
+          const data = parsed.data;
+          console.log('Parsed data:', data); // Debug: Xem data parse được gì
+          if (data.length > 0) {
+              CONFIG_DATA = data[0]; // Hàng đầu tiên là config
+              return data.slice(1); // Products từ hàng tiếp theo
           }
-
-          // Bắt đầu đọc sản phẩm từ Hàng 3 (index 2)
-          for (let i = 2; i < lines.length; i++) {
-              if (lines[i].trim() === '') continue;
-
-              // Tạm thời split dòng bằng dấu phẩy
-              const currentline = lines[i].trim().split(','); 
-              
-              if (currentline.length === headers.length) {
-                  const obj = {};
-                  for (let j = 0; j < headers.length; j++) {
-                      // Xử lý giá trị có thể có dấu nháy kép và khoảng trắng
-                      let value = currentline[j].replace(/^"|"$/g, '').trim(); 
-                      
-                      if (headers[j] === 'id') {
-                          obj[headers[j]] = parseInt(value) || 0; 
-                      } else {
-                          obj[headers[j]] = value;
-                      }
-                  }
-                  if (obj.title && obj.section) { 
-                     result.push(obj);
-                  }
-              } else {
-                  console.warn(`Bỏ qua hàng ${i+1}: Số cột không khớp hoặc dữ liệu bị thiếu. (Kiểm tra xem bạn có dùng dấu phẩy trong nội dung không)`);
-              }
-          }
-          return result;
+          return [];
       }
       
       // --- HÀM 2: FETCH VÀ RENDER SẢN PHẨM ---
       async function fetchAndRenderProducts() {
           try {
-              if (SHEET_API_URL.includes('DÁN URL CSV CÔNG KHAI CỦA GOOGLE SHEET VÀO ĐÂY')) {
-                  console.error('LỖI: Vui lòng thay thế SHEET_API_URL bằng link Google Sheet CSV của bạn.');
-                  renderSocialLinks({}); 
-                  updateContactInfo({});
-                  return; 
-              }
-              
               const response = await fetch(SHEET_API_URL, { cache: 'no-cache' });
               if (!response.ok) {
                   throw new Error(`HTTP error! status: ${response.status}`);
               }
-              const csvText = await response.text();
+              const tsvText = await response.text();
+              console.log('Raw TSV text:', tsvText); // Debug: Xem text tải về
               
-              PRODUCT_DATA = csvToArray(csvText);
+              PRODUCT_DATA = parseTsvToArray(tsvText);
               
-              // CẬP NHẬT THÔNG TIN CHUNG TỪ CONFIG_DATA (Nếu fetch thành công)
+              // CẬP NHẬT THÔNG TIN CHUNG TỪ CONFIG_DATA
               renderSocialLinks(CONFIG_DATA); 
               updateContactInfo(CONFIG_DATA); 
               
-              if (PRODUCT_DATA.length >= 0) {
+              if (PRODUCT_DATA.length > 0) {
                   renderProducts(PRODUCT_DATA); 
+              } else {
+                  console.warn('No products found in sheet.');
               }
           } catch (error) {
               console.error('LỖI khi tải hoặc xử lý dữ liệu từ Google Sheet:', error);
@@ -592,7 +592,7 @@
           contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL (ĐÃ CẬP NHẬT ĐỂ HỖ TRỢ ĐA VIDEO) ---
+      // --- HÀM XỬ LÝ MODAL (ĐÃ CẬP NHẬT ĐỂ HỖ TRỢ ĐA VIDEO VÀ PLATFORM) ---
       function switchModalView(view) {
           tabGalleryBtn.classList.remove('active');
           tabVideoBtn.classList.remove('active');
@@ -633,9 +633,18 @@
           
           const buyButton = document.getElementById('modal-buy-button');
           const isReview = product.section === 'review';
-          buyButton.textContent = isReview ? 'XEM BÀI REVIEW' : 'MUA NGAY';
           buyButton.href = product.link || '#'; 
           
+          // --- XỬ LÝ NỀN TẢNG (PLATFORM) ---
+          const platformKey = (product.platform || '').toLowerCase().trim();
+          const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
+          const buttonText = isReview ? 'XEM BÀI REVIEW' : platformInfo.text;
+          const iconHtml = isReview ? `<i class="fas fa-star" style="color: orange;"></i>` : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
+          
+          buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
+          buyButton.className = `buy-button`; // Đảm bảo không có class nền tảng dư thừa
+
+          // --- XỬ LÝ VIDEO (Giữ nguyên) ---
           const videoInput = product.video_id || ''; 
           videoContainerEmbed.innerHTML = ''; // Dọn dẹp nội dung cũ
 
