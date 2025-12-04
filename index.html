@@ -476,7 +476,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       
       // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
-      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
+      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjypBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -571,7 +571,7 @@
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS ---
+      // --- HÀM 3: RENDER PRODUCTS (ĐÃ SỬA DÙNG formatPrice) ---
       function renderProducts(data) {
           const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'review-products'];
           containers.forEach(id => {
@@ -628,7 +628,7 @@
           contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL ---
+      // --- HÀM XỬ LÝ MODAL (ĐÃ SỬA DÙNG formatPrice) ---
       function switchModalView(view) {
           tabGalleryBtn.classList.remove('active');
           tabVideoBtn.classList.remove('active');
@@ -764,7 +764,7 @@
           
           function handleCardClick() {
               const id = parseInt(this.dataset.productId);
-              // Sửa lỗi so sánh ID để đảm bảo Modal mở đúng
+              // Sửa lỗi so sánh ID để đảm bảo Modal mở đúng: dùng == thay vì === (vì id có thể là String trong p.id và Number trong id)
               const product = PRODUCT_DATA.find(p => p.id == id); 
               if (product) openModal(product);
           }
