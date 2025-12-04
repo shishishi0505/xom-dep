@@ -71,7 +71,7 @@
       justify-content: center; 
       align-items: center; 
       box-shadow: 0 6px 18px rgba(0,0,0,0.06); 
-      /* CHO PHÉP CUỘN NGANG TRÊN MOBILE (QUAN TRỌNG CHO MOBILE) */
+      /* CHO PHÉP CUỘN NGANG TRÊN MOBILE */
       overflow-x: auto;
       white-space: nowrap;
       -webkit-overflow-scrolling: touch;
@@ -264,9 +264,9 @@
         margin-bottom: 10px;
         font-size: 15px; /* Thêm cỡ chữ rõ ràng hơn */
     }
-    /* Style riêng cho giá ĐỒ CÔNG NGHỆ */
+    /* Style riêng cho giá ĐỒ CÔNG NGHỆ (màu xanh dương) */
     .price-technology {
-        color: #007bff !important; /* Màu xanh dương cho Đồ Công Nghệ */
+        color: #007bff !important; 
     }
 
     /* MODAL STYLES */
@@ -281,19 +281,19 @@
     .modal-content {
         background: var(--white); padding: 30px; border-radius: 20px;
         width: 90%; max-width: 850px; max-height: 90vh;
-        overflow-y: auto; /* QUAN TRỌNG: Cho phép cuộn nội dung modal */
+        overflow-y: auto; 
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         position: relative; transform: scale(0.95); transition: transform 0.3s ease;
     }
     .modal-overlay.visible .modal-content {
-        transform: scale(1); /* Hiệu ứng mở modal */
+        transform: scale(1); 
     }
     .modal-content h2 { color: var(--deep-pink); margin-top: 0; font-size: 28px; text-align: center; } 
     .modal-content p#modal-price { 
         text-align: center; 
         color: var(--deep-pink); 
         font-weight: 900; 
-        font-size: 18px; /* Làm cho giá trong modal nổi bật */
+        font-size: 18px; 
     } 
     .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; }
     .close-btn:hover { color: var(--deep-pink); }
@@ -332,7 +332,7 @@
     #video-container-embed {
         position: relative;
         /* Áp dụng padding-bottom cho container cha để tạo tỉ lệ 16:9 */
-        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        padding-bottom: 56.25%; 
         height: 0; 
         overflow: hidden; 
         border-radius: 12px;
@@ -347,23 +347,22 @@
     blockquote.tiktok-embed {
         position: static !important;
         /* Điều chỉnh kích thước hiển thị TikTok embed */
-        max-width: 325px; /* Chiều rộng mặc định của TikTok */
-        /* Cần override lại style do logic JS: */
-        margin: 20px auto 0 !important; /* Căn giữa và tạo khoảng cách */
+        max-width: 325px; 
+        margin: 20px auto 0 !important; 
         padding-bottom: 0 !important;
     }
 
     /* BUY BUTTON */
     .modal-footer { text-align: center; margin-top: 25px; border-top: 1px solid var(--pink); padding-top: 25px; }
     .modal-footer .buy-button {
-        display: inline-flex; /* Thay đổi để căn giữa icon */
+        display: inline-flex; 
         align-items: center;
         justify-content: center;
-        gap: 10px; /* Khoảng cách giữa text và icon */
+        gap: 10px; 
         background: var(--deep-pink); color: var(--white); text-decoration: none;
         padding: 12px 30px; border-radius: 30px; font-weight: 800; font-size: 18px;
         transition: background 0.2s;
-        max-width: 90%; /* Giới hạn để không bị tràn trên mobile */
+        max-width: 90%; /* Thêm max-width để tránh tràn */
     }
     .modal-footer .buy-button:hover { background: #c51152; }
     /* Nền tảng Icon */
@@ -378,7 +377,7 @@
         font-size: 14px;
         color: var(--deep-pink);
     }
-    /* Các màu nền tảng cụ thể (có thể thêm nhiều hơn) */
+    /* Các màu nền tảng cụ thể (giữ nguyên) */
     .platform-shopee { background-color: #ee4d2d !important; color: var(--white) !important; }
     .platform-lazada { background-color: #1a1b41 !important; color: var(--white) !important; }
     .platform-tiki { background-color: #0088ff !important; color: var(--white) !important; }
@@ -395,18 +394,47 @@
       .product-grid { grid-template-columns: repeat(2, 1fr); }
       .gallery-wrapper { grid-template-columns: repeat(2, 1fr); }
       blockquote, .contact-info a { width: 100%; }
-      /* Ẩn tiêu đề nếu nav quá chật (Tùy chọn) */
       header h1, header p { font-size: 90%; }
     }
+    
+    /* --- TỐI ƯU MODAL CHO ĐIỆN THOẠI (Dưới 550px) --- */
     @media (max-width: 550px) { 
         .product-grid, .gallery-wrapper { 
             grid-template-columns: 1fr; 
             display: grid; 
             margin: 20px 0;
         }
-        .modal-content { padding: 20px; }
+        .modal-content { 
+            /* MODAL FULLSCREEN */
+            width: 100%; 
+            height: 100%;
+            max-width: none; 
+            max-height: none;
+            padding: 20px 10px 10px; /* Giảm padding ngang */
+            border-radius: 0; /* Loại bỏ bo góc để thành fullscreen */
+        }
         .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
-        nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; } /* Nav full-width và không bo góc trên mobile nhỏ */
+        nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; }
+        
+        /* Căn giữa nút đóng modal trên cùng bên phải */
+        .close-btn { 
+            top: 10px; 
+            right: 10px; 
+            z-index: 10; 
+            background: var(--pink); /* Thêm nền để dễ bấm */
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        /* Căn giữa các ảnh gallery thành 2 cột */
+        .gallery-wrapper {
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 10px;
+        }
     }
   </style>
 </head>
@@ -661,7 +689,7 @@
           }
       }
       
-      // --- HÀM XỬ LÝ MODAL (ĐÃ TỐI ƯU HÓA) ---
+      // --- HÀM XỬ LÝ MODAL (ĐÃ TỐI ƯU) ---
       function switchModalView(view) {
           // Dọn dẹp nội dung video khi chuyển tab
           if (view === 'gallery') {
@@ -713,7 +741,7 @@
           const platformKey = (product.platform || '').toLowerCase().trim();
           const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
           
-          // TEXT BUTTON: Luôn dùng tên nền tảng hoặc MUA NGAY (vì đây là mục sản phẩm, không phải review đặc biệt nữa)
+          // TEXT BUTTON: Luôn dùng tên nền tảng hoặc MUA NGAY
           const buttonText = platformInfo.text; 
           
           // ICON BUTTON: Luôn dùng icon nền tảng
