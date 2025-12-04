@@ -10,7 +10,6 @@
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   
-  <!-- Thêm thư viện PapaParse để parse TSV/CSV an toàn hơn -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   
   <style>
@@ -346,6 +345,27 @@
       blockquote, .contact-info a { width: 100%; }
     }
     @media (max-width: 550px) { 
+        /* 💥 SỬA NAV BAR cho điện thoại 💥 */
+        nav {
+            overflow-x: auto; /* Cho phép cuộn ngang */
+            gap: 0; 
+            flex-wrap: nowrap; /* Đảm bảo menu không bị xuống dòng */
+            justify-content: flex-start; 
+            padding: 12px 10px; 
+        }
+        nav a {
+            font-size: 13px; 
+            padding: 6px 10px; 
+            white-space: nowrap; /* Ngăn chữ bị xuống dòng */
+            margin: 0 4px; /* Giảm khoảng cách giữa các mục */
+        }
+        /* Căn giữa lại khối layout chính */
+        .layout {
+            width: 98%;
+            margin: 20px auto;
+            padding: 0 5px; 
+        }
+
         .product-grid, .gallery-wrapper { 
             grid-template-columns: 1fr; 
             display: grid; 
@@ -474,6 +494,22 @@
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
       
+      // --- HÀM HỖ TRỢ: ĐỊNH DẠNG TIỀN TỆ (ĐÃ THÊM) ---
+      function formatPrice(price) {
+          if (!price || typeof price !== 'string') return '';
+          
+          // Loại bỏ dấu chấm/phẩy/khoảng trắng để chỉ giữ lại số
+          const num = price.replace(/[^0-9]/g, ''); 
+          
+          if (num === '') return price; // Trả về nguyên nếu không phải số
+          
+          // Định dạng số thành 300.000
+          const formattedNum = num.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          
+          return `${formattedNum} VNĐ`;
+      }
+
+
       // --- DỮ LIỆU CỐ ĐỊNH (FALLBACK) CHO SOCIAL ICONS ---
       const SOCIAL_LINKS_MAP = [
           { key: 'instagram_url', icon: 'fab fa-instagram', name: 'Instagram', default_url: 'https://www.instagram.com/ten_instagram_cua_ban/' },
@@ -535,7 +571,7 @@
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS (Giữ nguyên) ---
+      // --- HÀM 3: RENDER PRODUCTS ---
       function renderProducts(data) {
           const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'review-products'];
           containers.forEach(id => {
@@ -555,7 +591,7 @@
                           <img src="${img_url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />
                           <h3>${product.title}</h3>
                           <p>${product.desc}</p> 
-                          <span style="display:block; color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'}; font-weight: 900; margin-bottom: 10px;">${product.price}</span>
+                          <span style="display:block; color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'}; font-weight: 900; margin-bottom: 10px;">${formatPrice(product.price)}</span>
                       </div>
                   `;
                   container.innerHTML += html;
@@ -592,7 +628,7 @@
           contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL (ĐÃ CẬP NHẬT ĐỂ HỖ TRỢ ĐA VIDEO VÀ PLATFORM) ---
+      // --- HÀM XỬ LÝ MODAL ---
       function switchModalView(view) {
           tabGalleryBtn.classList.remove('active');
           tabVideoBtn.classList.remove('active');
@@ -621,7 +657,7 @@
       function openModal(product) {
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
-          document.getElementById('modal-price').textContent = product.price;
+          document.getElementById('modal-price').textContent = formatPrice(product.price); // ĐÃ SỬA: Dùng formatPrice
 
           const galleryContainer = document.getElementById('modal-gallery-container');
           galleryContainer.innerHTML = ''; 
@@ -642,11 +678,11 @@
           const iconHtml = isReview ? `<i class="fas fa-star" style="color: orange;"></i>` : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
           
           buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
-          buyButton.className = `buy-button`; // Đảm bảo không có class nền tảng dư thừa
+          buyButton.className = `buy-button`; 
 
-          // --- XỬ LÝ VIDEO (Giữ nguyên) ---
+          // --- XỬ LÝ VIDEO ---
           const videoInput = product.video_id || ''; 
-          videoContainerEmbed.innerHTML = ''; // Dọn dẹp nội dung cũ
+          videoContainerEmbed.innerHTML = ''; 
 
           if (videoInput) {
               tabVideoBtn.style.display = 'inline-block';
@@ -698,7 +734,13 @@
               tabVideoBtn.style.display = 'none';
           }
           
-          switchModalView('gallery');
+          // Nếu không có ảnh gallery, chuyển sang tab video (nếu có)
+          if (images.length === 0 && product.video_id) {
+              switchModalView('video');
+          } else {
+              switchModalView('gallery'); // Mặc định mở tab Gallery
+          }
+
 
           modal.classList.add('visible');
           document.body.style.overflow = 'hidden'; 
@@ -712,8 +754,9 @@
           videoContainerEmbed.innerHTML = '';
       }
       
-      // --- GẮN SỰ KIỆN LẮNG NGHE (Giữ nguyên) ---
+      // --- GẮN SỰ KIỆN LẮNG NGHE (ĐÃ SỬA LỖI MODAL) ---
       function attachModalListeners() {
+          // 1. Gán sự kiện cho thẻ sản phẩm
           document.querySelectorAll('.open-modal-btn').forEach(card => {
               card.removeEventListener('click', handleCardClick); 
               card.addEventListener('click', handleCardClick); 
@@ -721,10 +764,12 @@
           
           function handleCardClick() {
               const id = parseInt(this.dataset.productId);
-              const product = PRODUCT_DATA.find(p => p.id === id); 
+              // Sửa lỗi so sánh ID để đảm bảo Modal mở đúng
+              const product = PRODUCT_DATA.find(p => p.id == id); 
               if (product) openModal(product);
           }
           
+          // 2. Gán sự kiện đóng/chuyển tab
           tabGalleryBtn.removeEventListener('click', handleSwitchGallery); 
           tabVideoBtn.removeEventListener('click', handleSwitchVideo);
           document.querySelector('.close-btn').removeEventListener('click', closeModal);
