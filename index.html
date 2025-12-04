@@ -460,8 +460,7 @@
           <div id="modal-view-video" class="modal-view">
             <div class="video-container" id="video-container-embed" style="text-align: center;">
                 </div>
-            <div style="text-align:center; margin-top:15px; font-weight: 400;">(Hỗ trợ Video YouTube ID, TikTok Embed, Facebook Embed, hoặc link MP4 trực tiếp)</div>
-          </div>
+             </div>
           
           <div class="modal-footer">
             <a href="#" target="_blank" id="modal-buy-button" class="buy-button">MUA NGAY</a>
@@ -494,17 +493,16 @@
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
       
-      // --- HÀM HỖ TRỢ: ĐỊNH DẠNG TIỀN TỆ (ĐÃ THÊM LẠI) ---
+      // --- HÀM HỖ TRỢ: ĐỊNH DẠNG TIỀN TỆ (ĐÃ KIỂM TRA LẠI) ---
       function formatPrice(price) {
-          if (!price || typeof price !== 'string') return '';
+          if (!price) return '';
           
-          // Loại bỏ dấu chấm/phẩy/khoảng trắng để chỉ giữ lại số
-          const num = price.replace(/[^0-9]/g, ''); 
+          // Chuyển giá trị (có thể là chuỗi '300') thành số, sau đó làm tròn
+          let num = parseFloat(price);
+          if (isNaN(num)) return price; // Trả về nguyên nếu không phải số
           
-          if (num === '') return price; // Trả về nguyên nếu không phải số
-          
-          // Định dạng số thành 300.000
-          const formattedNum = num.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          // Làm tròn và định dạng số thành 300.000
+          const formattedNum = num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
           
           return `${formattedNum} VNĐ`;
       }
@@ -634,7 +632,7 @@
           contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL (ĐÃ SỬA DÙNG formatPrice) ---
+      // --- HÀM XỬ LÝ MODAL (ĐÃ SỬA LỖI GIÁ VÀ XỬ LÝ VIDEO TỐT HƠN) ---
       function switchModalView(view) {
           tabGalleryBtn.classList.remove('active');
           tabVideoBtn.classList.remove('active');
@@ -651,7 +649,9 @@
               viewVideo.classList.add('active');
               // Khi chuyển sang tab video, đảm bảo script TikTok chạy lại nếu cần
               if (videoContainerEmbed.innerHTML.includes('tiktok-embed')) {
-                   if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
+                   if (window.tiktok) {
+                       window.tiktok.render(document.getElementById('video-container-embed').querySelector('blockquote'));
+                   } else if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
                         const script = document.createElement('script');
                         script.src = 'https://www.tiktok.com/embed.js';
                         document.body.appendChild(script); 
@@ -663,7 +663,7 @@
       function openModal(product) {
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
-          // Áp dụng formatPrice ở đây
+          // ✅ SỬA LỖI GIÁ: Áp dụng formatPrice ở đây
           document.getElementById('modal-price').textContent = formatPrice(product.price); 
 
           const galleryContainer = document.getElementById('modal-gallery-container');
@@ -682,11 +682,11 @@
           // --- XỬ LÝ NỀN TẢNG (PLATFORM) ---
           const platformKey = (product.platform || '').toLowerCase().trim();
           const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
-          const buttonText = isReviewOrDienTu ? 'MUA HÀNG NGAY' : platformInfo.text; // Thay 'XEM BÀI REVIEW' thành 'MUA HÀNG NGAY' cho ĐT/Review
+          // Sử dụng text mặc định cho Đồ điện tử/Review là "MUA HÀNG NGAY"
+          const buttonText = isReviewOrDienTu ? 'MUA HÀNG NGAY' : platformInfo.text; 
           const iconHtml = isReviewOrDienTu ? `<i class="fas fa-shopping-cart" style="color: var(--white);"></i>` : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
           
           buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
-          // Đảm bảo nút mua hàng có màu hồng đậm cho cả ĐỒ ĐIỆN TỬ
           buyButton.style.backgroundColor = 'var(--deep-pink)'; 
 
           // --- XỬ LÝ VIDEO ---
@@ -699,31 +699,40 @@
               let htmlToEmbed = '';
               const trimmedInput = videoInput.trim();
 
+              // 1. Nhúng HTML trực tiếp (TikTok Embed Code, Facebook iFrame, iFrame bất kỳ)
               if (trimmedInput.startsWith('<')) {
                   htmlToEmbed = trimmedInput;
               } 
+              // 2. ID YouTube (11 ký tự không khoảng trắng)
               else if (trimmedInput.length === 11 && !trimmedInput.includes(' ') && !trimmedInput.includes('/') && !trimmedInput.includes('.')) {
                   const youtubeURL = `https://www.youtube.com/embed/${trimmedInput}?autoplay=1&rel=0&showinfo=0`;
                   htmlToEmbed = `<iframe src="${youtubeURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
               } 
+              // 3. Link Video Trực tiếp (MP4, MOV, WEBM)
               else if (trimmedInput.startsWith('http') && (trimmedInput.includes('.mp4') || trimmedInput.includes('.mov') || trimmedInput.includes('.webm') || trimmedInput.includes('.ogg'))) {
+                  // Sử dụng thẻ <video> cho link file trực tiếp
                   htmlToEmbed = `<video controls autoplay preload="auto" style="width: 100%; height: 100%; object-fit: cover;" src="${trimmedInput}"></video>`;
               }
+              // 4. Các URL nhúng/xem khác (YouTube URL, Facebook URL, Vimeo URL...)
               else if (trimmedInput.startsWith('http')) {
+                  // Xử lý đặc biệt nếu người dùng dán link youtube đầy đủ (ví dụ: watch?v=)
                   if (trimmedInput.includes('youtube.com/watch?v=')) {
                        const youtubeID = new URL(trimmedInput).searchParams.get('v');
                        if (youtubeID) {
                             htmlToEmbed = `<iframe src="https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0&showinfo=0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
                        } else {
+                            // Link YouTube không có ID, dùng iframe tổng quát
                             htmlToEmbed = `<iframe src="${trimmedInput}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
                        }
                   } else {
+                       // Mặc định dùng iframe cho các link http khác (Facebook, Vimeo, etc.)
                        htmlToEmbed = `<iframe src="${trimmedInput}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
                   }
               }
 
               videoContainerEmbed.innerHTML = htmlToEmbed;
               
+              // Xử lý đặc biệt cho script nhúng của TikTok
               if (htmlToEmbed.includes('tiktok-embed') && !document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
                   const script = document.createElement('script');
                   script.src = 'https://www.tiktok.com/embed.js';
@@ -749,6 +758,7 @@
           modal.classList.remove('visible');
           document.body.style.overflow = ''; 
           
+          // Dọn dẹp nội dung container để dừng tất cả video/iframe
           videoContainerEmbed.innerHTML = '';
       }
       
