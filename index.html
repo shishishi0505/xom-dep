@@ -58,8 +58,39 @@
     header { margin-top: 30px; padding-bottom: 10px; }
     header h1 { margin: 12px 0 0; color: var(--title); font-size: 38px; line-height: 1; letter-spacing: 0.8px; text-transform: uppercase; }
     header p { margin: 6px 0 0; color: var(--text); font-size: 16px; font-weight: 800; text-transform: uppercase; } 
-    nav { background: var(--white); padding: 12px 14px; position: sticky; top: 14px; z-index: 40; margin: 0 10px; border-radius: 22px; display: flex; gap: 8px; justify-content: center; align-items: center; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
-    nav a { display: inline-flex; align-items: center; gap: 8px; margin: 0 8px; color: var(--title); text-decoration: none; font-weight: 800; font-size: 15px; padding: 8px 12px; border-radius: 14px; transition: background 0.25s, transform 0.18s; text-transform: uppercase; }
+    nav { 
+      background: var(--white); 
+      padding: 12px 14px; 
+      position: sticky; 
+      top: 14px; 
+      z-index: 40; 
+      margin: 0 10px; 
+      border-radius: 22px; 
+      display: flex; 
+      gap: 8px; 
+      justify-content: center; 
+      align-items: center; 
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06); 
+      /* CHO PHÉP CUỘN NGANG TRÊN MOBILE */
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+    nav a { 
+      flex-shrink: 0; /* KHÔNG CHO CÁC NÚT BỊ CO LẠI */
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px; 
+      margin: 0 4px; /* Giảm margin ngang để tiết kiệm không gian */
+      color: var(--title); 
+      text-decoration: none; 
+      font-weight: 800; 
+      font-size: 15px; 
+      padding: 8px 10px; /* Giảm padding ngang */
+      border-radius: 14px; 
+      transition: background 0.25s, transform 0.18s; 
+      text-transform: uppercase; 
+    }
     nav a:hover { background: linear-gradient(90deg, var(--soft-pink), var(--cream)); transform: translateY(-3px); }
     nav a:focus { background: var(--pink); outline: 2px solid var(--deep-pink); outline-offset: 2px; }
 
@@ -226,6 +257,13 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    /* Đảm bảo giá luôn được áp dụng style */
+    .product-price-display {
+        display:block; 
+        font-weight: 900; 
+        margin-bottom: 10px;
+        font-size: 15px; /* Thêm cỡ chữ rõ ràng hơn */
+    }
 
     /* MODAL STYLES */
     .modal-overlay {
@@ -239,11 +277,20 @@
     .modal-content {
         background: var(--white); padding: 30px; border-radius: 20px;
         width: 90%; max-width: 850px; max-height: 90vh;
-        overflow-y: auto; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        overflow-y: auto; /* QUAN TRỌNG: Cho phép cuộn nội dung modal */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         position: relative; transform: scale(0.95); transition: transform 0.3s ease;
     }
+    .modal-overlay.visible .modal-content {
+        transform: scale(1); /* Hiệu ứng mở modal */
+    }
     .modal-content h2 { color: var(--deep-pink); margin-top: 0; font-size: 28px; text-align: center; } 
-    .modal-content p#modal-price { text-align: center; } 
+    .modal-content p#modal-price { 
+        text-align: center; 
+        color: var(--deep-pink); 
+        font-weight: 900; 
+        font-size: 18px; /* Làm cho giá trong modal nổi bật */
+    } 
     .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; }
     .close-btn:hover { color: var(--deep-pink); }
     
@@ -343,6 +390,8 @@
       .product-grid { grid-template-columns: repeat(2, 1fr); }
       .gallery-wrapper { grid-template-columns: repeat(2, 1fr); }
       blockquote, .contact-info a { width: 100%; }
+      /* Ẩn tiêu đề nếu nav quá chật (Tùy chọn) */
+      header h1, header p { font-size: 90%; }
     }
     @media (max-width: 550px) { 
         .product-grid, .gallery-wrapper { 
@@ -352,6 +401,7 @@
         }
         .modal-content { padding: 20px; }
         .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
+        nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; } /* Nav full-width và không bo góc trên mobile nhỏ */
     }
   </style>
 </head>
@@ -423,7 +473,7 @@
           
           <h2 id="modal-title" style="text-align: center;"></h2>
           <p id="modal-desc" style="color: var(--text); font-weight: 400; margin-bottom: 20px; text-align: left;"></p>
-          <p id="modal-price" style="color: var(--deep-pink); font-weight: 900; text-align: center;"></p>
+          <p id="modal-price" style="text-align: center;"></p>
           
           <div class="modal-tabs">
             <button id="tab-gallery" class="tab-btn active">ẢNH SẢN PHẨM</button>
@@ -455,7 +505,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       
       // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
-      // URL này là URL tôi đang sử dụng để test, bạn cần thay bằng URL TSV công khai của sheet bạn.
       const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
@@ -499,15 +548,10 @@
       function parseTsvToArray(tsvText) {
           const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
           const data = parsed.data;
-          
+          console.log('Parsed data:', data); // Debug: Xem data parse được gì
           if (data.length > 0) {
-              // Hàng đầu tiên (chứa các URL/Email/Zalo)
-              CONFIG_DATA = data[0]; 
-              // Các hàng còn lại là sản phẩm
-              const products = data.slice(1); 
-              
-              // Lọc các sản phẩm không có ID (hàng trống)
-              return products.filter(p => p.id && p.id.trim() !== '');
+              CONFIG_DATA = data[0]; // Hàng đầu tiên là config
+              return data.slice(1); // Products từ hàng tiếp theo
           }
           return [];
       }
@@ -520,6 +564,7 @@
                   throw new Error(`HTTP error! status: ${response.status}`);
               }
               const tsvText = await response.text();
+              console.log('Raw TSV text:', tsvText); // Debug: Xem text tải về
               
               PRODUCT_DATA = parseTsvToArray(tsvText);
               
@@ -534,13 +579,12 @@
               }
           } catch (error) {
               console.error('LỖI khi tải hoặc xử lý dữ liệu từ Google Sheet:', error);
-              // Vẫn render Social/Contact với giá trị mặc định nếu fetch lỗi
               renderSocialLinks({}); 
               updateContactInfo({});
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS (ĐÃ THÊM VNĐ) ---
+      // --- HÀM 3: RENDER PRODUCTS (Đã sửa giá) ---
       function renderProducts(data) {
           const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'review-products'];
           containers.forEach(id => {
@@ -553,20 +597,18 @@
               const container = document.getElementById(targetId);
               
               const img_url = product.img || '';
+              // HIỂN THỊ GIÁ CÓ VNĐ (TRỪ REVIEW)
+              const priceDisplay = product.section === 'review' 
+                ? product.price 
+                : (product.price ? `${product.price} VNĐ` : '');
 
               if (container) {
-                  // Định dạng giá tiền: Thêm ' VNĐ' nếu không phải là phần 'review'
-                  let formattedPrice = product.price;
-                  if (product.section && product.section.toLowerCase().trim() !== 'review') {
-                      formattedPrice = `${product.price} VNĐ`; 
-                  }
-                  
                   const html = `
                       <div data-product-id="${product.id}" class="product-card open-modal-btn">
                           <img src="${img_url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />
                           <h3>${product.title}</h3>
                           <p>${product.desc}</p> 
-                          <span style="display:block; color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'}; font-weight: 900; margin-bottom: 10px;">${formattedPrice}</span>
+                          <span class="product-price-display" style="color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'};">${priceDisplay}</span>
                       </div>
                   `;
                   container.innerHTML += html;
@@ -575,13 +617,12 @@
           attachModalListeners();
       }
       
-      // --- HÀM 4 & 5: RENDER SOCIAL & CONTACT (ĐÃ SỬA LỖI LOGIC) ---
+      // --- HÀM 4 & 5: RENDER SOCIAL & CONTACT (Giữ nguyên) ---
       function renderSocialLinks(config) {
           if (!socialContainer) return; 
           socialContainer.innerHTML = ''; 
           SOCIAL_LINKS_MAP.forEach(item => {
-              // Lấy URL từ CONFIG_DATA. CONFIG_DATA là hàng đầu tiên của sheet
-              const url = config[item.key] ? config[item.key].trim() : item.default_url;
+              const url = config[item.key] || item.default_url;
               // Chỉ hiển thị link nếu có dữ liệu hoặc sử dụng link mặc định
               if (url) { 
                   const linkHTML = `
@@ -597,18 +638,14 @@
       function updateContactInfo(config) {
           if (!contactContainer) return;
           contactContainer.innerHTML = ''; 
-          // Lấy email và zalo từ CONFIG_DATA
-          const email = (config.email_address && config.email_address.trim()) || 'emailcuaban@gmail.com';
-          const zalo = (config.zalo_phone && config.zalo_phone.trim()) || '09xx.xxx.xxx (SĐT của bạn)';
-          
+          const email = config.email_address || 'emailcuaban@gmail.com';
+          const zalo = config.zalo_phone || '09xx.xxx.xxx (SĐT của bạn)';
           contactContainer.innerHTML += `<a href="mailto:${email}" target="_blank"><i class="fas fa-envelope"></i><span>${email}</span></a>`;
-          
-          // Xử lý link Zalo: loại bỏ dấu chấm và khoảng trắng
           const phone = zalo.replace(/\./g, '').replace(/ /g, ''); 
           contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL (Giữ nguyên) ---
+      // --- HÀM XỬ LÝ MODAL (ĐÃ CẬP NHẬT GIÁ) ---
       function switchModalView(view) {
           tabGalleryBtn.classList.remove('active');
           tabVideoBtn.classList.remove('active');
@@ -638,12 +675,11 @@
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
           
-          // Định dạng giá tiền trong Modal: Thêm ' VNĐ'
-          let formattedPrice = product.price;
-          if (product.section && product.section.toLowerCase().trim() !== 'review') {
-              formattedPrice = `${product.price} VNĐ`; 
-          }
-          document.getElementById('modal-price').textContent = formattedPrice;
+          // HIỂN THỊ GIÁ TRONG MODAL (CÓ VNĐ NẾU KHÔNG PHẢI REVIEW)
+          const modalPriceDisplay = product.section === 'review' 
+            ? product.price 
+            : (product.price ? `${product.price} VNĐ` : '');
+          document.getElementById('modal-price').textContent = modalPriceDisplay;
 
           const galleryContainer = document.getElementById('modal-gallery-container');
           galleryContainer.innerHTML = ''; 
@@ -654,7 +690,7 @@
           });
           
           const buyButton = document.getElementById('modal-buy-button');
-          const isReview = product.section && product.section.toLowerCase().trim() === 'review';
+          const isReview = product.section === 'review';
           buyButton.href = product.link || '#'; 
           
           // --- XỬ LÝ NỀN TẢNG (PLATFORM) ---
@@ -720,7 +756,19 @@
               tabVideoBtn.style.display = 'none';
           }
           
-          switchModalView('gallery');
+          // Luôn hiển thị tab gallery nếu có ảnh gallery hoặc ảnh chính
+          if (images.length > 0 || product.img) {
+              tabGalleryBtn.style.display = 'inline-block';
+              switchModalView('gallery');
+          } else if (videoInput) {
+              // Nếu không có ảnh nào nhưng có video, mặc định mở tab video
+              tabGalleryBtn.style.display = 'none';
+              switchModalView('video');
+          } else {
+              // Nếu không có cả ảnh lẫn video, đóng modal (trường hợp hiếm)
+              closeModal();
+              return;
+          }
 
           modal.classList.add('visible');
           document.body.style.overflow = 'hidden'; 
@@ -742,9 +790,8 @@
           });
           
           function handleCardClick() {
-              const id = parseInt(this.dataset.productId);
-              // Phải tìm theo ID, không dùng index vì data có thể bị lọc
-              const product = PRODUCT_DATA.find(p => parseInt(p.id) === id); 
+              const id = this.dataset.productId; // Giữ là string vì id trong sheet có thể là string/number
+              const product = PRODUCT_DATA.find(p => p.id === id); 
               if (product) openModal(product);
           }
           
@@ -769,6 +816,7 @@
       // --- LOGIC CHUYỂN VIEW VÀ CUỘN (Giữ nguyên) ---
       function showSection(targetId) {
           navLinks.forEach(link => {
+              // Xử lý active link
               if (link.getAttribute('href') === targetId) {
                   link.style.background = 'var(--pink)';
               } else {
@@ -785,6 +833,7 @@
           });
           const scrollTarget = document.getElementById(targetId.substring(1));
           if (scrollTarget && targetId !== '#home') {
+                  // Cuộn đến vị trí mới, trừ đi chiều cao của nav bar + margin
                   window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'smooth' });
           } else {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -813,6 +862,7 @@
               e.preventDefault();
               document.body.classList.remove('page-enter-active');
               document.body.classList.add('page-exit-active');
+              // Thêm timeout để tạo hiệu ứng chuyển trang mượt mà
               setTimeout(() => {
                   showSection(href); 
                   document.body.classList.remove('page-exit-active');
