@@ -475,7 +475,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       
-      // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN - ĐÃ SỬA LẠI URL CHÍNH XÁC ⚠️
+      // ✅ ĐÃ SỬA LỖI: URL CHÍNH XÁC TỪ CẤU HÌNH XUẤT BẢN WEB CỦA BẠN
       const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjypBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
@@ -494,7 +494,7 @@
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
       
-      // --- HÀM HỖ TRỢ: ĐỊNH DẠNG TIỀN TỆ (ĐÃ THÊM) ---
+      // --- HÀM HỖ TRỢ: ĐỊNH DẠNG TIỀN TỆ (ĐÃ THÊM LẠI) ---
       function formatPrice(price) {
           if (!price || typeof price !== 'string') return '';
           
@@ -509,7 +509,7 @@
           return `${formattedNum} VNĐ`;
       }
 
-
+      
       // --- DỮ LIỆU CỐ ĐỊNH (FALLBACK) CHO SOCIAL ICONS ---
       const SOCIAL_LINKS_MAP = [
           { key: 'instagram_url', icon: 'fab fa-instagram', name: 'Instagram', default_url: 'https://www.instagram.com/ten_instagram_cua_ban/' },
