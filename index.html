@@ -264,10 +264,6 @@
         margin-bottom: 10px;
         font-size: 15px; /* Thêm cỡ chữ rõ ràng hơn */
     }
-    /* Style riêng cho giá ĐỒ CÔNG NGHỆ (màu xanh dương) */
-    .price-technology {
-        color: #007bff !important; 
-    }
 
     /* MODAL STYLES */
     .modal-overlay {
@@ -315,8 +311,27 @@
     }
     .modal-view { display: none; }
     .modal-view.active { display: block; }
+
+    /* Container cho Ảnh Chính (khi click vào ảnh nhỏ) */
+    #main-image-viewer {
+        position: relative;
+        padding-bottom: 56.25%; /* Tỷ lệ 16:9 */
+        height: 0; 
+        overflow: hidden; 
+        border-radius: 12px;
+        margin-bottom: 20px; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+        background: var(--cream);
+        display: none; /* Ẩn mặc định */
+    }
+    #main-image-viewer img {
+        position: absolute; 
+        top: 0; left: 0; 
+        width: 100%; height: 100%; 
+        object-fit: contain; /* Ảnh không bị cắt, giữ nguyên tỷ lệ */
+    }
     
-    /* Căn giữa Gallery */
+    /* Căn giữa Gallery (Các ảnh nhỏ) */
     .gallery-wrapper {
         display: inline-grid;
         grid-template-columns: repeat(3, 1fr); 
@@ -326,6 +341,11 @@
     .gallery-wrapper img {
         width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 16 / 16;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        cursor: pointer; /* Thêm con trỏ */
+        transition: transform 0.2s;
+    }
+    .gallery-wrapper img:hover {
+        transform: scale(0.98);
     }
     
     /* Container cho video nhúng (iframe/video tag/tiktok embed) */
@@ -362,7 +382,6 @@
         background: var(--deep-pink); color: var(--white); text-decoration: none;
         padding: 12px 30px; border-radius: 30px; font-weight: 800; font-size: 18px;
         transition: background 0.2s;
-        max-width: 90%; /* Thêm max-width để tránh tràn */
     }
     .modal-footer .buy-button:hover { background: #c51152; }
     /* Nền tảng Icon */
@@ -377,7 +396,7 @@
         font-size: 14px;
         color: var(--deep-pink);
     }
-    /* Các màu nền tảng cụ thể (giữ nguyên) */
+    /* Các màu nền tảng cụ thể */
     .platform-shopee { background-color: #ee4d2d !important; color: var(--white) !important; }
     .platform-lazada { background-color: #1a1b41 !important; color: var(--white) !important; }
     .platform-tiki { background-color: #0088ff !important; color: var(--white) !important; }
@@ -399,10 +418,15 @@
     
     /* --- TỐI ƯU MODAL CHO ĐIỆN THOẠI (Dưới 550px) --- */
     @media (max-width: 550px) { 
-        .product-grid, .gallery-wrapper { 
+        .product-grid { 
             grid-template-columns: 1fr; 
             display: grid; 
             margin: 20px 0;
+        }
+        /* Giảm lưới ảnh nhỏ thành 2 cột trên điện thoại để ảnh to hơn */
+        .gallery-wrapper {
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 10px;
         }
         .modal-content { 
             /* MODAL FULLSCREEN */
@@ -410,8 +434,8 @@
             height: 100%;
             max-width: none; 
             max-height: none;
-            padding: 20px 10px 10px; /* Giảm padding ngang */
-            border-radius: 0; /* Loại bỏ bo góc để thành fullscreen */
+            padding: 20px 10px 10px; 
+            border-radius: 0; 
         }
         .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
         nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; }
@@ -421,7 +445,7 @@
             top: 10px; 
             right: 10px; 
             z-index: 10; 
-            background: var(--pink); /* Thêm nền để dễ bấm */
+            background: var(--pink); 
             border-radius: 50%;
             width: 35px;
             height: 35px;
@@ -429,11 +453,6 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-        }
-        /* Căn giữa các ảnh gallery thành 2 cột */
-        .gallery-wrapper {
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 10px;
         }
     }
   </style>
@@ -452,7 +471,7 @@
     <a href="#vay" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-female"></i></span> VÁY</a>
     <a href="#quanao" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-tshirt"></i></span> QUẦN ÁO</a>
     <a href="#bikini" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-swimmer"></i></span> BIKINI</a>
-    <a href="#electronics" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-mobile-alt"></i></span> ĐỒ CÔNG NGHỆ</a> 
+    <a href="#review" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-star"></i></span> REVIEW</a>
     <a href="#contact" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-envelope"></i></span> LIÊN HỆ</a>
   </nav>
 
@@ -488,8 +507,7 @@
       <section id="vay" class="card"><div class="section-title"><h2>VÁY</h2></div><p>Bộ sưu tập Váy thiết kế và gợi ý mix & match các kiểu Váy A, Váy suông, Váy maxi cho mọi sự kiện.</p><div class="product-grid" id="vay-products"></div></section>
       <section id="quanao" class="card"><div class="section-title"><h2>QUẦN ÁO</h2></div><p>Gợi ý các set Quần áo thanh lịch, cá tính, từ đồ công sở đến đồ đi chơi cuối tuần.</p><div class="product-grid" id="quanao-products"></div></section>
       <section id="bikini" class="card"><div class="section-title"><h2>BIKINI</h2></div><p>Bikini và đồ bơi: Xu hướng màu sắc, kiểu dáng giúp bạn tự tin tỏa sáng trên bãi biển.</p><div class="product-grid" id="bikini-products"></div></section>
-      
-      <section id="electronics" class="card"><div class="section-title"><h2>ĐỒ CÔNG NGHỆ</h2></div><p>Review và đánh giá các sản phẩm công nghệ, tiện ích thông minh (điện thoại, laptop, phụ kiện...).</p><div class="product-grid" id="electronics-products"></div></section>
+      <section id="review" class="card"><div class="section-title"><h2>REVIEW</h2></div><p>Đánh giá khách quan các sản phẩm làm đẹp và thời trang mới nhất trên thị trường.</p><div class="product-grid" id="review-products"></div></section>
 
       <section id="contact" class="card">
         <div class="section-title"><h2>LIÊN HỆ</h2></div>
@@ -515,6 +533,9 @@
           </div>
           
           <div id="modal-view-gallery" class="modal-view active">
+            <div id="main-image-viewer">
+                <img id="main-product-image" src="" alt="Ảnh lớn sản phẩm" />
+            </div>
             <div id="modal-gallery-container" class="gallery-wrapper">
                 </div>
           </div>
@@ -552,6 +573,10 @@
       const socialContainer = document.getElementById('social-links-container');
       const contactContainer = document.querySelector('#contact .contact-info');
       const videoContainerEmbed = document.getElementById('video-container-embed');
+      
+      // KHAI BÁO BIẾN CHO TÍNH NĂNG MỚI
+      const mainImageViewer = document.getElementById('main-image-viewer');
+      const mainProductImage = document.getElementById('main-product-image');
       
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
@@ -617,30 +642,23 @@
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS (Đã sửa và thêm electronics) ---
+      // --- HÀM 3: RENDER PRODUCTS (Giữ nguyên logic giá) ---
       function renderProducts(data) {
-          // THAY THẾ 'review-products' bằng 'electronics-products'
-          const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'electronics-products'];
+          const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'review-products'];
           containers.forEach(id => {
               const container = document.getElementById(id);
               if (container) container.innerHTML = '';
           });
 
           data.forEach(product => {
-              // Sử dụng product.section để xác định container
               const targetId = `${product.section}-products`;
               const container = document.getElementById(targetId);
               
               const img_url = product.img || '';
-              // Dùng 'electronics' thay vì 'review' để kiểm tra
-              const isTechnology = product.section === 'electronics'; 
-
-              // HIỂN THỊ GIÁ CÓ VNĐ (Áp dụng cho mọi mục)
-              const priceDisplay = product.price ? `${product.price} VNĐ` : '';
-              
-              // Thêm class price-technology nếu là ĐỒ CÔNG NGHỆ
-              const priceClass = isTechnology ? 'price-technology' : '';
-              const priceColor = isTechnology ? '#007bff' : 'var(--deep-pink)';
+              // HIỂN THỊ GIÁ CÓ VNĐ (TRỪ REVIEW)
+              const priceDisplay = product.section === 'review' 
+                ? product.price 
+                : (product.price ? `${product.price} VNĐ` : '');
 
               if (container) {
                   const html = `
@@ -648,7 +666,7 @@
                           <img src="${img_url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />
                           <h3>${product.title}</h3>
                           <p>${product.desc}</p> 
-                          <span class="product-price-display ${priceClass}" style="color: ${priceColor};">${priceDisplay}</span>
+                          <span class="product-price-display" style="color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'};">${priceDisplay}</span>
                       </div>
                   `;
                   container.innerHTML += html;
@@ -663,8 +681,7 @@
           socialContainer.innerHTML = ''; 
           SOCIAL_LINKS_MAP.forEach(item => {
               const url = config[item.key] || item.default_url;
-              // Chỉ hiển thị link nếu có dữ liệu hoặc sử dụng link mặc định
-              if (url && url.trim() !== '') { 
+              if (url) { 
                   const linkHTML = `
                       <a href="${url}" class="icon-fa" target="_blank" title="Kết nối với ${item.name}">
                           <i class="${item.icon}"></i>
@@ -680,18 +697,14 @@
           contactContainer.innerHTML = ''; 
           const email = config.email_address || 'emailcuaban@gmail.com';
           const zalo = config.zalo_phone || '09xx.xxx.xxx (SĐT của bạn)';
-          if (email && email.trim() !== '') {
-            contactContainer.innerHTML += `<a href="mailto:${email}" target="_blank"><i class="fas fa-envelope"></i><span>${email}</span></a>`;
-          }
-          if (zalo && zalo.trim() !== '') {
-            const phone = zalo.replace(/\./g, '').replace(/ /g, ''); 
-            contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
-          }
+          contactContainer.innerHTML += `<a href="mailto:${email}" target="_blank"><i class="fas fa-envelope"></i><span>${email}</span></a>`;
+          const phone = zalo.replace(/\./g, '').replace(/ /g, ''); 
+          contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL (ĐÃ TỐI ƯU) ---
+      // --- HÀM XỬ LÝ MODAL (ĐÃ TỐI ƯU CẢ PHẦN GALLERY) ---
       function switchModalView(view) {
-          // Dọn dẹp nội dung video khi chuyển tab
+          // Tắt video khi chuyển tab
           if (view === 'gallery') {
                videoContainerEmbed.innerHTML = ''; 
           }
@@ -715,8 +728,10 @@
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
           
-          // HIỂN THỊ GIÁ TRONG MODAL (LUÔN CÓ VNĐ)
-          const modalPriceDisplay = product.price ? `${product.price} VNĐ` : '';
+          // HIỂN THỊ GIÁ TRONG MODAL
+          const modalPriceDisplay = product.section === 'review' 
+            ? product.price 
+            : (product.price ? `${product.price} VNĐ` : '');
           document.getElementById('modal-price').textContent = modalPriceDisplay;
 
           const galleryContainer = document.getElementById('modal-gallery-container');
@@ -730,25 +745,36 @@
           const galleryUrls = (product.gallery || '').split(',').map(url => url.trim()).filter(url => url.length > 0);
           images.push(...galleryUrls);
 
-          images.forEach(url => {
-              galleryContainer.innerHTML += `<img src="${url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />`;
-          });
+          // --- LOGIC ẢNH CHÍNH & ẢNH NHỎ ---
+          if (images.length > 0) {
+              mainImageViewer.style.display = 'block'; 
+              mainProductImage.src = images[0]; // Ảnh đầu tiên là ảnh chính
+              mainProductImage.alt = product.title;
+
+              images.forEach(url => {
+                  // Dùng data-src để lưu URL của ảnh nhỏ
+                  galleryContainer.innerHTML += `<img src="${url}" data-src="${url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />`;
+              });
+          } else {
+              mainImageViewer.style.display = 'none'; // Ẩn khu vực ảnh chính nếu không có ảnh
+          }
+          // --- KẾT THÚC LOGIC ẢNH ---
           
           const buyButton = document.getElementById('modal-buy-button');
+          const isReview = product.section === 'review';
           buyButton.href = product.link || '#'; 
           
           // --- XỬ LÝ NỀN TẢNG (PLATFORM) ---
           const platformKey = (product.platform || '').toLowerCase().trim();
           const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
           
-          // TEXT BUTTON: Luôn dùng tên nền tảng hoặc MUA NGAY
-          const buttonText = platformInfo.text; 
-          
-          // ICON BUTTON: Luôn dùng icon nền tảng
-          const iconHtml = `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
+          const buttonText = isReview ? 'XEM BÀI REVIEW' : platformInfo.text; 
+          const iconHtml = isReview ? 
+            `<i class="fas fa-star" style="color: white; background: orange; border-radius: 50%; padding: 4px;"></i>` : // Icon REVIEW
+            `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`; // Icon nền tảng
           
           buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
-          buyButton.className = `buy-button`; // Đảm bảo class chính xác
+          buyButton.className = `buy-button`; 
 
           // --- XỬ LÝ VIDEO ---
           const videoInput = product.video_id || ''; 
@@ -756,29 +782,24 @@
 
           if (videoInput && videoInput.trim() !== '') {
               tabVideoBtn.style.display = 'inline-block';
-
+              // (Giữ nguyên logic nhúng video cũ)
               let htmlToEmbed = '';
               const trimmedInput = videoInput.trim();
 
-              // Logic nhúng video
               if (trimmedInput.startsWith('<')) {
                   htmlToEmbed = trimmedInput;
               } else if (trimmedInput.length === 11 && !trimmedInput.includes(' ') && !trimmedInput.includes('/') && !trimmedInput.includes('.')) {
-                  // YouTube ID
                   const youtubeURL = `https://www.youtube.com/embed/${trimmedInput}?autoplay=1&rel=0&showinfo=0`;
-                  htmlToEmbed = `<iframe src="${youtubeURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                  htmlToEmbed = `<iframe src="${youtubeURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
               } else if (trimmedInput.startsWith('http') && (/\.(mp4|mov|webm|ogg)$/i.test(trimmedInput))) {
-                  // Video File Link
                   htmlToEmbed = `<video controls autoplay preload="auto" style="width: 100%; height: 100%; object-fit: cover;" src="${trimmedInput}"></video>`;
               } else if (trimmedInput.startsWith('http')) {
-                  // YouTube/Facebook/Vimeo URL
                   let embedURL = trimmedInput;
                   if (trimmedInput.includes('youtube.com/watch?v=')) {
                        const youtubeID = new URL(trimmedInput).searchParams.get('v');
                        if (youtubeID) embedURL = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0&showinfo=0`;
                   } 
-                  // Mặc định dùng iframe
-                  htmlToEmbed = `<iframe src="${embedURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                  htmlToEmbed = `<iframe src="${embedURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
               }
               videoContainerEmbed.innerHTML = htmlToEmbed;
           } else {
@@ -793,32 +814,30 @@
               tabGalleryBtn.style.display = 'none';
               switchModalView('video');
           } else {
-              // Không có ảnh và video, không mở modal (hoặc mở nhưng không hiển thị tab)
               tabGalleryBtn.style.display = 'none';
               return; 
           }
 
           modal.classList.add('visible');
           document.body.style.overflow = 'hidden'; 
+          attachModalListeners(); // Phải gọi lại để gán sự kiện cho các ảnh nhỏ mới được render
       }
 
       function closeModal() {
           modal.classList.remove('visible');
           document.body.style.overflow = ''; 
-          
-          // Dọn dẹp nội dung container để dừng tất cả video/iframe khi đóng modal
           videoContainerEmbed.innerHTML = '';
       }
       
-      // --- GẮN SỰ KIỆN LẮNG NGHE (Giữ nguyên) ---
+      // --- GẮN SỰ KIỆN LẮNG NGHE (ĐÃ CẬP NHẬT) ---
       function attachModalListeners() {
-          // Xóa tất cả listener cũ trước khi thêm mới
+          // 1. Cards
           document.querySelectorAll('.open-modal-btn').forEach(card => {
               card.removeEventListener('click', handleCardClick); 
               card.addEventListener('click', handleCardClick); 
           });
           
-          // Event handlers cho Modal
+          // 2. Tabs, Close, Overlay
           tabGalleryBtn.removeEventListener('click', handleSwitchGallery); 
           tabVideoBtn.removeEventListener('click', handleSwitchVideo);
           document.querySelector('.close-btn').removeEventListener('click', closeModal);
@@ -830,11 +849,25 @@
           document.querySelector('.close-btn').addEventListener('click', closeModal);
           modal.addEventListener('click', handleModalOverlayClick);
           document.addEventListener('keydown', handleEscapeKey);
+
+          // 3. ẢNH TRONG GALLERY (MỚI)
+          document.querySelectorAll('.gallery-wrapper img').forEach(img => {
+              img.removeEventListener('click', handleGalleryImageClick);
+              img.addEventListener('click', handleGalleryImageClick);
+          });
           
           function handleCardClick() {
               const id = this.dataset.productId; 
               const product = PRODUCT_DATA.find(p => p.id === id); 
               if (product) openModal(product);
+          }
+
+          function handleGalleryImageClick() {
+              const src = this.getAttribute('data-src'); 
+              mainProductImage.src = src; 
+              mainImageViewer.style.display = 'block'; 
+              // Cuộn lên đầu để người dùng thấy ảnh chính được cập nhật
+              mainImageViewer.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
           }
 
           function handleSwitchGallery() { switchModalView('gallery'); }
@@ -846,7 +879,6 @@
       // --- LOGIC CHUYỂN VIEW VÀ CUỘN (Giữ nguyên) ---
       function showSection(targetId) {
           navLinks.forEach(link => {
-              // Xử lý active link
               if (link.getAttribute('href') === targetId) {
                   link.style.background = 'var(--pink)';
               } else {
@@ -863,7 +895,6 @@
           });
           const scrollTarget = document.getElementById(targetId.substring(1));
           if (scrollTarget && targetId !== '#home') {
-                  // Cuộn đến vị trí mới, trừ đi chiều cao của nav bar + margin
                   window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'smooth' });
           } else {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -871,17 +902,17 @@
       }
       
       // Hàm tự động tải lại dữ liệu sau 5 phút
-      const POLLING_INTERVAL = 300000; // 5 phút (300,000 miligiây)
+      const POLLING_INTERVAL = 300000; 
 
       function startPolling() {
           renderSocialLinks({});
           updateContactInfo({});
           
-          fetchAndRenderProducts(); // Tải lần đầu từ sheet
-          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); // Tải lặp lại
+          fetchAndRenderProducts(); 
+          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); 
       }
 
-      // 🚨 KHỞI TẠO: Bắt đầu tải dữ liệu khi trang load
+      // 🚨 KHỞI TẠO
       startPolling(); 
       showSection('#home');
 
@@ -892,7 +923,6 @@
               e.preventDefault();
               document.body.classList.remove('page-enter-active');
               document.body.classList.add('page-exit-active');
-              // Thêm timeout để tạo hiệu ứng chuyển trang mượt mà
               setTimeout(() => {
                   showSection(href); 
                   document.body.classList.remove('page-exit-active');
