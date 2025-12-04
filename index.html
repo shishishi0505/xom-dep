@@ -55,7 +55,7 @@
     .page-exit-active { opacity: 0; transform: translateY(-8px); transition: all 350ms cubic-bezier(.2,.9,.2,1); }
 
     /* HEADER & NAV */
-    header { margin-top: 30px; padding-bottom: 10px; }
+    header { margin-top: 30px; padding-bottom: 10px; position: relative; }
     header h1 { margin: 12px 0 0; color: var(--title); font-size: 38px; line-height: 1; letter-spacing: 0.8px; text-transform: uppercase; }
     header p { margin: 6px 0 0; color: var(--text); font-size: 16px; font-weight: 800; text-transform: uppercase; } 
     nav { background: var(--white); padding: 12px 14px; position: sticky; top: 14px; z-index: 40; margin: 0 10px; border-radius: 22px; display: flex; gap: 8px; justify-content: center; align-items: center; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
@@ -336,43 +336,101 @@
     
     footer { text-align:center; padding:22px; margin-top:36px; background: linear-gradient(90deg,var(--soft-pink),var(--cream)); border-top-left-radius:40px; border-top-right-radius:40px; color:var(--title); }
 
+    /* --- CSS CHO MOBILE MENU TOGGLE --- */
+    .mobile-menu-toggle {
+        display: none; /* Mặc định ẩn trên Desktop */
+        position: absolute; 
+        top: 40px; 
+        right: 20px; 
+        background: var(--deep-pink); 
+        color: var(--white); 
+        border: none; 
+        padding: 10px 15px; 
+        border-radius: 50%; 
+        font-size: 20px; 
+        cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    
     /* RESPONSIVE */
     @media (max-width: 900px) { 
-      .layout{ flex-direction:column; } 
-      .sidebar{ width:100%; }
-      .product-grid { grid-template-columns: repeat(2, 1fr); }
-      .gallery-wrapper { grid-template-columns: repeat(2, 1fr); }
-      blockquote, .contact-info a { width: 100%; }
-    }
-    @media (max-width: 550px) { 
-        /* SỬA NAV BAR cho điện thoại */
-        nav {
-            overflow-x: auto; /* Cho phép cuộn ngang */
-            gap: 0; 
-            flex-wrap: nowrap; /* Đảm bảo menu không bị xuống dòng */
-            justify-content: flex-start; 
-            padding: 12px 10px; 
-        }
-        nav a {
-            font-size: 13px; 
-            padding: 6px 10px; 
-            white-space: nowrap; /* Ngăn chữ bị xuống dòng */
-            margin: 0 4px; /* Giảm khoảng cách giữa các mục */
-        }
-        /* Căn giữa lại khối layout chính */
-        .layout {
-            width: 98%;
-            margin: 20px auto;
-            padding: 0 5px; 
+        /* HIỆN NÚT TOGGLE */
+        .mobile-menu-toggle {
+            display: block; 
         }
         
+        /* OVERLAY MÀN HÌNH MỜ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); z-index: 80;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ẨN SIDEBAR MẶC ĐỊNH TRÊN MOBILE */
+        .sidebar {
+            /* Đặt vị trí ban đầu nằm ngoài màn hình */
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 300px; /* Chiều rộng cố định */
+            height: 100%; 
+            border-radius: 0;
+            z-index: 90;
+            transform: translateX(-100%); /* ẨN VÀO BÊN TRÁI */
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+            overflow-y: auto; /* Cho phép cuộn nếu nội dung dài */
+            padding-top: 80px; /* Tránh Header */
+        }
+        /* TRƯỢT RA KHI CÓ CLASS 'active' */
+        .sidebar.active {
+            transform: translateX(0); 
+        }
+        
+        /* Đảm bảo nội dung chính rộng rãi hơn */
+        .layout{ 
+            flex-direction:column; 
+            width: 98%; /* Tăng độ rộng ra */
+            gap: 15px; 
+            margin: 20px auto;
+        } 
+        .container{ 
+            width: 100%; 
+            padding: 20px;
+        }
+        .product-grid { 
+            grid-template-columns: repeat(2, 1fr); /* Giữ 2 cột cho điện thoại lớn/ngang */
+        }
+        .gallery-wrapper { 
+            grid-template-columns: repeat(2, 1fr); /* Giữ 2 cột cho điện thoại lớn/ngang */
+        }
+        blockquote, .contact-info a { width: 100%; }
+    }
+    
+    @media (max-width: 550px) { 
         .product-grid, .gallery-wrapper { 
-            grid-template-columns: 1fr; 
+            grid-template-columns: 1fr; /* CHỈ CÒN 1 CỘT SẢN PHẨM */
             display: grid; 
             margin: 20px 0;
         }
         .modal-content { padding: 20px; }
         .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
+        
+        /* Căn chỉnh lại NAV cho điện thoại nhỏ */
+        nav { 
+            padding: 8px; /* Giảm padding */
+            border-radius: 12px; /* Bo góc nhỏ hơn */
+        }
+        nav a {
+            font-size: 14px; /* Giảm font chữ */
+            padding: 6px 10px; /* Giảm padding */
+            margin: 0 4px; /* Giảm margin */
+            gap: 4px; /* Giảm khoảng cách icon */
+        }
     }
   </style>
 </head>
@@ -382,6 +440,9 @@
     <h1>XÓM ĐẸP</h1>
     
     <p>𝒳ó𝓂 Đ𝑒̣̂𝓅 ✿ 𝒩𝑜̛𝒾 𝒽𝑜̣̂𝒾 𝓉𝓊̣ 𝓉𝓲𝓃𝒽 𝒽𝑜𝒶 𝒸𝓊̉𝒶 𝒫𝒽𝒶́𝒾 Đ𝑒̣̂𝓅</p>
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="sidebar-mobile">
+        <i class="fas fa-bars"></i>
+    </button>
   </header>
 
   <nav aria-label="Chuyển mục">
@@ -390,13 +451,12 @@
     <a href="#vay" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-female"></i></span> VÁY</a>
     <a href="#quanao" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-tshirt"></i></span> QUẦN ÁO</a>
     <a href="#bikini" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-swimmer"></i></span> BIKINI</a>
-    <a href="#dientu" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-mobile-alt"></i></span> ĐỒ ĐIỆN TỬ</a>
+    <a href="#review" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-star"></i></span> REVIEW</a>
     <a href="#contact" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-envelope"></i></span> LIÊN HỆ</a>
   </nav>
 
   <div class="layout">
-
-    <aside class="sidebar" role="complementary">
+    <aside class="sidebar" role="complementary" id="sidebar-mobile">
       <h3>GIỚI THIỆU</h3>
       <p>Chào mừng đến với **XÓM ĐẸP** – Nơi chia sẻ các bí quyết làm đẹp, thời trang và phong cách sống tinh tế, dành riêng cho phái nữ.</p>
       <h3>BÀI NỔI BẬT</h3>
@@ -426,8 +486,7 @@
       <section id="vay" class="card"><div class="section-title"><h2>VÁY</h2></div><p>Bộ sưu tập Váy thiết kế và gợi ý mix & match các kiểu Váy A, Váy suông, Váy maxi cho mọi sự kiện.</p><div class="product-grid" id="vay-products"></div></section>
       <section id="quanao" class="card"><div class="section-title"><h2>QUẦN ÁO</h2></div><p>Gợi ý các set Quần áo thanh lịch, cá tính, từ đồ công sở đến đồ đi chơi cuối tuần.</p><div class="product-grid" id="quanao-products"></div></section>
       <section id="bikini" class="card"><div class="section-title"><h2>BIKINI</h2></div><p>Bikini và đồ bơi: Xu hướng màu sắc, kiểu dáng giúp bạn tự tin tỏa sáng trên bãi biển.</p><div class="product-grid" id="bikini-products"></div></section>
-      
-      <section id="dientu" class="card"><div class="section-title"><h2>ĐỒ ĐIỆN TỬ</h2></div><p>Đánh giá và giới thiệu các thiết bị điện tử, phụ kiện công nghệ mới nhất trên thị trường.</p><div class="product-grid" id="dientu-products"></div></section>
+      <section id="review" class="card"><div class="section-title"><h2>REVIEW</h2></div><p>Đánh giá khách quan các sản phẩm làm đẹp và thời trang mới nhất trên thị trường.</p><div class="product-grid" id="review-products"></div></section>
 
       <section id="contact" class="card">
         <div class="section-title"><h2>LIÊN HỆ</h2></div>
@@ -460,7 +519,8 @@
           <div id="modal-view-video" class="modal-view">
             <div class="video-container" id="video-container-embed" style="text-align: center;">
                 </div>
-             </div>
+            <div style="text-align:center; margin-top:15px; font-weight: 400;">(Hỗ trợ Video YouTube ID, TikTok Embed, Facebook Embed, hoặc link MP4 trực tiếp)</div>
+          </div>
           
           <div class="modal-footer">
             <a href="#" target="_blank" id="modal-buy-button" class="buy-button">MUA NGAY</a>
@@ -475,8 +535,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       
-      // ✅ ĐÃ SỬA LỖI URL: URL CHÍNH XÁC TỪ CẤU HÌNH XUẤT BẢN WEB CỦA BẠN
-      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
+      // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
+      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSd2OXVYpI/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -489,24 +549,20 @@
       const socialContainer = document.getElementById('social-links-container');
       const contactContainer = document.querySelector('#contact .contact-info');
       const videoContainerEmbed = document.getElementById('video-container-embed');
+
+      // Khai báo biến mới cho Sidebar Mobile
+      const sidebar = document.getElementById('sidebar-mobile');
+      const menuToggle = document.getElementById('mobile-menu-toggle');
+      // Thêm overlay để đóng khi click ra ngoài
+      const sidebarOverlay = document.createElement('div');
+      sidebarOverlay.className = 'sidebar-overlay';
+      // Chỉ append overlay nếu có nút toggle trên mobile
+      if (menuToggle) {
+          document.body.appendChild(sidebarOverlay);
+      }
       
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
-      
-      // --- HÀM HỖ TRỢ: ĐỊNH DẠNG TIỀN TỆ (ĐÃ KIỂM TRA LẠI) ---
-      function formatPrice(price) {
-          if (!price) return '';
-          
-          // Chuyển giá trị (có thể là chuỗi '300') thành số, sau đó làm tròn
-          let num = parseFloat(price);
-          if (isNaN(num)) return price; // Trả về nguyên nếu không phải số
-          
-          // Làm tròn và định dạng số thành 300.000
-          const formattedNum = num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-          
-          return `${formattedNum} VNĐ`;
-      }
-
       
       // --- DỮ LIỆU CỐ ĐỊNH (FALLBACK) CHO SOCIAL ICONS ---
       const SOCIAL_LINKS_MAP = [
@@ -535,8 +591,8 @@
           const data = parsed.data;
           console.log('Parsed data:', data); 
           if (data.length > 0) {
-              CONFIG_DATA = data[0]; 
-              return data.slice(1); 
+              CONFIG_DATA = data[0]; // Hàng đầu tiên là config
+              return data.slice(1); // Products từ hàng tiếp theo
           }
           return [];
       }
@@ -564,27 +620,21 @@
               }
           } catch (error) {
               console.error('LỖI khi tải hoặc xử lý dữ liệu từ Google Sheet:', error);
-              // Thêm cảnh báo nếu lỗi tải dữ liệu
-              document.getElementById('home').querySelector('.section-title').insertAdjacentHTML('afterend', 
-                  '<p style="color: red; font-weight: 700;">⚠ LỖI TẢI DỮ LIỆU: Không thể kết nối với Google Sheet. Vui lòng kiểm tra lại URL TSV công khai.</p>');
               renderSocialLinks({}); 
               updateContactInfo({});
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS (ĐÃ SỬA DÙNG formatPrice VÀ CẬP NHẬT CONTAINERS) ---
+      // --- HÀM 3: RENDER PRODUCTS (Giữ nguyên) ---
       function renderProducts(data) {
-          // CẬP NHẬT: Thêm dientu-products, loại bỏ review-products
-          const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'dientu-products']; 
+          const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products', 'review-products'];
           containers.forEach(id => {
               const container = document.getElementById(id);
               if (container) container.innerHTML = '';
           });
 
           data.forEach(product => {
-              // CẬP NHẬT: Thay thế 'review' bằng 'dientu'
-              const targetSection = product.section === 'review' ? 'dientu' : product.section; 
-              const targetId = `${targetSection}-products`;
+              const targetId = `${product.section}-products`;
               const container = document.getElementById(targetId);
               
               const img_url = product.img || '';
@@ -595,7 +645,7 @@
                           <img src="${img_url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />
                           <h3>${product.title}</h3>
                           <p>${product.desc}</p> 
-                          <span style="display:block; color: ${targetSection === 'dientu' ? 'orange' : 'var(--deep-pink)'}; font-weight: 900; margin-bottom: 10px;">${formatPrice(product.price)}</span>
+                          <span style="display:block; color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'}; font-weight: 900; margin-bottom: 10px;">${product.price}</span>
                       </div>
                   `;
                   container.innerHTML += html;
@@ -632,7 +682,7 @@
           contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
       }
       
-      // --- HÀM XỬ LÝ MODAL (ĐÃ SỬA LỖI GIÁ VÀ XỬ LÝ VIDEO TỐT HƠN) ---
+      // --- HÀM XỬ LÝ MODAL (Giữ nguyên) ---
       function switchModalView(view) {
           tabGalleryBtn.classList.remove('active');
           tabVideoBtn.classList.remove('active');
@@ -649,9 +699,7 @@
               viewVideo.classList.add('active');
               // Khi chuyển sang tab video, đảm bảo script TikTok chạy lại nếu cần
               if (videoContainerEmbed.innerHTML.includes('tiktok-embed')) {
-                   if (window.tiktok) {
-                       window.tiktok.render(document.getElementById('video-container-embed').querySelector('blockquote'));
-                   } else if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
+                   if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
                         const script = document.createElement('script');
                         script.src = 'https://www.tiktok.com/embed.js';
                         document.body.appendChild(script); 
@@ -663,35 +711,32 @@
       function openModal(product) {
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
-          // ✅ SỬA LỖI GIÁ: Áp dụng formatPrice ở đây
-          document.getElementById('modal-price').textContent = formatPrice(product.price); 
+          document.getElementById('modal-price').textContent = product.price;
 
           const galleryContainer = document.getElementById('modal-gallery-container');
           galleryContainer.innerHTML = ''; 
-          
+          // Xử lý chuỗi link ảnh phụ (gallery)
           const images = (product.gallery || '').split(',').map(url => url.trim()).filter(url => url.length > 0);
           images.forEach(url => {
               galleryContainer.innerHTML += `<img src="${url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />`;
           });
           
           const buyButton = document.getElementById('modal-buy-button');
-          // CẬP NHẬT: Kiểm tra cả section 'review' cũ và 'dientu' mới
-          const isReviewOrDienTu = (product.section || '').toLowerCase() === 'review' || (product.section || '').toLowerCase() === 'dientu'; 
+          const isReview = product.section === 'review';
           buyButton.href = product.link || '#'; 
           
           // --- XỬ LÝ NỀN TẢNG (PLATFORM) ---
           const platformKey = (product.platform || '').toLowerCase().trim();
           const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
-          // Sử dụng text mặc định cho Đồ điện tử/Review là "MUA HÀNG NGAY"
-          const buttonText = isReviewOrDienTu ? 'MUA HÀNG NGAY' : platformInfo.text; 
-          const iconHtml = isReviewOrDienTu ? `<i class="fas fa-shopping-cart" style="color: var(--white);"></i>` : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
+          const buttonText = isReview ? 'XEM BÀI REVIEW' : platformInfo.text;
+          const iconHtml = isReview ? `<i class="fas fa-star" style="color: orange;"></i>` : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
           
           buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
-          buyButton.style.backgroundColor = 'var(--deep-pink)'; 
+          buyButton.className = `buy-button`; // Đảm bảo không có class nền tảng dư thừa
 
           // --- XỬ LÝ VIDEO ---
           const videoInput = product.video_id || ''; 
-          videoContainerEmbed.innerHTML = ''; 
+          videoContainerEmbed.innerHTML = ''; // Dọn dẹp nội dung cũ
 
           if (videoInput) {
               tabVideoBtn.style.display = 'inline-block';
@@ -743,12 +788,7 @@
               tabVideoBtn.style.display = 'none';
           }
           
-          if (images.length === 0 && product.video_id) {
-              switchModalView('video');
-          } else {
-              switchModalView('gallery');
-          }
-
+          switchModalView('gallery');
 
           modal.classList.add('visible');
           document.body.style.overflow = 'hidden'; 
@@ -762,7 +802,7 @@
           videoContainerEmbed.innerHTML = '';
       }
       
-      // --- GẮN SỰ KIỆN LẮNG NGHE (Sửa lỗi so sánh id) ---
+      // --- GẮN SỰ KIỆN LẮNG NGHE (Giữ nguyên) ---
       function attachModalListeners() {
           document.querySelectorAll('.open-modal-btn').forEach(card => {
               card.removeEventListener('click', handleCardClick); 
@@ -770,8 +810,7 @@
           });
           
           function handleCardClick() {
-              const id = this.dataset.productId; // Lấy ID là chuỗi
-              // SỬA LỖI SO SÁNH: so sánh chuỗi với chuỗi (p.id là chuỗi từ sheet)
+              const id = parseInt(this.dataset.productId);
               const product = PRODUCT_DATA.find(p => p.id === id); 
               if (product) openModal(product);
           }
@@ -794,8 +833,13 @@
           function handleEscapeKey(e) { if (e.key === 'Escape' && modal.classList.contains('visible')) closeModal(); }
       }
       
-      // --- LOGIC CHUYỂN VIEW VÀ CUỘN (Giữ nguyên) ---
+      // --- LOGIC CHUYỂN VIEW VÀ CUỘN (Đã sửa lại để đóng Sidebar khi chuyển mục) ---
       function showSection(targetId) {
+          // Logic đóng sidebar khi chuyển mục (chỉ trên mobile)
+          if (window.innerWidth <= 900 && sidebar.classList.contains('active')) {
+               toggleSidebar(); // Gọi hàm đóng Sidebar
+          }
+          
           navLinks.forEach(link => {
               if (link.getAttribute('href') === targetId) {
                   link.style.background = 'var(--pink)';
@@ -813,10 +857,35 @@
           });
           const scrollTarget = document.getElementById(targetId.substring(1));
           if (scrollTarget && targetId !== '#home') {
+                  // Cuộn lên vị trí của section (trừ đi chiều cao của nav bar)
                   window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'smooth' });
           } else {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
           }
+      }
+
+      // --- LOGIC MỚI: SIDEBAR TOGGLE ---
+      if (menuToggle && sidebar) {
+          function toggleSidebar() {
+              sidebar.classList.toggle('active');
+              sidebarOverlay.classList.toggle('active');
+              const isExpanded = sidebar.classList.contains('active');
+              menuToggle.setAttribute('aria-expanded', isExpanded);
+              // Chặn cuộn màn hình chính (chỉ khi mở menu trên mobile)
+              document.body.style.overflow = isExpanded && window.innerWidth <= 900 ? 'hidden' : ''; 
+          }
+          
+          menuToggle.addEventListener('click', toggleSidebar);
+          sidebarOverlay.addEventListener('click', toggleSidebar); // Đóng khi bấm overlay
+
+          // Đóng Sidebar khi người dùng bấm vào một link trong Sidebar (trên mobile)
+          sidebar.querySelectorAll('a').forEach(link => {
+             link.addEventListener('click', () => {
+                 if (sidebar.classList.contains('active')) {
+                     setTimeout(toggleSidebar, 100); // Đóng sau 1 khoảng trễ ngắn
+                 }
+             });
+          });
       }
       
       // Hàm tự động tải lại dữ liệu sau 5 phút
