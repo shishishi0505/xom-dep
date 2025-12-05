@@ -50,7 +50,7 @@
       text-align: center; 
     }
     
-    /* NEW: FIX LỖI MODAL LỆCH VỊ TRÍ TRÊN MOBILE */
+    /* FIX LỖI MODAL LỆCH VỊ TRÍ TRÊN MOBILE */
     body.modal-open {
         position: fixed; 
         width: 100%;
@@ -104,7 +104,7 @@
       text-transform: uppercase; 
     }
     nav a:hover { background: linear-gradient(90deg, var(--soft-pink), var(--cream)); transform: translateY(-3px); }
-    nav a.active { background: var(--pink); } /* NEW: Màu active cố định */
+    nav a.active { background: var(--pink); } /* Màu active cố định */
     nav a:focus { background: var(--pink); outline: 2px solid var(--deep-pink); outline-offset: 2px; }
 
     /* simple pastel icon style */
@@ -293,7 +293,9 @@
     /* MODAL STYLES */
     .modal-overlay {
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.7); z-index: 1000;
+        /* Chỉnh overlay màu trắng để giống trang mới trên mobile */
+        background: var(--white); 
+        z-index: 1000;
         display: flex; justify-content: center; align-items: center;
         transition: opacity 0.3s ease; opacity: 0; pointer-events: none;
         text-align: left; 
@@ -460,7 +462,7 @@
     @media (max-width: 900px) { 
       .layout{ flex-direction:column; } 
       .sidebar{ width:100%; }
-      /* NEW: Sidebar sẽ chiếm full-width trên tablet/desktop nếu không bị ẩn */
+      /* Sidebar sẽ chiếm full-width trên tablet/desktop nếu không bị ẩn */
       .sidebar.hidden-mobile { display: none; } /* Đảm bảo ẩn nếu có class này */
       .container.full-width { width: 100%; } /* Dành cho mobile khi sidebar ẩn */
 
@@ -471,7 +473,7 @@
       header h1, header p { font-size: 90%; }
     }
     
-    /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE */
+    /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE (TEELAB STYLE) */
     @media (max-width: 550px) { 
         
         /* Điều chỉnh header, nav, layout cho mobile tốt hơn */
@@ -531,22 +533,51 @@
             margin-top: 5px;
         }
 
-        /* 2. Điều chỉnh Modal/Gallery (Áp dụng yêu cầu 96%) */
+        /* 2. Điều chỉnh Modal/Gallery (Áp dụng phong cách Teelab Mobile) */
+        .modal-content { 
+            padding: 0; /* Xóa padding ngoài cùng */
+            width: 100%; 
+            max-width: 100%; 
+            max-height: 100vh; /* Chiếm trọn chiều cao */
+            height: 100vh;
+            border-radius: 0; /* Xóa bo góc */
+            box-shadow: none; /* Xóa bóng đổ */
+        } 
+        
+        /* Nút đóng cố định trên Mobile (Teelab Style) */
+        .close-btn { 
+            position: fixed; 
+            top: 10px; 
+            right: 15px; 
+            z-index: 1002; 
+            color: #505050; 
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 50%;
+            line-height: 1;
+            font-size: 24px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* Thêm padding cho các khối nội dung bên trong modal để không bị sát mép */
+        .modal-content h2, 
+        .modal-content p, 
+        .modal-tabs,
+        .modal-view,
+        .modal-footer {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .modal-content h2 { padding-top: 15px; } /* Thêm padding trên cùng */
+        
         .gallery-wrapper { 
             /* Gallery 1 cột trên điện thoại */
             grid-template-columns: 1fr; 
             display: grid; 
             margin: 20px auto; 
+            padding: 0 15px; /* Thêm padding ngang cho gallery */
         }
-        .modal-content { 
-            padding: 15px; 
-            /* NEW: Modal chiếm 96% chiều rộng và cao */
-            width: 96%; 
-            max-width: 96%; 
-            max-height: 96vh; /* Giới hạn chiều cao */
-            border-radius: 12px; /* Bo góc mềm mại */
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); /* Bóng đổ nhẹ */
-        } 
+        
         .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
         
         /* Optional: Small adjustments for better flow (Added for better mobile UX) */
@@ -970,14 +1001,14 @@
           }
 
           modal.classList.add('visible');
-          // NEW FIX: Áp dụng class để chặn cuộn và giữ modal cố định
+          // FIX: Áp dụng class để chặn cuộn và giữ modal cố định
           document.body.classList.add('modal-open'); 
       }
 
       function closeModal() {
           modal.classList.remove('visible');
           lightbox.classList.remove('visible'); 
-          // NEW FIX: Bỏ class khi modal đóng
+          // FIX: Bỏ class khi modal đóng
           document.body.classList.remove('modal-open'); 
           
           videoContainerEmbed.innerHTML = '';
@@ -1048,7 +1079,7 @@
               }
           });
           
-          // NEW LOGIC: Xử lý ẩn Sidebar trên Mobile/Tablet (< 900px) cho các mục sản phẩm
+          // LOGIC: Xử lý ẩn Sidebar trên Mobile/Tablet (< 900px) cho các mục sản phẩm
           if (window.innerWidth <= 900 && ['#beauty', '#vay', '#quanao', '#bikini'].includes(targetId)) {
               sidebar.classList.add('hidden-mobile');
               container.classList.add('full-width');
