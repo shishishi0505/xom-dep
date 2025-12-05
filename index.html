@@ -507,30 +507,61 @@
             margin-top: 5px;
         }
 
+        /* --- TỐI ƯU HÓA MODAL CHO MÀN HÌNH ĐIỆN THOẠI NHỎ (DƯỚI 550PX) --- */
+        
         /* 2. Điều chỉnh Modal/Gallery */
+        
+        /* Làm cho Modal gần như Toàn màn hình (Fullscreen-like) */
+        .modal-overlay {
+            /* Thay đổi căn chỉnh từ center sang top */
+            align-items: flex-start; 
+        }
+        .modal-content {
+            padding: 15px; 
+            width: 100%; /* Chiếm toàn bộ chiều rộng */
+            max-width: 100%; /* Bỏ giới hạn max-width */
+            height: 100vh; /* Chiếm toàn bộ chiều cao */
+            max-height: 100vh; /* Bỏ giới hạn max-height */
+            margin: 0; /* Bỏ margin */
+            border-radius: 0; /* Bỏ bo góc */
+            transform: none !important; /* Bỏ hiệu ứng scale ban đầu */
+            transition: opacity 0.3s ease; /* Giữ lại transition opacity */
+        }
+        
+        /* Điều chỉnh nút Đóng (Close Button) */
+        .close-btn { 
+            position: fixed; /* Giữ nút đóng cố định */
+            top: 0; 
+            right: 0;
+            padding: 15px 20px; 
+            background: var(--white); /* Nền trắng để dễ thấy */
+            border-bottom-left-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15); /* Thêm bóng để nổi bật */
+            z-index: 1002; /* Cao hơn nội dung modal */
+            font-size: 28px;
+            color: var(--deep-pink); /* Nút đóng màu hồng cho dễ thấy */
+        }
+
+        /* Điều chỉnh nội dung modal để không bị nút close che */
+        .modal-content h2 { margin-top: 30px; } /* Đẩy nội dung xuống */
+        
+        /* Các điều chỉnh khác */
+        .modal-tabs { margin-bottom: 15px; }
+        .modal-footer { margin-top: 15px; padding-top: 15px; }
         .gallery-wrapper { 
             /* Gallery 1 cột trên điện thoại */
             grid-template-columns: 1fr; 
             display: grid; 
             margin: 20px auto; 
         }
-        .modal-content { 
-            padding: 15px; 
-            /* Modal chiếm 95% chiều rộng trên mobile nhỏ */
-            width: 95%; 
-            max-width: 95%; 
-        } 
-        .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
-        
         /* Optional: Small adjustments for better flow (Added for better mobile UX) */
         #modal-desc { margin: 10px 0; font-size: 14px; }
         #modal-price { font-size: 16px; margin: 5px 0 15px; }
     }
   </style>
 </head>
-<body class="page-enter page-enter-active">
-
-  <header>
+<body>
+<header>
     <h1>XÓM ĐẸP</h1>
     
     <p>𝒳ó𝓂 Đ𝑒̣̂𝓅 ✿ 𝒩𝑜̛𝒾 𝒽𝑜̣̂𝒾 𝓉𝓊̣ 𝓉𝓲𝓃𝒽 𝒽𝑜𝒶 𝒸𝓊̉𝒶 𝒫𝒽𝒶́𝒾 Đ𝑒̣̂𝓅</p>
