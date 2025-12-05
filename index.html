@@ -48,11 +48,11 @@
       text-align: center; 
     }
 
-    /* SMOOTH PAGE TRANSITION */
-    .page-enter { opacity: 0; transform: translateY(8px); }
-    .page-enter-active { opacity: 1; transform: translateY(0); transition: all 450ms cubic-bezier(.2,.9,.2,1); }
-    .page-exit { opacity: 1; }
-    .page-exit-active { opacity: 0; transform: translateY(-8px); transition: all 350ms cubic-bezier(.2,.9,.2,1); }
+    /* XÓA: SMOOTH PAGE TRANSITION */
+    /* .page-enter { opacity: 0; transform: translateY(8px); } */
+    /* .page-enter-active { opacity: 1; transform: translateY(0); transition: all 450ms cubic-bezier(.2,.9,.2,1); } */
+    /* .page-exit { opacity: 1; } */
+    /* .page-exit-active { opacity: 0; transform: translateY(-8px); transition: all 350ms cubic-bezier(.2,.9,.2,1); } */
 
     /* HEADER & NAV */
     header { margin-top: 30px; padding-bottom: 10px; }
@@ -446,6 +446,19 @@
       /* Ẩn tiêu đề nếu nav quá chật (Tùy chọn) */
       header h1, header p { font-size: 90%; }
     }
+
+    /* THÊM CSS MỚI: Quản lý ẩn/hiện Sidebar */
+    /* Mặc định: Hiển thị sidebar */
+    .sidebar { display: block; }
+    /* Ẩn Sidebar trên Desktop/Tablet cho các mục Sản phẩm/Làm đẹp */
+    @media (min-width: 901px) {
+        .layout.no-sidebar .sidebar {
+            display: none !important;
+        }
+        .layout.no-sidebar .container {
+            flex: 100%; /* Cho phép container chiếm trọn 100% chiều rộng */
+        }
+    }
     
     /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE */
     @media (max-width: 550px) { 
@@ -507,61 +520,87 @@
             margin-top: 5px;
         }
 
-        /* --- TỐI ƯU HÓA MODAL CHO MÀN HÌNH ĐIỆN THOẠI NHỎ (DƯỚI 550PX) --- */
-        
         /* 2. Điều chỉnh Modal/Gallery */
-        
-        /* Làm cho Modal gần như Toàn màn hình (Fullscreen-like) */
-        .modal-overlay {
-            /* Thay đổi căn chỉnh từ center sang top */
-            align-items: flex-start; 
-        }
-        .modal-content {
-            padding: 15px; 
-            width: 100%; /* Chiếm toàn bộ chiều rộng */
-            max-width: 100%; /* Bỏ giới hạn max-width */
-            height: 100vh; /* Chiếm toàn bộ chiều cao */
-            max-height: 100vh; /* Bỏ giới hạn max-height */
-            margin: 0; /* Bỏ margin */
-            border-radius: 0; /* Bỏ bo góc */
-            transform: none !important; /* Bỏ hiệu ứng scale ban đầu */
-            transition: opacity 0.3s ease; /* Giữ lại transition opacity */
-        }
-        
-        /* Điều chỉnh nút Đóng (Close Button) */
-        .close-btn { 
-            position: fixed; /* Giữ nút đóng cố định */
-            top: 0; 
-            right: 0;
-            padding: 15px 20px; 
-            background: var(--white); /* Nền trắng để dễ thấy */
-            border-bottom-left-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15); /* Thêm bóng để nổi bật */
-            z-index: 1002; /* Cao hơn nội dung modal */
-            font-size: 28px;
-            color: var(--deep-pink); /* Nút đóng màu hồng cho dễ thấy */
-        }
-
-        /* Điều chỉnh nội dung modal để không bị nút close che */
-        .modal-content h2 { margin-top: 30px; } /* Đẩy nội dung xuống */
-        
-        /* Các điều chỉnh khác */
-        .modal-tabs { margin-bottom: 15px; }
-        .modal-footer { margin-top: 15px; padding-top: 15px; }
         .gallery-wrapper { 
             /* Gallery 1 cột trên điện thoại */
             grid-template-columns: 1fr; 
             display: grid; 
             margin: 20px auto; 
         }
-        /* Optional: Small adjustments for better flow (Added for better mobile UX) */
-        #modal-desc { margin: 10px 0; font-size: 14px; }
-        #modal-price { font-size: 16px; margin: 5px 0 15px; }
+        
+        /* 3. Tối ưu Modal Fullscreen (Quan trọng) */
+        .modal-overlay.visible {
+            /* Đảm bảo nền overlay chiếm trọn 100% viewport, không bị cuộn theo body */
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0;
+            background: var(--white); /* Đổi nền overlay thành trắng để che hoàn toàn nội dung cũ */
+        }
+        
+        .modal-content { 
+            /* Modal chiếm trọn 100% chiều rộng và chiều cao trên mobile */
+            width: 100%; 
+            max-width: 100%; 
+            height: 100vh; /* Quan trọng: Chiếm trọn chiều cao viewport */
+            max-height: 100vh;
+            padding: 15px 15px 0 15px; /* Giữ padding trên cùng, loại bỏ padding dưới */
+            border-radius: 0; /* Loại bỏ bo góc */
+            box-shadow: none; /* Loại bỏ bóng đổ */
+            transform: none; /* Bỏ animation scale */
+            transition: none;
+            
+            /* Điều chỉnh bố cục bên trong để cuộn tốt hơn */
+            display: flex;
+            flex-direction: column;
+        } 
+        
+        /* Đảm bảo phần nội dung cuộn được chiếm đủ không gian còn lại */
+        #modal-view-gallery, #modal-view-video {
+            flex-grow: 1; /* Cho phép phần xem ảnh/video mở rộng */
+            overflow-y: auto; /* Cho phép cuộn bên trong view này */
+            padding-bottom: 20px; /* Thêm padding cuối cùng cho nội dung */
+            /* QUAN TRỌNG: Đặt margin-bottom 0 cho gallery-wrapper để nó không chiếm không gian thừa */
+        }
+        
+        /* Nút Đóng Modal trên mobile */
+        .close-btn { 
+            position: fixed; /* Cố định nút đóng */
+            top: 10px; 
+            right: 15px; 
+            font-size: 35px; /* Làm nút to hơn dễ bấm */
+            color: var(--deep-pink); /* Màu nổi bật */
+            background: none; 
+            border: none;
+            z-index: 1002; /* Cao hơn mọi thứ */
+        }
+        
+        /* Cố định Footer Modal (Nút Mua Hàng) */
+        .modal-footer {
+            /* Cố định ở dưới cùng màn hình */
+            position: sticky; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: var(--white); /* Tạo nền trắng để che nội dung cuộn */
+            margin: 0;
+            border-top: none; 
+            padding: 15px 0; /* Giữ padding để nút không sát mép */
+            z-index: 1001;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1); /* Thêm bóng đổ nhẹ ở trên */
+        }
+        
+        .gallery-wrapper { 
+            /* Cần đảm bảo gallery không bị giới hạn chiều cao cố định */
+            margin-bottom: 0; 
+        }
     }
   </style>
 </head>
-<body>
-<header>
+<body class="page-enter page-enter-active">
+
+  <header>
     <h1>XÓM ĐẸP</h1>
     
     <p>𝒳ó𝓂 Đ𝑒̣̂𝓅 ✿ 𝒩𝑜̛𝒾 𝒽𝑜̣̂𝒾 𝓉𝓊̣ 𝓉𝓲𝓃𝒽 𝒽𝑜𝒶 𝒸𝓊̉𝒶 𝒫𝒽𝒶́𝒾 Đ𝑒̣̂𝓅</p>
@@ -677,6 +716,7 @@
       const socialContainer = document.getElementById('social-links-container');
       const contactContainer = document.querySelector('#contact .contact-info');
       const videoContainerEmbed = document.getElementById('video-container-embed');
+      const layout = document.querySelector('.layout'); // KHAI BÁO MỚI CHO SIDEBAR
 
       // NEW: Khai báo biến cho Lightbox Zoom
       const lightbox = document.getElementById('zoom-lightbox');
@@ -1033,8 +1073,21 @@
           }
       }
       
-      // --- LOGIC CHUYỂN VIEW VÀ CUỘN (ĐÃ SỬA: behavior: 'smooth' -> 'auto') ---
+      // --- LOGIC CHUYỂN VIEW VÀ CUỘN (ĐÃ BỎ HIỆU ỨNG SMOOTH) ---
       function showSection(targetId) {
+          
+          // BẮT ĐẦU: QUẢN LÝ ẨN/HIỆN SIDEBAR
+          const isProductSection = ['#beauty', '#vay', '#quanao', '#bikini'].includes(targetId);
+          
+          if (isProductSection) {
+              // Nếu là mục sản phẩm, thêm class để ẩn sidebar trên desktop
+              layout.classList.add('no-sidebar');
+          } else {
+              // Nếu là LỜI CHÀO (#home) hoặc LIÊN HỆ (#contact), đảm bảo sidebar hiển thị
+              layout.classList.remove('no-sidebar');
+          }
+          // KẾT THÚC: QUẢN LÝ ẨN/HIỆN SIDEBAR
+
           navLinks.forEach(link => {
               // Xử lý active link
               if (link.getAttribute('href') === targetId) {
@@ -1053,10 +1106,10 @@
           });
           const scrollTarget = document.getElementById(targetId.substring(1));
           if (scrollTarget && targetId !== '#home') {
-                  // Cuộn đến vị trí mới, trừ đi chiều cao của nav bar + margin
-                  window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'auto' });
+                  // Cuộn đến vị trí mới, LÀM NGAY LẬP TỨC (behavior: 'instant')
+                  window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'instant' });
           } else {
-                  window.scrollTo({ top: 0, behavior: 'auto' });
+                  window.scrollTo({ top: 0, behavior: 'instant' });
           }
       }
       
@@ -1080,21 +1133,14 @@
               const href = this.getAttribute('href');
               if (!href || href.charAt(0) !== '#') return;
               e.preventDefault();
-              document.body.classList.remove('page-enter-active');
-              document.body.classList.add('page-exit-active');
-              // Thêm timeout để tạo hiệu ứng chuyển trang mượt mà
-              setTimeout(() => {
-                  showSection(href); 
-                  document.body.classList.remove('page-exit-active');
-                  document.body.classList.add('page-enter-active');
-              }, 320);
+              
+              // ĐÃ XÓA CODE CHUYỂN TRANG MƯỢT MÀ TẠI ĐÂY
+              showSection(href); 
           });
       });
       
       window.addEventListener('load', () => {
-        setTimeout(()=>{
-          document.body.classList.remove('page-enter', 'page-enter-active');
-        }, 600);
+        // ĐÃ XÓA CODE CHUYỂN TRANG MƯỢT MÀ TẠI ĐÂY
       });
     });
   </script>
