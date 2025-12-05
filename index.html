@@ -6,6 +6,8 @@
   
   <title>🎀 𝗫Ó𝗠 Đ𝗘̣𝗫 🌸</title>
   
+  <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUAAADu8u7x8fHx8fHx8fHu8u7u8u7x8fHu8u7x8fHx8fHu8u7u8u7u8u7x8fHx8fHu8u7u8u7u8u7x8fHx8fHx8fEAAADw8vH///+JvNfNAAAACnRSTlMA6wL66gMBDQECdYk870MAAACPSURBVDjLrdLnEkAwEIXh/d84y4J+p6p7oP9Z4t8kM5kIeF3/eG8wYdIe7yX6A6h39v2xO80h59f8JcO7lPj/d4zD9y32R8Y8c4w8/x8L+d5E+N/g453fD732Vw48/D8P3fX+w411D5/x/l93wJ/f/i5b9/p+D9V5o/9t9797YcAAAAAElFTkSuQmCC">
+  
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -47,6 +49,22 @@
       /* CĂN LỀ GIỮA TOÀN BỘ TEXT */
       text-align: center; 
     }
+    
+    /* NEW: FIX LỖI MODAL LỆCH VỊ TRÍ TRÊN MOBILE */
+    body.modal-open {
+        position: fixed; 
+        width: 100%;
+        /* Giữ lại thanh cuộn để body không bị dịch chuyển */
+        overflow-y: scroll; 
+        padding-right: 0 !important; 
+    }
+
+
+    /* SMOOTH PAGE TRANSITION */
+    .page-enter { opacity: 0; transform: translateY(8px); }
+    .page-enter-active { opacity: 1; transform: translateY(0); transition: all 450ms cubic-bezier(.2,.9,.2,1); }
+    .page-exit { opacity: 1; }
+    .page-exit-active { opacity: 0; transform: translateY(-8px); transition: all 350ms cubic-bezier(.2,.9,.2,1); }
 
     /* HEADER & NAV */
     header { margin-top: 30px; padding-bottom: 10px; }
@@ -86,6 +104,7 @@
       text-transform: uppercase; 
     }
     nav a:hover { background: linear-gradient(90deg, var(--soft-pink), var(--cream)); transform: translateY(-3px); }
+    nav a.active { background: var(--pink); } /* NEW: Màu active cố định */
     nav a:focus { background: var(--pink); outline: 2px solid var(--deep-pink); outline-offset: 2px; }
 
     /* simple pastel icon style */
@@ -110,6 +129,10 @@
       border-radius: 30px; 
       box-shadow: 0 6px 20px rgba(0,0,0,0.10); 
       text-align: center; /* Căn giữa nội dung sidebar */
+      transition: opacity 0.3s ease; /* Thêm transition cho Sidebar */
+    }
+    .sidebar.hidden-mobile { 
+        display: none; /* Class để ẩn sidebar trên mobile */
     }
     .sidebar h3 { color: var(--title); margin-bottom: 12px; text-transform: uppercase; }
     
@@ -177,6 +200,9 @@
       border-radius: 30px; 
       box-shadow: 0 6px 20px rgba(0,0,0,0.10); 
       text-align: center; /* Căn giữa nội dung chính */
+    }
+    .container.full-width {
+        width: 100%; /* Dành cho mobile khi sidebar ẩn */
     }
     
     /* CARD & CONTENT */
@@ -426,7 +452,6 @@
     .platform-tiki { background-color: #0088ff !important; color: var(--white) !important; }
     .platform-tiktok { background-color: #000000 !important; color: var(--white) !important; }
     .platform-website { background-color: var(--soft-pink) !important; color: var(--deep-pink) !important; }
-    .platform-sendo { background-color: #cd1200 !important; color: var(--white) !important; }
 
     
     footer { text-align:center; padding:22px; margin-top:36px; background: linear-gradient(90deg,var(--soft-pink),var(--cream)); border-top-left-radius:40px; border-top-right-radius:40px; color:var(--title); }
@@ -435,23 +460,15 @@
     @media (max-width: 900px) { 
       .layout{ flex-direction:column; } 
       .sidebar{ width:100%; }
+      /* NEW: Sidebar sẽ chiếm full-width trên tablet/desktop nếu không bị ẩn */
+      .sidebar.hidden-mobile { display: none; } /* Đảm bảo ẩn nếu có class này */
+      .container.full-width { width: 100%; } /* Dành cho mobile khi sidebar ẩn */
+
       .product-grid { grid-template-columns: repeat(2, 1fr); }
       .gallery-wrapper { grid-template-columns: repeat(2, 1fr); }
       blockquote, .contact-info a { width: 100%; }
       /* Ẩn tiêu đề nếu nav quá chật (Tùy chọn) */
       header h1, header p { font-size: 90%; }
-    }
-
-    /* ĐIỀU CHỈNH MỚI: Quản lý ẩn/hiện Sidebar cho MỌI thiết bị */
-    /* Mặc định: Hiển thị sidebar */
-    .sidebar { display: block; }
-    /* Ẩn Sidebar khi có class no-sidebar (áp dụng cho mọi thiết bị) */
-    .layout.no-sidebar .sidebar {
-        display: none !important;
-    }
-    /* Điều chỉnh container khi sidebar bị ẩn */
-    .layout.no-sidebar .container {
-        flex: 100%; /* Cho phép container chiếm trọn 100% chiều rộng */
     }
     
     /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE */
@@ -514,83 +531,27 @@
             margin-top: 5px;
         }
 
-        /* 2. Điều chỉnh Modal/Gallery */
+        /* 2. Điều chỉnh Modal/Gallery (Áp dụng yêu cầu 96%) */
         .gallery-wrapper { 
             /* Gallery 1 cột trên điện thoại */
             grid-template-columns: 1fr; 
             display: grid; 
             margin: 20px auto; 
         }
-        
-        /* 3. ĐIỀU CHỈNH MỚI: Tối ưu Modal Fullscreen xuống 96% */
-        .modal-overlay.visible {
-            /* Đảm bảo nền overlay chiếm trọn 100% viewport, không bị cuộn theo body */
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            bottom: 0;
-            background: var(--white); /* Đổi nền overlay thành trắng để che hoàn toàn nội dung cũ */
-        }
-        
         .modal-content { 
-            /* ĐIỀU CHỈNH MỚI: Giảm từ 100% xuống 96% và thêm lại bo góc */
+            padding: 15px; 
+            /* NEW: Modal chiếm 96% chiều rộng và cao */
             width: 96%; 
             max-width: 96%; 
-            height: 96vh; 
-            max-height: 96vh;
-            
-            padding: 15px; /* Điều chỉnh padding đều 4 phía */
-            border-radius: 12px; /* Thêm bo góc nhẹ */
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* Thêm bóng đổ nhẹ */
-            
-            transform: none; 
-            transition: none;
-            
-            display: flex;
-            flex-direction: column;
-            
-            /* Thêm vào để căn giữa tốt hơn */
-            margin: auto;
+            max-height: 96vh; /* Giới hạn chiều cao */
+            border-radius: 12px; /* Bo góc mềm mại */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); /* Bóng đổ nhẹ */
         } 
+        .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
         
-        /* Đảm bảo phần nội dung cuộn được chiếm đủ không gian còn lại */
-        #modal-view-gallery, #modal-view-video {
-            flex-grow: 1; /* Cho phép phần xem ảnh/video mở rộng */
-            overflow-y: auto; /* Cho phép cuộn bên trong view này */
-            padding-bottom: 20px; /* Thêm padding cuối cùng cho nội dung */
-        }
-        
-        /* Nút Đóng Modal trên mobile */
-        .close-btn { 
-            position: fixed; 
-            top: 15px; /* Điều chỉnh vị trí để không bị sát mép */
-            right: 25px; 
-            font-size: 35px; 
-            color: var(--deep-pink); 
-            background: none; 
-            border: none;
-            z-index: 1002; 
-        }
-        
-        /* Cố định Footer Modal (Nút Mua Hàng) */
-        .modal-footer {
-            position: sticky; 
-            bottom: 0; 
-            left: 0; 
-            right: 0; 
-            background: var(--white); 
-            margin: -15px; /* Dùng margin âm để mở rộng background ra sát mép modal */
-            margin-top: 15px;
-            border-top: none; 
-            padding: 15px 15px; /* Giữ padding để nút không sát mép */
-            z-index: 1001;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1); 
-        }
-        
-        .gallery-wrapper { 
-            margin-bottom: 0; 
-        }
+        /* Optional: Small adjustments for better flow (Added for better mobile UX) */
+        #modal-desc { margin: 10px 0; font-size: 14px; }
+        #modal-price { font-size: 16px; margin: 5px 0 15px; }
     }
   </style>
 </head>
@@ -705,6 +666,8 @@
       const sections = document.querySelectorAll('#main-content .card');
       const navLinks = document.querySelectorAll('a.nav-link');
       const modal = document.getElementById('gallery-modal');
+      const sidebar = document.querySelector('.sidebar'); // NEW: Chọn Sidebar
+      const container = document.querySelector('.container'); // NEW: Chọn Container
       const tabGalleryBtn = document.getElementById('tab-gallery');
       const tabVideoBtn = document.getElementById('tab-video');
       const viewGallery = document.getElementById('modal-view-gallery');
@@ -712,7 +675,6 @@
       const socialContainer = document.getElementById('social-links-container');
       const contactContainer = document.querySelector('#contact .contact-info');
       const videoContainerEmbed = document.getElementById('video-container-embed');
-      const layout = document.querySelector('.layout'); 
 
       // NEW: Khai báo biến cho Lightbox Zoom
       const lightbox = document.getElementById('zoom-lightbox');
@@ -737,7 +699,7 @@
         'tiktok shop': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
         'tiktok': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
         'website': { icon: 'fas fa-globe', className: 'platform-website', text: 'WEBSITE' },
-        'sendo': { icon: 'fas fa-hand-holding-usd', className: 'platform-sendo', text: 'SENDO' },
+        'sendo': { icon: 'fas fa-hand-holding-usd', className: 'platform-website', text: 'SENDO' },
         // Thêm các nền tảng khác tại đây
         '': { icon: 'fas fa-shopping-cart', className: '', text: 'MUA NGAY' }
       };
@@ -850,31 +812,28 @@
       function openLightbox(imageUrl) {
           lightboxImage.src = imageUrl;
           lightbox.classList.add('visible');
-          // document.body.style.overflow = 'hidden'; 
+          // Áp dụng class để chặn cuộn và giữ modal cố định
+          document.body.classList.add('modal-open'); 
       }
       
       function closeLightbox() {
           lightbox.classList.remove('visible');
           // Nếu modal chính cũng đóng thì mới khôi phục overflow
           if (!modal.classList.contains('visible')) {
-             document.body.style.overflow = '';
+             document.body.classList.remove('modal-open');
           }
       }
       
       function handleLightboxOverlayClick(e) { 
-          if (e.target === lightbox || e.target === lightboxImage) {
+          // Nếu click vào nền lightbox hoặc ảnh (đã được đặt trong lightbox-content) thì đóng
+          if (e.target === lightbox || e.target === lightboxImage || e.target.closest('.lightbox-content')) {
              closeLightbox(); 
           } 
       }
       
-      function handleEscapeKeyLightbox(e) {
-         if (e.key === 'Escape' && lightbox.classList.contains('visible')) {
-             closeLightbox();
-         }
-      }
-      
-      // --- HÀM XỬ LÝ MODAL (ĐÃ CẬP NHẬT GẮN LISTENER CHO ZOOM) ---
+      // --- HÀM XỬ LÝ MODAL ---
       function switchModalView(view) {
+          // Khôi phục lại tab Video (đã bị lỗi xóa trong phiên bản trước)
           tabGalleryBtn.classList.remove('active');
           tabVideoBtn.classList.remove('active');
           viewGallery.classList.remove('active');
@@ -943,6 +902,7 @@
           });
 
           // Gắn listener cho tất cả ảnh trong gallery (để mở lightbox)
+          // Đảm bảo gắn lại mỗi khi Modal mở
           setTimeout(() => {
               document.querySelectorAll('#modal-gallery-container .gallery-image').forEach(img => {
                   img.addEventListener('click', (e) => {
@@ -952,7 +912,7 @@
               });
           }, 0); 
 
-          // 4. Xử lý VIDEO
+          // 4. Xử lý VIDEO (Đã khôi phục)
           const videoInput = product.video_id || ''; 
           videoContainerEmbed.innerHTML = ''; 
 
@@ -1010,14 +970,15 @@
           }
 
           modal.classList.add('visible');
-          document.body.style.overflow = 'hidden'; 
+          // NEW FIX: Áp dụng class để chặn cuộn và giữ modal cố định
+          document.body.classList.add('modal-open'); 
       }
 
       function closeModal() {
           modal.classList.remove('visible');
-          // Đảm bảo đóng cả lightbox nếu nó đang mở
           lightbox.classList.remove('visible'); 
-          document.body.style.overflow = ''; 
+          // NEW FIX: Bỏ class khi modal đóng
+          document.body.classList.remove('modal-open'); 
           
           videoContainerEmbed.innerHTML = '';
       }
@@ -1038,18 +999,17 @@
           tabGalleryBtn.removeEventListener('click', handleSwitchGallery); 
           tabVideoBtn.removeEventListener('click', handleSwitchVideo);
           document.querySelector('#gallery-modal .close-btn').removeEventListener('click', closeModal);
-          document.querySelector('#zoom-lightbox .close-btn').removeEventListener('click', closeLightbox); // NEW
+          document.querySelector('#zoom-lightbox .close-btn').removeEventListener('click', closeLightbox);
           modal.removeEventListener('click', handleModalOverlayClick);
-          lightbox.removeEventListener('click', handleLightboxOverlayClick); // NEW
+          lightbox.removeEventListener('click', handleLightboxOverlayClick);
           document.removeEventListener('keydown', handleEscapeKey);
           
           tabGalleryBtn.addEventListener('click', handleSwitchGallery);
           tabVideoBtn.addEventListener('click', handleSwitchVideo);
           document.querySelector('#gallery-modal .close-btn').addEventListener('click', closeModal);
-          document.querySelector('#zoom-lightbox .close-btn').addEventListener('click', closeLightbox); // NEW
+          document.querySelector('#zoom-lightbox .close-btn').addEventListener('click', closeLightbox);
           modal.addEventListener('click', handleModalOverlayClick);
-          lightbox.addEventListener('click', handleLightboxOverlayClick); // NEW
-          // Chỉ gắn 1 listener duy nhất cho Escape (đã được quản lý trong hàm open/close lightbox)
+          lightbox.addEventListener('click', handleLightboxOverlayClick);
           document.addEventListener('keydown', handleEscapeKey); 
 
           function handleSwitchGallery() { switchModalView('gallery'); }
@@ -1069,27 +1029,14 @@
           }
       }
       
-      // --- LOGIC CHUYỂN VIEW VÀ CUỘN (ĐÃ BỎ HIỆU ỨNG SMOOTH) ---
+      // --- LOGIC CHUYỂN VIEW VÀ CUỘN (ĐÃ CẬP NHẬT LOGIC ẨN SIDEBAR) ---
       function showSection(targetId) {
-          
-          // BẮT ĐẦU: QUẢN LÝ ẨN/HIỆN SIDEBAR (Áp dụng cho mọi thiết bị)
-          const isProductSection = ['#beauty', '#vay', '#quanao', '#bikini'].includes(targetId);
-          
-          if (isProductSection) {
-              // Nếu là mục sản phẩm, thêm class để ẩn sidebar
-              layout.classList.add('no-sidebar');
-          } else {
-              // Nếu là LỜI CHÀO (#home) hoặc LIÊN HỆ (#contact), đảm bảo sidebar hiển thị
-              layout.classList.remove('no-sidebar');
-          }
-          // KẾT THÚC: QUẢN LÝ ẨN/HIỆN SIDEBAR
-
           navLinks.forEach(link => {
               // Xử lý active link
               if (link.getAttribute('href') === targetId) {
-                  link.style.background = 'var(--pink)';
+                  link.classList.add('active');
               } else {
-                  link.style.background = 'none';
+                  link.classList.remove('active');
               }
           });
 
@@ -1100,12 +1047,22 @@
                   section.classList.add('hidden');
               }
           });
+          
+          // NEW LOGIC: Xử lý ẩn Sidebar trên Mobile/Tablet (< 900px) cho các mục sản phẩm
+          if (window.innerWidth <= 900 && ['#beauty', '#vay', '#quanao', '#bikini'].includes(targetId)) {
+              sidebar.classList.add('hidden-mobile');
+              container.classList.add('full-width');
+          } else {
+              sidebar.classList.remove('hidden-mobile');
+              container.classList.remove('full-width');
+          }
+
           const scrollTarget = document.getElementById(targetId.substring(1));
           if (scrollTarget && targetId !== '#home') {
-                  // Cuộn đến vị trí mới, LÀM NGAY LẬP TỨC (behavior: 'instant')
-                  window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'instant' });
+                  // Cuộn đến vị trí mới, trừ đi chiều cao của nav bar + margin
+                  window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'smooth' });
           } else {
-                  window.scrollTo({ top: 0, behavior: 'instant' });
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
           }
       }
       
@@ -1129,14 +1086,33 @@
               const href = this.getAttribute('href');
               if (!href || href.charAt(0) !== '#') return;
               e.preventDefault();
-              
-              // Chuyển trang tức thời
-              showSection(href); 
+              document.body.classList.remove('page-enter-active');
+              document.body.classList.add('page-exit-active');
+              // Thêm timeout để tạo hiệu ứng chuyển trang mượt mà
+              setTimeout(() => {
+                  showSection(href); 
+                  document.body.classList.remove('page-exit-active');
+                  document.body.classList.add('page-enter-active');
+              }, 320);
           });
       });
       
       window.addEventListener('load', () => {
-        // Không có hiệu ứng load trang
+        setTimeout(()=>{
+          document.body.classList.remove('page-enter', 'page-enter-active');
+        }, 600);
+      });
+      
+      // Chạy lại logic ẩn/hiện sidebar khi thay đổi kích thước màn hình
+      window.addEventListener('resize', () => {
+          // Lấy ID section đang active để chạy lại logic ẩn/hiện sidebar
+          const activeLink = document.querySelector('.nav-link.active');
+          if (activeLink) {
+              showSection(activeLink.getAttribute('href'));
+          } else {
+              // Mặc định hiển thị trang chủ nếu không có link nào active
+              showSection('#home');
+          }
       });
     });
   </script>
