@@ -273,7 +273,9 @@
     /* MODAL STYLES */
     .modal-overlay {
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.7); z-index: 1000;
+        background: rgba(0, 0, 0, 0.7); 
+        /* TĂNG Z-INDEX ĐỂ NẰM TRÊN NAV BAR CỐ ĐỊNH */
+        z-index: 1000;
         display: flex; justify-content: center; align-items: center;
         transition: opacity 0.3s ease; opacity: 0; pointer-events: none;
         text-align: left; 
@@ -284,7 +286,9 @@
         width: 90%; max-width: 850px; max-height: 90vh;
         overflow-y: auto; /* QUAN TRỌNG: Cho phép cuộn nội dung modal */
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        position: relative; transform: scale(0.95); transition: transform 0.3s ease;
+        position: relative; 
+        transform: scale(0.95); /* Hiệu ứng mặc định cho Desktop */
+        transition: transform 0.3s ease;
     }
     .modal-overlay.visible .modal-content {
         transform: scale(1); /* Hiệu ứng mở modal */
@@ -519,7 +523,15 @@
             /* Modal chiếm 95% chiều rộng trên mobile nhỏ */
             width: 95%; 
             max-width: 95%; 
+            /* VÔ HIỆU HÓA TRANSFORM TRÊN MOBILE (KHẮC PHỤC DỊCH CHUYỂN) */
+            transform: none !important; 
+            margin-top: 10px; 
         } 
+        /* Vô hiệu hóa hiệu ứng mở modal cho mobile */
+        .modal-overlay.visible .modal-content {
+            transform: none !important; 
+        }
+        
         .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
         
         /* Optional: Small adjustments for better flow (Added for better mobile UX) */
@@ -633,7 +645,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       
       // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
-      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
+      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSdOXVYpI/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -943,6 +955,7 @@
           }
 
           modal.classList.add('visible');
+          // ⭐️ KHẮC PHỤC VẤN ĐỀ CUỘN/DỊCH CHUYỂN
           document.body.style.overflow = 'hidden'; 
       }
 
