@@ -48,12 +48,6 @@
       text-align: center; 
     }
 
-    /* XÓA: SMOOTH PAGE TRANSITION */
-    /* .page-enter { opacity: 0; transform: translateY(8px); } */
-    /* .page-enter-active { opacity: 1; transform: translateY(0); transition: all 450ms cubic-bezier(.2,.9,.2,1); } */
-    /* .page-exit { opacity: 1; } */
-    /* .page-exit-active { opacity: 0; transform: translateY(-8px); transition: all 350ms cubic-bezier(.2,.9,.2,1); } */
-
     /* HEADER & NAV */
     header { margin-top: 30px; padding-bottom: 10px; }
     header h1 { margin: 12px 0 0; color: var(--title); font-size: 38px; line-height: 1; letter-spacing: 0.8px; text-transform: uppercase; }
@@ -432,6 +426,7 @@
     .platform-tiki { background-color: #0088ff !important; color: var(--white) !important; }
     .platform-tiktok { background-color: #000000 !important; color: var(--white) !important; }
     .platform-website { background-color: var(--soft-pink) !important; color: var(--deep-pink) !important; }
+    .platform-sendo { background-color: #cd1200 !important; color: var(--white) !important; }
 
     
     footer { text-align:center; padding:22px; margin-top:36px; background: linear-gradient(90deg,var(--soft-pink),var(--cream)); border-top-left-radius:40px; border-top-right-radius:40px; color:var(--title); }
@@ -447,17 +442,16 @@
       header h1, header p { font-size: 90%; }
     }
 
-    /* THÊM CSS MỚI: Quản lý ẩn/hiện Sidebar */
+    /* ĐIỀU CHỈNH MỚI: Quản lý ẩn/hiện Sidebar cho MỌI thiết bị */
     /* Mặc định: Hiển thị sidebar */
     .sidebar { display: block; }
-    /* Ẩn Sidebar trên Desktop/Tablet cho các mục Sản phẩm/Làm đẹp */
-    @media (min-width: 901px) {
-        .layout.no-sidebar .sidebar {
-            display: none !important;
-        }
-        .layout.no-sidebar .container {
-            flex: 100%; /* Cho phép container chiếm trọn 100% chiều rộng */
-        }
+    /* Ẩn Sidebar khi có class no-sidebar (áp dụng cho mọi thiết bị) */
+    .layout.no-sidebar .sidebar {
+        display: none !important;
+    }
+    /* Điều chỉnh container khi sidebar bị ẩn */
+    .layout.no-sidebar .container {
+        flex: 100%; /* Cho phép container chiếm trọn 100% chiều rộng */
     }
     
     /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE */
@@ -528,7 +522,7 @@
             margin: 20px auto; 
         }
         
-        /* 3. Tối ưu Modal Fullscreen (Quan trọng) */
+        /* 3. ĐIỀU CHỈNH MỚI: Tối ưu Modal Fullscreen xuống 96% */
         .modal-overlay.visible {
             /* Đảm bảo nền overlay chiếm trọn 100% viewport, không bị cuộn theo body */
             position: fixed; 
@@ -540,20 +534,24 @@
         }
         
         .modal-content { 
-            /* Modal chiếm trọn 100% chiều rộng và chiều cao trên mobile */
-            width: 100%; 
-            max-width: 100%; 
-            height: 100vh; /* Quan trọng: Chiếm trọn chiều cao viewport */
-            max-height: 100vh;
-            padding: 15px 15px 0 15px; /* Giữ padding trên cùng, loại bỏ padding dưới */
-            border-radius: 0; /* Loại bỏ bo góc */
-            box-shadow: none; /* Loại bỏ bóng đổ */
-            transform: none; /* Bỏ animation scale */
+            /* ĐIỀU CHỈNH MỚI: Giảm từ 100% xuống 96% và thêm lại bo góc */
+            width: 96%; 
+            max-width: 96%; 
+            height: 96vh; 
+            max-height: 96vh;
+            
+            padding: 15px; /* Điều chỉnh padding đều 4 phía */
+            border-radius: 12px; /* Thêm bo góc nhẹ */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* Thêm bóng đổ nhẹ */
+            
+            transform: none; 
             transition: none;
             
-            /* Điều chỉnh bố cục bên trong để cuộn tốt hơn */
             display: flex;
             flex-direction: column;
+            
+            /* Thêm vào để căn giữa tốt hơn */
+            margin: auto;
         } 
         
         /* Đảm bảo phần nội dung cuộn được chiếm đủ không gian còn lại */
@@ -561,38 +559,36 @@
             flex-grow: 1; /* Cho phép phần xem ảnh/video mở rộng */
             overflow-y: auto; /* Cho phép cuộn bên trong view này */
             padding-bottom: 20px; /* Thêm padding cuối cùng cho nội dung */
-            /* QUAN TRỌNG: Đặt margin-bottom 0 cho gallery-wrapper để nó không chiếm không gian thừa */
         }
         
         /* Nút Đóng Modal trên mobile */
         .close-btn { 
-            position: fixed; /* Cố định nút đóng */
-            top: 10px; 
-            right: 15px; 
-            font-size: 35px; /* Làm nút to hơn dễ bấm */
-            color: var(--deep-pink); /* Màu nổi bật */
+            position: fixed; 
+            top: 15px; /* Điều chỉnh vị trí để không bị sát mép */
+            right: 25px; 
+            font-size: 35px; 
+            color: var(--deep-pink); 
             background: none; 
             border: none;
-            z-index: 1002; /* Cao hơn mọi thứ */
+            z-index: 1002; 
         }
         
         /* Cố định Footer Modal (Nút Mua Hàng) */
         .modal-footer {
-            /* Cố định ở dưới cùng màn hình */
             position: sticky; 
             bottom: 0; 
             left: 0; 
             right: 0; 
-            background: var(--white); /* Tạo nền trắng để che nội dung cuộn */
-            margin: 0;
+            background: var(--white); 
+            margin: -15px; /* Dùng margin âm để mở rộng background ra sát mép modal */
+            margin-top: 15px;
             border-top: none; 
-            padding: 15px 0; /* Giữ padding để nút không sát mép */
+            padding: 15px 15px; /* Giữ padding để nút không sát mép */
             z-index: 1001;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1); /* Thêm bóng đổ nhẹ ở trên */
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1); 
         }
         
         .gallery-wrapper { 
-            /* Cần đảm bảo gallery không bị giới hạn chiều cao cố định */
             margin-bottom: 0; 
         }
     }
@@ -716,7 +712,7 @@
       const socialContainer = document.getElementById('social-links-container');
       const contactContainer = document.querySelector('#contact .contact-info');
       const videoContainerEmbed = document.getElementById('video-container-embed');
-      const layout = document.querySelector('.layout'); // KHAI BÁO MỚI CHO SIDEBAR
+      const layout = document.querySelector('.layout'); 
 
       // NEW: Khai báo biến cho Lightbox Zoom
       const lightbox = document.getElementById('zoom-lightbox');
@@ -741,7 +737,7 @@
         'tiktok shop': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
         'tiktok': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
         'website': { icon: 'fas fa-globe', className: 'platform-website', text: 'WEBSITE' },
-        'sendo': { icon: 'fas fa-hand-holding-usd', className: 'platform-website', text: 'SENDO' },
+        'sendo': { icon: 'fas fa-hand-holding-usd', className: 'platform-sendo', text: 'SENDO' },
         // Thêm các nền tảng khác tại đây
         '': { icon: 'fas fa-shopping-cart', className: '', text: 'MUA NGAY' }
       };
@@ -854,7 +850,7 @@
       function openLightbox(imageUrl) {
           lightboxImage.src = imageUrl;
           lightbox.classList.add('visible');
-          // document.body.style.overflow = 'hidden'; // Đã được xử lý trong openModal
+          // document.body.style.overflow = 'hidden'; 
       }
       
       function closeLightbox() {
@@ -1076,11 +1072,11 @@
       // --- LOGIC CHUYỂN VIEW VÀ CUỘN (ĐÃ BỎ HIỆU ỨNG SMOOTH) ---
       function showSection(targetId) {
           
-          // BẮT ĐẦU: QUẢN LÝ ẨN/HIỆN SIDEBAR
+          // BẮT ĐẦU: QUẢN LÝ ẨN/HIỆN SIDEBAR (Áp dụng cho mọi thiết bị)
           const isProductSection = ['#beauty', '#vay', '#quanao', '#bikini'].includes(targetId);
           
           if (isProductSection) {
-              // Nếu là mục sản phẩm, thêm class để ẩn sidebar trên desktop
+              // Nếu là mục sản phẩm, thêm class để ẩn sidebar
               layout.classList.add('no-sidebar');
           } else {
               // Nếu là LỜI CHÀO (#home) hoặc LIÊN HỆ (#contact), đảm bảo sidebar hiển thị
@@ -1134,13 +1130,13 @@
               if (!href || href.charAt(0) !== '#') return;
               e.preventDefault();
               
-              // ĐÃ XÓA CODE CHUYỂN TRANG MƯỢT MÀ TẠI ĐÂY
+              // Chuyển trang tức thời
               showSection(href); 
           });
       });
       
       window.addEventListener('load', () => {
-        // ĐÃ XÓA CODE CHUYỂN TRANG MƯỢT MÀ TẠI ĐÂY
+        // Không có hiệu ứng load trang
       });
     });
   </script>
