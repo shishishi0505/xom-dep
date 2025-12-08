@@ -54,9 +54,9 @@
       margin: 0;
       padding: 0;
       
-      /* NỀN: Sẽ được JS thêm ảnh toàn trang */
+      /* NỀN: Sẽ được JS thêm ảnh toàn trang (Full màn hình) */
       background-color: var(--cream);
-      background-size: cover; /* ĐÃ CHỈNH: Full màn hình */
+      background-size: cover; 
       background-position: center center;
       background-repeat: no-repeat;
       background-attachment: fixed; 
@@ -87,18 +87,18 @@
     
     header h1 { 
         margin: 12px 0 0; 
-        color: var(--white); /* ĐÃ CHỈNH: Màu trắng */
+        color: var(--white); /* Màu trắng */
         font-size: 42px; 
         line-height: 1.1; 
         letter-spacing: 1px; 
         text-transform: uppercase; 
         text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7); /* Thêm bóng chữ đen */
-        font-family: 'DFVN Bungalow', cursive, 'Nunito', sans-serif; /* ĐÃ CHỈNH: Thêm font chữ */
+        font-family: 'DFVN Bungalow', cursive, 'Nunito', sans-serif; /* Font chữ viết tay */
     }
     
     header p { 
         margin: 6px 0 0; 
-        color: var(--white); /* ĐÃ CHỈNH: Màu trắng */
+        color: var(--white); /* Màu trắng */
         font-size: 18px; 
         font-weight: 800; 
         text-transform: none; 
@@ -133,10 +133,10 @@
         color: var(--primary-red);
     }
     
-    /* ĐÃ THÊM: Ẩn Icon Blogger */
-    .social-icons a[aria-label="Blogger"] {
+    /* ĐÃ BỎ: Không ẩn Icon Blogger nữa */
+    /* .social-icons a[aria-label="Blogger"] {
         display: none !important;
-    }
+    } */
 
     nav { 
       background: var(--trans-white); 
@@ -460,8 +460,7 @@
     <p style="font-size: 14px; font-weight: 700;">Bản sắc dân tộc Thái ✿ Ẩm thực ✿ Văn hóa ✿ Kết nối dân tộc</p>
     
     <div class="social-icons">
-        <a href="#" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>
-    </div>
+        </div>
   </header>
 
   <nav aria-label="Chuyển mục">
@@ -615,9 +614,11 @@
               socialContainer.innerHTML += `<a href="${fbLink}" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>`;
           }
           
-           // Thêm Blogger link vào social icons nếu có
-           // Icon này đã bị ẩn bằng CSS, nên không cần kiểm tra link nữa
-           socialContainer.innerHTML += `<a href="${bloggerLink}" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>`;
+           // Thêm Blogger link vào social icons (ĐÃ KHÔI PHỤC)
+           // Chỉ hiển thị nếu có link hợp lệ
+           if (bloggerLink && bloggerLink !== '#') {
+              socialContainer.innerHTML += `<a href="${bloggerLink}" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>`;
+           }
       }
 
       // --- HÀM LẤY LINK CHUNG (ĐỂ TRÁNH TRÙNG LẶP CODE) ---
