@@ -16,6 +16,18 @@
   
   <style>
     /* ------------------------------------ */
+    /* KHAI BÁO FONT CHỮ VIẾT TAY DFVN BUNGALOW (BẠN CẦN CHÈN FILE FONT) */
+    /* ------------------------------------ */
+    @font-face {
+        font-family: 'DFVN Bungalow';
+        src: url('fonts/DFVNBungalow.woff2') format('woff2'),
+             url('fonts/DFVNBungalow.woff') format('woff');
+        /* THAY 'fonts/...' BẰNG ĐƯỜNG DẪN THỰC TẾ ĐẾN FILE FONT CỦA BẠN */
+        font-weight: normal;
+        font-style: normal;
+    }
+    
+    /* ------------------------------------ */
     /* CSS CHỦ ĐỀ SẮC ĐẸP DÂN TỘC THÁI (ĐỎ - VÀNG) */
     /* ------------------------------------ */
     
@@ -72,8 +84,26 @@
 
     /* HEADER & NAV */
     header { margin-top: 30px; padding-bottom: 10px; position: relative; z-index: 10; }
-    header h1 { margin: 12px 0 0; color: var(--title); font-size: 42px; line-height: 1.1; letter-spacing: 1px; text-transform: uppercase; text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8); }
-    header p { margin: 6px 0 0; color: var(--text); font-size: 18px; font-weight: 800; text-transform: none; text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8); } 
+    
+    header h1 { 
+        margin: 12px 0 0; 
+        color: var(--white); /* ĐÃ CHỈNH: Màu trắng */
+        font-size: 42px; 
+        line-height: 1.1; 
+        letter-spacing: 1px; 
+        text-transform: uppercase; 
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7); /* Thêm bóng chữ đen */
+        font-family: 'DFVN Bungalow', cursive, 'Nunito', sans-serif; /* ĐÃ CHỈNH: Thêm font chữ */
+    }
+    
+    header p { 
+        margin: 6px 0 0; 
+        color: var(--white); /* ĐÃ CHỈNH: Màu trắng */
+        font-size: 18px; 
+        font-weight: 800; 
+        text-transform: none; 
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Thêm bóng chữ đen */
+    } 
     
     /* SOCIAL ICONS STYLES */
     .social-icons {
@@ -103,6 +133,11 @@
         color: var(--primary-red);
     }
     
+    /* ĐÃ THÊM: Ẩn Icon Blogger */
+    .social-icons a[aria-label="Blogger"] {
+        display: none !important;
+    }
+
     nav { 
       background: var(--trans-white); 
       padding: 12px 14px; 
@@ -581,9 +616,8 @@
           }
           
            // Thêm Blogger link vào social icons nếu có
-           if (bloggerLink && bloggerLink !== '#') {
-              socialContainer.innerHTML += `<a href="${bloggerLink}" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>`;
-          }
+           // Icon này đã bị ẩn bằng CSS, nên không cần kiểm tra link nữa
+           socialContainer.innerHTML += `<a href="${bloggerLink}" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>`;
       }
 
       // --- HÀM LẤY LINK CHUNG (ĐỂ TRÁNH TRÙNG LẶP CODE) ---
