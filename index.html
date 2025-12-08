@@ -28,7 +28,7 @@
       --white: #ffffff;
       --cream: #fffaf0; /* Trắng ngà */
       
-      /* Màu trong suốt để lộ ảnh nền (Đã chỉnh theo yêu cầu của bạn) */
+      /* Màu trong suốt để lộ ảnh nền */
       --trans-white: rgba(255, 255, 255, 0.8);
       --trans-cream: rgba(255, 255, 255, 0.65);
     }
@@ -42,7 +42,7 @@
       margin: 0;
       padding: 0;
       
-      /* NỀN: Sẽ được JS thêm ảnh toàn trang (Đã chỉnh theo yêu cầu) */
+      /* NỀN: Sẽ được JS thêm ảnh toàn trang */
       background-color: var(--cream);
       background-size: cover;
       background-position: center center;
@@ -56,8 +56,6 @@
       overflow-x: hidden;
       text-align: center; 
     }
-    
-    /* ĐÃ BỎ LỚP PHỦ background-overlay theo yêu cầu */
     
     body.modal-open {
         position: fixed; 
@@ -106,7 +104,6 @@
     }
     
     nav { 
-      /* THAY ĐỔI: Sử dụng nền trong suốt */
       background: var(--trans-white); 
       padding: 12px 14px; 
       position: sticky; 
@@ -157,9 +154,9 @@
       text-align: left; 
     }
 
+    /* Container luôn full-width vì không có sidebar */
     .container { 
       flex: 1; 
-      /* THAY ĐỔI: Sử dụng nền trong suốt nhẹ */
       background: var(--trans-cream); 
       padding: 26px; 
       border-radius: 30px; 
@@ -171,7 +168,6 @@
     .card { 
         border-radius: 20px; 
         overflow: hidden; 
-        /* THAY ĐỔI: Sử dụng nền trong suốt đơn giản */
         background: var(--trans-cream); 
         box-shadow: 0 8px 30px rgba(0,0,0,0.08); 
         padding: 16px; 
@@ -191,7 +187,6 @@
         padding-left: 15px; 
         margin: 15px auto; 
         font-style: italic; 
-        /* Sử dụng nền trong suốt */
         background: rgba(255, 255, 255, 0.4); 
         color: var(--text);
     }
@@ -212,13 +207,78 @@
       margin: 20px auto; 
     }
     .product-card {
-        /* Sử dụng nền trong suốt */
         background: rgba(255, 255, 255, 0.75); 
         padding: 12px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         transition: transform 0.2s; text-align: center; cursor: pointer;
+        /* THAY ĐỔI: Sử dụng flexbox để căn chỉnh nội dung tốt hơn */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-    /* ... (Các CSS khác trong card và grid giữ nguyên) ... */
+    
+    .product-card img { 
+        width: 100%; height: auto; border-radius: 12px; margin-bottom: 10px; 
+        object-fit: cover; aspect-ratio: 1 / 1; 
+    }
+    .product-card-details {
+      text-align: center; 
+      flex-grow: 1; /* Cho phép details chiếm hết không gian còn lại */
+    }
+    .product-card h3 { color: var(--title); font-size: 16px; margin: 8px 0 5px; font-weight: 900; min-height: 40px; }
+    .product-card p {
+        font-size: 13px; 
+        color: #888; 
+        margin-bottom: 10px; 
+        min-height: 30px; 
+        display: -webkit-box;
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .product-price-display {
+        display:block; 
+        font-weight: 900; 
+        margin-bottom: 10px;
+        font-size: 15px; 
+    }
+
+    /* NEW: CSS cho nút bấm nhanh FB/Zalo */
+    .quick-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed rgba(139, 0, 0, 0.2); /* Đường phân cách mờ */
+    }
+    .quick-actions a {
+        width: 45%; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 0;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 13px;
+        transition: opacity 0.2s, transform 0.2s;
+        color: var(--white);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .quick-actions a:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    .quick-actions i {
+        margin-right: 5px;
+        font-size: 14px;
+        color: var(--white);
+    }
+    /* Màu sắc cụ thể */
+    .quick-actions .btn-fb { background-color: #1877f2; }
+    .quick-actions .btn-zalo { background-color: #0088ff; } /* Màu Zalo */
 
     /* MODAL STYLES (Giữ nguyên nền trắng cho Modal) */
     .modal-overlay {
@@ -229,20 +289,105 @@
         transition: opacity 0.3s ease; opacity: 0; pointer-events: none;
         text-align: left; 
     }
-    /* ... (Các CSS khác trong modal giữ nguyên) ... */
+    .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+    .modal-content {
+        background: var(--white); padding: 30px; border-radius: 20px;
+        width: 90%; max-width: 850px; max-height: 90vh;
+        overflow-y: auto; 
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        position: relative; transform: scale(0.95); transition: transform 0.3s ease;
+    }
+    .modal-content h2 { color: var(--primary-red); margin-top: 0; font-size: 28px; text-align: center; } 
+    .modal-content p#modal-price { 
+        text-align: center; 
+        color: var(--primary-red); 
+        font-weight: 900; 
+        font-size: 18px; 
+    } 
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; z-index: 1001; }
+    .close-btn:hover { color: var(--primary-red); }
     
+    /* Căn giữa Gallery */
+    .gallery-wrapper {
+        display: flex; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+        gap: 15px; 
+        margin: 20px auto; 
+    }
+    .gallery-wrapper img {
+        width: calc(33.33% - 15px); 
+        max-width: 250px; 
+        object-fit: cover; aspect-ratio: 16 / 16;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        cursor: zoom-in; 
+        transition: transform 0.2s ease;
+        border-radius: 12px; 
+    }
+    .gallery-wrapper img:hover { transform: scale(0.98); }
+    
+    /* Lightbox Zoom */
+    #zoom-lightbox { z-index: 2000; background: rgba(0, 0, 0, 0.95); }
+    /* ... (CSS Lightbox giữ nguyên) ... */
+
+
     /* FOOTER */
     footer { 
         text-align:center; padding:22px; margin-top:36px; 
-        /* THAY ĐỔI: Sử dụng nền trong suốt */
         background: rgba(255, 255, 255, 0.8); 
         border-top-left-radius:40px; border-top-right-radius:40px; color:var(--title); 
     }
 
-    /* ... (CSS responsive giữ nguyên) ... */
+    /* RESPONSIVE */
+    @media (max-width: 900px) { 
+      .product-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-wrapper img {
+          width: calc(50% - 8px); 
+          max-width: none;
+      }
+      blockquote { max-width: 100%; }
+    }
+    
+    @media (max-width: 550px) { 
+        header h1 { font-size: 32px; }
+        header p { font-size: 14px; }
+        nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; }
+        nav a { font-size: 14px; padding: 8px 10px; }
+        .layout { margin: 15px auto; width: 98%; }
+        
+        /* 2 Cột trên Mobile để hiển thị được nhiều sản phẩm */
+        .product-grid { 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px;
+            margin: 15px 0;
+            padding: 0 10px; 
+        }
+        .product-card { padding: 8px; border-radius: 10px; }
+        .product-card img { border-radius: 8px; }
+        .product-card h3 { font-size: 13px; min-height: 35px; }
+        .product-card p { display: none; }
+        .product-price-display { font-size: 13px; }
+
+        .quick-actions { gap: 5px; }
+        .quick-actions a { font-size: 11px; padding: 6px 0; }
+        .quick-actions i { margin-right: 2px; font-size: 12px; }
+        
+        .modal-content { padding: 0; border-radius: 0; box-shadow: none; width: 100%; max-width: 100%; max-height: 100vh; height: 100vh; } 
+        .close-btn { position: fixed; top: 10px; right: 15px; z-index: 1002; color: #505050; background: rgba(255, 255, 255, 0.8); padding: 5px 10px; border-radius: 50%; line-height: 1; font-size: 24px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+
+        .modal-content h2, 
+        .modal-content p, 
+        .gallery-wrapper {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .modal-content h2 { padding-top: 15px; } 
+        .gallery-wrapper img { width: 100%; max-width: none; }
+    }
   </style>
 </head>
 <body class="page-enter page-enter-active">
+    
   <header>
     <h1>SẮC ĐẸP DÂN TỘC THÁI</h1>
     
@@ -260,8 +405,7 @@
   </nav>
 
   <div class="layout">
-
-    <main class="container full-width" role="main" id="main-content">
+    <main class="container" role="main" id="main-content">
         
       <section id="home" class="card">
         <div class="section-title"><h2>VỀ SẮC ĐẸP DÂN TỘC THÁI</h2></div>
@@ -290,6 +434,9 @@
                 </div>
           </div>
           
+          <div class="modal-footer">
+            <a href="#" target="_blank" id="modal-buy-button" class="buy-button">MUA NGAY</a>
+          </div>
       </div>
   </div>
 
@@ -320,6 +467,19 @@
       
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
+      
+      // --- BẢN ĐỒ ICON NỀN TẢNG (CHỈ DÙNG CHO NÚT MUA HÀNG TRONG MODAL) ---
+      const PLATFORM_ICONS = {
+        'shopee': { icon: 'fas fa-store', className: 'platform-shopee', text: 'SHOPEE' },
+        'lazada': { icon: 'fas fa-box', className: 'platform-lazada', text: 'LAZADA' },
+        'tiki': { icon: 'fas fa-feather-alt', className: 'platform-tiki', text: 'TIKI' },
+        'tiktok shop': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
+        'tiktok': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
+        'website': { icon: 'fas fa-globe', className: 'platform-website', text: 'WEBSITE' },
+        // Thêm các nền tảng khác tại đây
+        '': { icon: 'fas fa-shopping-cart', className: '', text: 'MUA NGAY' }
+      };
+
       
       // --- HÀM 1: PHÂN TÍCH DỮ LIỆU TSV (Sử dụng PapaParse) ---
       function parseTsvToArray(tsvText) {
@@ -362,21 +522,17 @@
           }
       }
 
-      // --- HÀM CẬP NHẬT ẢNH NỀN (ĐÃ TỐI ƯU HÓA CHO HIỂN THỊ RÕ NÉT) ---
+      // --- HÀM CẬP NHẬT ẢNH NỀN (ĐÃ CHỈNH background-size: contain) ---
       function updatePageBackground(config) {
           const backgroundUrl = config.background_img || config.img || ''; 
           const body = document.body;
           if (backgroundUrl) {
-              // Cài đặt ảnh nền
               body.style.backgroundImage = `url('${backgroundUrl}')`;
               body.style.backgroundColor = 'transparent'; 
               
-              // Ghi đè lại background gradient mặc định
+              // SỬA: Đặt background-size là 'contain' (ảnh toàn bộ vào khung hình, rõ nét hơn)
               body.style.background = `url('${backgroundUrl}') no-repeat center center fixed`;
-              body.style.backgroundSize = 'cover';
-              
-              // Để dùng chế độ "Ảnh toàn bộ vào khung hình" (CONTAIN), hãy đổi 'cover' thành 'contain'
-              // body.style.backgroundSize = 'contain'; 
+              body.style.backgroundSize = 'contain'; 
               
           } else {
               // Fallback về gradient nếu không có ảnh
@@ -388,27 +544,46 @@
 
       // --- HÀM CẬP NHẬT SOCIAL LINKS ---
       function updateSocialLinks(config) {
-          // Lấy links từ CONFIG_DATA
+          // Lấy links từ CONFIG_DATA (Lấy cả zalo link để dùng chung)
           const fbLink = config.fb_link && config.fb_link.startsWith('http') ? config.fb_link : '#';
           const bloggerLink = config.blogger_link && config.blogger_link.startsWith('http') ? config.blogger_link : '#';
+          // Zalo link: Dùng cho nút Zalo ở ngoài Header nếu có
+          const zaloLink = config.zalo_link && config.zalo_link.startsWith('http') ? config.zalo_link : 
+                           (config.zalo_phone ? `https://zalo.me/${config.zalo_phone.replace(/[^0-9]/g, '')}` : '#');
 
-          // Áp dụng links vào thẻ <a>
+
+          const socialContainer = document.querySelector('.social-icons');
+          if (socialContainer) socialContainer.innerHTML = '';
+          
+          // Thêm Zalo link vào social icons nếu có (dùng icon mobile)
+          if (zaloLink && zaloLink !== '#') {
+              socialContainer.innerHTML += `<a href="${zaloLink}" target="_blank" aria-label="Zalo"><i class="fas fa-mobile-alt"></i></a>`;
+          }
+
+          // Áp dụng links vào thẻ <a> FB và Blogger
           const fbElement = document.querySelector('.social-icons a[aria-label="Facebook"]');
           const bloggerElement = document.querySelector('.social-icons a[aria-label="Blogger"]');
 
           if (fbElement) {
               fbElement.href = fbLink;
-              // Ẩn icon nếu không có link hợp lệ
               fbElement.style.display = fbLink === '#' ? 'none' : 'flex'; 
           }
           if (bloggerElement) {
               bloggerElement.href = bloggerLink;
-              // Ẩn icon nếu không có link hợp lệ
               bloggerElement.style.display = bloggerLink === '#' ? 'none' : 'flex';
+          }
+
+          // Re-render FB link cho chắc chắn
+          if (fbLink && fbLink !== '#') {
+              socialContainer.innerHTML += `<a href="${fbLink}" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>`;
+          }
+           if (bloggerLink && bloggerLink !== '#') {
+              socialContainer.innerHTML += `<a href="${bloggerLink}" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>`;
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS ---
+
+      // --- HÀM 3: RENDER PRODUCTS (ĐÃ THÊM NÚT ZALO & FB) ---
       function renderProducts(data) {
           const container = document.getElementById('all-products');
           if (container) container.innerHTML = '';
@@ -417,21 +592,36 @@
 
           productsToRender.forEach(product => {
               const img_url = product.img || '';
-              // Định dạng tiền tệ: Thêm dấu phẩy và VNĐ
               const priceRaw = product.price ? product.price.toString().replace(/[^0-9]/g, '') : '';
               const priceText = priceRaw ? 
                   priceRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ' : 
                   'Liên hệ';
 
+              // Lấy link cho nút bấm nhanh
+              const fbLink = product.fb_link && product.fb_link.startsWith('http') ? product.fb_link : 
+                             (CONFIG_DATA.fb_link && CONFIG_DATA.fb_link.startsWith('http') ? CONFIG_DATA.fb_link : '#');
+              // SỬA: Lấy Zalo link từ cột mới
+              const zaloLink = product.zalo_link && product.zalo_link.startsWith('http') ? product.zalo_link :
+                               (product.zalo_phone ? `https://zalo.me/${product.zalo_phone.replace(/[^0-9]/g, '')}` : '#');
+
               if (container) {
                   const html = `
-                      <div data-product-id="${product.id}" class="product-card open-modal-btn">
+                      <div data-product-id="${product.id}" class="product-card">
                           <img src="${img_url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/FFD700/8B0000?text=Thai+Image';" />
                           <div class="product-card-details">
                             <h3>${product.title}</h3>
                             <p>${product.desc}</p> 
                             <span class="product-price-display">${priceText}</span>
-                          </div>
+                            
+                            <div class="quick-actions">
+                                <a href="${fbLink}" class="btn-fb" target="_blank" style="display: ${fbLink === '#' ? 'none' : 'flex'};">
+                                    <i class="fab fa-facebook-f"></i> FACEBOOK
+                                </a>
+                                <a href="${zaloLink}" class="btn-zalo" target="_blank" style="display: ${zaloLink === '#' ? 'none' : 'flex'};">
+                                    <i class="fas fa-comment-dots"></i> ZALO
+                                </a>
+                            </div>
+                            </div>
                       </div>
                   `;
                   container.innerHTML += html;
@@ -467,14 +657,25 @@
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
           
-          // Định dạng tiền tệ
           const priceRaw = product.price ? product.price.toString().replace(/[^0-9]/g, '') : '';
           const modalPriceDisplay = priceRaw ? 
               priceRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ' : 
               'Giá: Liên hệ';
           document.getElementById('modal-price').textContent = modalPriceDisplay;
 
-          // 2. Xử lý GALLERY và GẮN LISTENER CHO ZOOM
+          // 2. Xử lý nút MUA HÀNG TRONG MODAL
+          const buyButton = document.getElementById('modal-buy-button');
+          buyButton.href = product.link || '#'; 
+          
+          const platformKey = (product.platform || '').toLowerCase().trim();
+          const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
+          const buttonText = platformInfo.text;
+          const iconHtml = `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
+          
+          buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
+          buyButton.className = `buy-button`;
+          
+          // 3. Xử lý GALLERY và GẮN LISTENER CHO ZOOM
           const galleryContainer = document.getElementById('modal-gallery-container');
           galleryContainer.innerHTML = ''; 
           
@@ -488,10 +689,9 @@
           const uniqueImages = [...new Set(allImages)].filter(url => url.length > 0);
           
           if(uniqueImages.length === 0) {
-              console.warn('Product has no images.');
-              // Bạn có thể thêm logic hiển thị thông báo thay vì đóng modal tại đây
-              // closeModal(); 
-              // return;
+              console.warn('Product has no images. Closing Modal.');
+              closeModal(); 
+              return;
           }
           
           uniqueImages.forEach(url => {
@@ -507,7 +707,7 @@
               });
           }, 0); 
 
-          // 3. Hiển thị modal
+          // 4. Hiển thị modal
           modal.classList.add('visible');
           document.body.classList.add('modal-open'); 
       }
@@ -520,9 +720,18 @@
       
       // --- GẮN SỰ KIỆN LẮNG NGHE ---
       function attachModalListeners() {
-          document.querySelectorAll('.open-modal-btn').forEach(card => {
+          // THAY ĐỔI: Gắn listener cho từng Card, không phải toàn bộ product-card
+          document.querySelectorAll('.product-card').forEach(card => {
+              // Loại bỏ listener cũ trước để tránh click đúp
               card.removeEventListener('click', handleCardClick); 
-              card.addEventListener('click', handleCardClick); 
+              // Chỉ gắn listener cho khu vực không phải là quick-actions
+              card.addEventListener('click', function(e) {
+                  // Nếu click vào nút quick-actions, KHÔNG mở modal
+                  if (e.target.closest('.quick-actions a')) {
+                      return; 
+                  }
+                  handleCardClick.call(this);
+              });
           });
           
           function handleCardClick() {
@@ -557,7 +766,7 @@
           }
       }
       
-      // --- LOGIC CHUYỂN VIEW VÀ CUỘN (Đã đơn giản hóa) ---
+      // --- LOGIC CHUYỂN VIEW VÀ CUỘN ---
       function showSection(targetId) {
           navLinks.forEach(link => {
               if (link.getAttribute('href') === targetId) {
@@ -593,7 +802,7 @@
 
       // 🚨 KHỞI TẠO: Bắt đầu tải dữ liệu khi trang load
       startPolling(); 
-      showSection('#home'); // Mặc định mở trang Giới thiệu
+      showSection('#home'); 
 
       navLinks.forEach(a => {
           a.addEventListener('click', function(e){
