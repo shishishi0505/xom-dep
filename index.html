@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>🎀 𝗫Ó𝗠 Đ𝗘̣𝗫 🌸</title>
+  <title>🌸 SẮC ĐẸP DÂN TỘC THÁI 🇹🇭</title>
   
-  <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUAAADu8u7x8fHx8fHx8fHu8u7u8u7x8fHx8fHu8u7x8fHx8fHx8fHu8u7u8u7u8u7x8fHx8fHx8fEAAADw8vH///+JvNfNAAAACnRSTlMA6wL66gMBDQECdYk870MAAACPSURBVDjLrdLnEkAwEIXh/d84y4J+p6p7oP9Z4t8kM5kIeF3/eG8wYdIe7yX6A6h39v2xO80h59f8JcO7lPj/d4zD9y32R8Y8c4w8/x8L+d5E+N/g453fD732Vw48/D8P3fX+w411D5/x/l93wJ/f/i5b9/p+D9V5o/9t9797YcAAAAAElFTkSuQmCC">
+  <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUAAADu8u7x8fHx8fHx8fHu8u7u8u7x8fHx8fHu8u7x8fHx8fHx8fHu8u7u8u7u8u7x8fHx8fHx8fEAAADw8vH///+JvNfNAAAACnRSTlMA6wL66gMBDQECdYk870MAAACPSURVDjLrdLnEkAwEIXh/d84y4J+p6p7oP9Z4t8kM5kIeF3/eG8wYdIe7yX6A6h39v2xO80h59f8JcO7lPj/d4zD9y32R8Y8c4w8/x8L+d5E+N/g453fD732Vw48/D8P3fX+w411D5/x/l93wJ/f/i5b9/p+D9V5o/9t9797YcAAAAAElFTkSuQmCC">
   
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
   
@@ -16,49 +16,58 @@
   
   <style>
     /* ------------------------------------ */
-    /* CSS CHỦ ĐỀ XÓM ĐẸP & HỒNG PHẤN */
+    /* CSS CHỦ ĐỀ SẮC ĐẸP DÂN TỘC THÁI */
     /* ------------------------------------ */
     
     :root {
-      --pink: #fce4ec; 
-      --soft-pink: #f8bbd0; 
-      --deep-pink: #e91e63; 
-      --cream: #fff9fb; 
-      
-      --text: #505050;
-      --title: var(--deep-pink); 
+      /* Màu Sắc Lấy Cảm Hứng Từ Trang Phục Dân Tộc (Đỏ, Vàng, Đen) */
+      --primary-red: #8B0000; /* Đỏ đô */
+      --secondary-gold: #FFD700; /* Vàng kim */
+      --text: #333333;
+      --title: var(--primary-red); 
       --white: #ffffff;
+      --cream: #fffaf0; /* Trắng ngà */
     }
 
     /* BASE */
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
-      /* FONT: Nunito (Phông tròn) */
       font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
       font-weight: 700; 
       margin: 0;
       padding: 0;
-      background: linear-gradient(145deg, var(--soft-pink), var(--cream), var(--soft-pink));
+      /* NỀN: Sẽ được JS thêm ảnh toàn trang */
+      background-color: var(--cream);
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed; /* Giữ ảnh nền cố định */
       color: var(--text);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       transition: background 0.5s ease, color 0.3s ease;
       overflow-x: hidden;
-      
-      /* CĂN LỀ GIỮA TOÀN BỘ TEXT */
       text-align: center; 
     }
     
-    /* FIX LỖI MODAL LỆCH VỊ TRÍ TRÊN MOBILE */
+    /* Overlay làm mờ/làm sáng ảnh nền */
+    .background-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      /* Overlay mờ để chữ nổi bật hơn */
+      background: rgba(255, 255, 255, 0.7); 
+      backdrop-filter: blur(2px);
+      z-index: -1; 
+      pointer-events: none;
+    }
+    
     body.modal-open {
         position: fixed; 
         width: 100%;
-        /* Giữ lại thanh cuộn để body không bị dịch chuyển */
         overflow-y: scroll; 
         padding-right: 0 !important; 
     }
-
 
     /* SMOOTH PAGE TRANSITION */
     .page-enter { opacity: 0; transform: translateY(8px); }
@@ -67,9 +76,38 @@
     .page-exit-active { opacity: 0; transform: translateY(-8px); transition: all 350ms cubic-bezier(.2,.9,.2,1); }
 
     /* HEADER & NAV */
-    header { margin-top: 30px; padding-bottom: 10px; }
-    header h1 { margin: 12px 0 0; color: var(--title); font-size: 38px; line-height: 1; letter-spacing: 0.8px; text-transform: uppercase; }
-    header p { margin: 6px 0 0; color: var(--text); font-size: 16px; font-weight: 800; text-transform: uppercase; } 
+    header { margin-top: 30px; padding-bottom: 10px; position: relative; z-index: 10; }
+    header h1 { margin: 12px 0 0; color: var(--title); font-size: 42px; line-height: 1.1; letter-spacing: 1px; text-transform: uppercase; text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8); }
+    header p { margin: 6px 0 0; color: var(--text); font-size: 18px; font-weight: 800; text-transform: none; text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8); } 
+    
+    /* SOCIAL ICONS STYLES */
+    .social-icons {
+        margin: 15px 0 25px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        position: relative;
+        z-index: 10;
+    }
+    .social-icons a {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--primary-red);
+        color: var(--white);
+        font-size: 18px;
+        transition: transform 0.2s, background 0.2s;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .social-icons a:hover {
+        transform: translateY(-2px) scale(1.05);
+        background: var(--secondary-gold);
+        color: var(--primary-red);
+    }
+    
     nav { 
       background: var(--white); 
       padding: 12px 14px; 
@@ -82,115 +120,43 @@
       gap: 8px; 
       justify-content: center; 
       align-items: center; 
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06); 
-      /* CHO PHÉP CUỘN NGANG TRÊN MOBILE */
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1); 
       overflow-x: auto;
       white-space: nowrap;
       -webkit-overflow-scrolling: touch;
     }
     nav a { 
-      flex-shrink: 0; /* KHÔNG CHO CÁC NÚT BỊ CO LẠI */
+      flex-shrink: 0; 
       display: inline-flex; 
       align-items: center; 
       gap: 8px; 
-      margin: 0 4px; /* Giảm margin ngang để tiết kiệm không gian */
+      margin: 0 4px; 
       color: var(--title); 
       text-decoration: none; 
-      font-weight: 800; 
-      font-size: 15px; 
-      padding: 8px 10px; /* Giảm padding ngang */
-      border-radius: 14px; 
+      font-weight: 900; 
+      font-size: 16px; 
+      padding: 10px 18px; 
+      border-radius: 18px; 
       transition: background 0.25s, transform 0.18s; 
       text-transform: uppercase; 
     }
-    nav a:hover { background: linear-gradient(90deg, var(--soft-pink), var(--cream)); transform: translateY(-3px); }
-    nav a.active { background: var(--pink); } /* Màu active cố định */
-    nav a:focus { background: var(--pink); outline: 2px solid var(--deep-pink); outline-offset: 2px; }
+    nav a:hover { background: var(--secondary-gold); color: var(--primary-red); transform: translateY(-3px); }
+    nav a.active { background: var(--primary-red); color: var(--white); } 
+    nav a:focus { background: var(--primary-red); color: var(--white); outline: 2px solid var(--secondary-gold); outline-offset: 2px; }
 
     /* simple pastel icon style */
     .icon-wrap { width: 24px; height: 24px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; }
-    .icon-pink { background: var(--pink); }
-    .icon-wrap i { font-size: 16px; color: var(--deep-pink); } 
+    .icon-thai { background: var(--secondary-gold); }
+    .icon-wrap i { font-size: 16px; color: var(--primary-red); } 
 
-    /* LAYOUT, SIDEBAR, CONTAINER */
+    /* LAYOUT & CONTAINER */
     .layout { 
       display: flex; 
       width: 95%; 
       max-width: 1200px; 
       margin: 30px auto; 
       gap: 26px; 
-      /* Reset căn lề trái cho flex container để các khối sidebar/container căn đúng */
       text-align: left; 
-    }
-    .sidebar { 
-      width: 28%; 
-      background: var(--white); 
-      padding: 26px; 
-      border-radius: 30px; 
-      box-shadow: 0 6px 20px rgba(0,0,0,0.10); 
-      text-align: center; /* Căn giữa nội dung sidebar */
-      transition: opacity 0.3s ease; /* Thêm transition cho Sidebar */
-    }
-    .sidebar.hidden-mobile { 
-        display: none; /* Class để ẩn sidebar trên mobile */
-    }
-    .sidebar h3 { color: var(--title); margin-bottom: 12px; text-transform: uppercase; }
-    
-    /* Social Icons - TẠO KHỐI NỀN PASTEL RỘNG RÃI */
-    .social-icons {
-      display: flex;
-      justify-content: center; 
-      align-items: center;
-      gap: 15px; 
-      margin-top: 15px;
-    }
-    .social-icons .icon-fa { 
-        /* Khối nền pastel rộng ra */
-        width: 55px; 
-        height: 55px; 
-        background: var(--cream); /* Nền trắng/kem nhẹ nhàng */
-        display: inline-flex; 
-        align-items: center;
-        justify-content: center;
-        border-radius: 14px; /* Bo góc mềm mại hơn */
-        transition: all 0.25s ease;
-        text-decoration: none; 
-        /* Bóng mờ nhẹ nhàng, KHÔNG CÓ VIỀN CỨNG */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
-    }
-    .social-icons .icon-fa:hover {
-        transform: translateY(-3px); /* Hiệu ứng nhấc nhẹ khi hover */
-        box-shadow: 0 8px 15px rgba(0,0,0,0.15); /* Bóng rõ hơn */
-    }
-
-    /* Đặt style cho icon bên trong (i) */
-    .social-icons .icon-fa i {
-        font-size: 24px; 
-        color: var(--white);
-        /* Tạo kích thước cố định cho icon thương hiệu bên trong */
-        width: 36px; 
-        height: 36px;
-        display: flex; 
-        align-items: center; 
-        justify-content: center;
-        border-radius: 8px; /* Bo góc cho icon thương hiệu */
-    }
-    
-    /* Màu sắc thương hiệu (Áp dụng cho thẻ <i> bên trong) */
-    .fa-instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
-    .fa-tiktok { background: #000; }
-    .fa-facebook-f { background: #1877f2; } 
-
-    
-    .sidebar ul {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 20px 0;
-        text-align: left;
-    }
-    .sidebar li {
-        padding: 5px 0;
-        font-weight: 400;
     }
 
     .container { 
@@ -198,11 +164,8 @@
       background: var(--white); 
       padding: 26px; 
       border-radius: 30px; 
-      box-shadow: 0 6px 20px rgba(0,0,0,0.10); 
-      text-align: center; /* Căn giữa nội dung chính */
-    }
-    .container.full-width {
-        width: 100%; /* Dành cho mobile khi sidebar ẩn */
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15); 
+      text-align: center; 
     }
     
     /* CARD & CONTENT */
@@ -210,43 +173,26 @@
     .card.hidden { display: none !important; }
     .section-title h2 { margin:0; color:var(--title); text-transform: uppercase; }
     
-    /* Điều chỉnh Blockquote cho căn giữa */
     blockquote {
-        text-align: left; /* Giữ text bên trong blockquote căn trái để dễ đọc */
-        display: inline-block; /* Cho phép căn giữa khối blockquote */
+        text-align: left; 
+        display: inline-block; 
         max-width: 90%;
-        border-left: 4px solid var(--soft-pink); 
+        border-left: 4px solid var(--primary-red); 
         padding-left: 15px; 
-        margin: 15px auto; /* Thêm auto để căn giữa */
+        margin: 15px auto; 
         font-style: italic; 
         background: var(--cream);
+        color: var(--text);
+    }
+    blockquote footer {
+        font-size: 14px; 
+        margin-top: 10px; 
+        color: var(--text); 
+        padding: 0; 
+        background: none; 
+        text-align: left;
     }
 
-    /* Điều chỉnh khu vực liên hệ */
-    .contact-info {
-        display: flex; 
-        flex-direction: column;
-        align-items: center; /* Căn giữa các link */
-    }
-    .contact-info a { 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; /* Căn giữa nội dung link */
-        gap: 12px; 
-        margin: 15px 0; 
-        font-weight: 800; 
-        color: var(--text); 
-        text-decoration: none; 
-        padding: 10px; 
-        border-radius: 10px; 
-        background: var(--pink); 
-        transition: background 0.2s; 
-        width: 80%; /* Giới hạn chiều rộng để căn giữa */
-        max-width: 400px;
-    }
-    .contact-info a:hover { background: var(--soft-pink); }
-    .contact-info a i { font-size: 20px; color: var(--deep-pink); }
-    
     /* --- CSS CHO SẢN PHẨM & MODAL --- */
     .product-grid { 
       display: inline-grid; 
@@ -263,14 +209,11 @@
         width: 100%; height: auto; border-radius: 12px; margin-bottom: 10px; 
         object-fit: cover; aspect-ratio: 1 / 1; 
     }
-    /* Thêm div chứa details để áp dụng bố cục mobile */
     .product-card-details {
-      /* Dành cho desktop, chi tiết căn giữa */
       text-align: center; 
     }
     .product-card h3 { color: var(--title); font-size: 16px; margin: 8px 0 5px; font-weight: 900; min-height: 40px; }
     
-    /* Mô tả cắt ngắn 2 dòng trên lưới sản phẩm */
     .product-card p {
         font-size: 13px; 
         color: #888; 
@@ -282,18 +225,17 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    /* Đảm bảo giá luôn được áp dụng style */
     .product-price-display {
         display:block; 
         font-weight: 900; 
         margin-bottom: 10px;
-        font-size: 15px; /* Thêm cỡ chữ rõ ràng hơn */
+        font-size: 15px; 
+        color: var(--primary-red); /* Đổi màu giá */
     }
 
     /* MODAL STYLES */
     .modal-overlay {
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        /* Chỉnh overlay màu trắng để giống trang mới trên mobile */
         background: var(--white); 
         z-index: 1000;
         display: flex; justify-content: center; align-items: center;
@@ -304,93 +246,49 @@
     .modal-content {
         background: var(--white); padding: 30px; border-radius: 20px;
         width: 90%; max-width: 850px; max-height: 90vh;
-        overflow-y: auto; /* QUAN TRỌNG: Cho phép cuộn nội dung modal */
+        overflow-y: auto; 
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         position: relative; transform: scale(0.95); transition: transform 0.3s ease;
     }
     .modal-overlay.visible .modal-content {
-        transform: scale(1); /* Hiệu ứng mở modal */
+        transform: scale(1); 
     }
-    .modal-content h2 { color: var(--deep-pink); margin-top: 0; font-size: 28px; text-align: center; } 
+    .modal-content h2 { color: var(--primary-red); margin-top: 0; font-size: 28px; text-align: center; } 
     .modal-content p#modal-price { 
         text-align: center; 
-        color: var(--deep-pink); 
+        color: var(--primary-red); 
         font-weight: 900; 
-        font-size: 18px; /* Làm cho giá trong modal nổi bật */
+        font-size: 18px; 
+        margin-top: 15px; 
     } 
     .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; z-index: 1001; }
-    .close-btn:hover { color: var(--deep-pink); }
+    .close-btn:hover { color: var(--primary-red); }
     
-    /* MODAL TABS & VIDEO */
-    .modal-tabs {
-        display: flex; justify-content: center; margin-bottom: 20px;
-        border-bottom: 1px solid var(--pink); margin-top: 15px;
-    }
-    .tab-btn {
-        background: none; border: none; padding: 10px 20px; font-weight: 800; cursor: pointer;
-        color: var(--text); border-bottom: 3px solid transparent; transition: all 0.2s;
-        font-size: 16px; text-transform: uppercase;
-    }
-    .tab-btn:hover { color: var(--deep-pink); }
-    .tab-btn.active {
-        color: var(--deep-pink);
-        border-bottom: 3px solid var(--deep-pink);
-    }
-    .modal-view { display: none; }
-    .modal-view.active { display: block; }
-    
-    /* Căn giữa Gallery - ĐÃ TỐI ƯU HÓA SỬ DỤNG FLEXBOX */
+    /* MODAL GALLERY */
     .gallery-wrapper {
-        display: flex; /* THAY ĐỔI: Sử dụng Flexbox linh hoạt */
-        flex-wrap: wrap; /* Cho phép các ảnh tự động xuống dòng */
-        justify-content: center; /* QUAN TRỌNG: Căn giữa các ảnh khi số lượng ít */
+        display: flex; 
+        flex-wrap: wrap; 
+        justify-content: center; 
         gap: 15px; 
         margin: 20px auto; 
     }
-    /* Ảnh trong gallery giờ có thể click để zoom */
     .gallery-wrapper img {
-        /* Mặc định 3 cột: Ảnh chiếm tối đa 1/3 chiều rộng trừ đi khoảng cách */
-        width: calc(33.33% - 15px); /* Chỉnh width để 3 ảnh vừa vặn */
-        max-width: 250px; /* Thêm giới hạn để ảnh không quá to trên desktop */
+        width: calc(33.33% - 15px); 
+        max-width: 250px; 
         object-fit: cover; aspect-ratio: 16 / 16;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        cursor: zoom-in; /* Thêm con trỏ zoom-in */
+        cursor: zoom-in; 
         transition: transform 0.2s ease;
-        border-radius: 12px; /* Giữ nguyên bo góc */
+        border-radius: 12px; 
     }
     .gallery-wrapper img:hover {
         transform: scale(0.98);
     }
     
-    /* Container cho video nhúng (iframe/video tag/tiktok embed) */
-    #video-container-embed {
-        position: relative;
-        /* Áp dụng padding-bottom cho container cha để tạo tỉ lệ 16:9 */
-        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-        height: 0; 
-        overflow: hidden; 
-        border-radius: 12px;
-        margin-top: 20px; 
-    }
-    /* Đảm bảo nội dung nhúng chiếm trọn container */
-    #video-container-embed > * {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
-        object-fit: cover; 
-    }
-    /* Xử lý cho TikTok embed code, vốn là blockquote nên không thể dùng absolute */
-    blockquote.tiktok-embed {
-        position: static !important;
-        /* Điều chỉnh kích thước hiển thị TikTok embed */
-        max-width: 325px; /* Chiều rộng mặc định của TikTok */
-        /* Cần override lại style do logic JS: */
-        margin: 20px auto 0 !important; /* Căn giữa và tạo khoảng cách */
-        padding-bottom: 0 !important;
-    }
-    
-    /* NEW: Zoom Lightbox for detailed viewing (Ảnh phóng to) */
+    /* Lightbox Zoom (Giữ nguyên) */
     #zoom-lightbox {
-        z-index: 2000; /* Cao hơn modal chính */
-        background: rgba(0, 0, 0, 0.95); /* Nền đen mờ */
+        z-index: 2000; 
+        background: rgba(0, 0, 0, 0.95); 
     }
     #zoom-lightbox .lightbox-content {
         background: transparent;
@@ -403,7 +301,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        /* Re-use modal-content scale animation logic */
         position: relative; 
         transform: scale(0.95); transition: transform 0.3s ease;
     }
@@ -415,11 +312,10 @@
         max-height: 95vh;
         width: auto;
         height: auto;
-        object-fit: contain; /* Đảm bảo ảnh vừa vặn */
-        cursor: zoom-out; /* Dùng zoom-out để chỉ ra có thể nhấp để đóng */
+        object-fit: contain; 
+        cursor: zoom-out; 
         border-radius: 0; 
     }
-    /* Reposition close button for lightbox */
     #lightbox-close-btn {
         color: white;
         text-shadow: 0 0 5px black;
@@ -428,93 +324,49 @@
         z-index: 2001; 
     }
 
-
-    /* BUY BUTTON */
-    .modal-footer { text-align: center; margin-top: 25px; border-top: 1px solid var(--pink); padding-top: 25px; }
-    .modal-footer .buy-button {
-        display: inline-flex; /* Thay đổi để căn giữa icon */
-        align-items: center;
-        justify-content: center;
-        gap: 10px; /* Khoảng cách giữa text và icon */
-        background: var(--deep-pink); color: var(--white); text-decoration: none;
-        padding: 12px 30px; border-radius: 30px; font-weight: 800; font-size: 18px;
-        transition: background 0.2s;
-    }
-    .modal-footer .buy-button:hover { background: #c51152; }
-    /* Nền tảng Icon */
-    .platform-icon {
-        width: 24px;
-        height: 24px;
-        background-color: var(--white);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        color: var(--deep-pink);
-    }
-    /* Các màu nền tảng cụ thể (có thể thêm nhiều hơn) */
-    .platform-shopee { background-color: #ee4d2d !important; color: var(--white) !important; }
-    .platform-lazada { background-color: #1a1b41 !important; color: var(--white) !important; }
-    .platform-tiki { background-color: #0088ff !important; color: var(--white) !important; }
-    .platform-tiktok { background-color: #000000 !important; color: var(--white) !important; }
-    .platform-website { background-color: var(--soft-pink) !important; color: var(--deep-pink) !important; }
-
-    
-    footer { text-align:center; padding:22px; margin-top:36px; background: linear-gradient(90deg,var(--soft-pink),var(--cream)); border-top-left-radius:40px; border-top-right-radius:40px; color:var(--title); }
+    footer { text-align:center; padding:22px; margin-top:36px; background: rgba(255, 255, 255, 0.9); border-top-left-radius:40px; border-top-right-radius:40px; color:var(--title); }
 
     /* RESPONSIVE */
     @media (max-width: 900px) { 
       .layout{ flex-direction:column; } 
-      .sidebar{ width:100%; }
-      /* Sidebar sẽ chiếm full-width trên tablet/desktop nếu không bị ẩn */
-      .sidebar.hidden-mobile { display: none; } /* Đảm bảo ẩn nếu có class này */
-      .container.full-width { width: 100%; } /* Dành cho mobile khi sidebar ẩn */
-
       .product-grid { grid-template-columns: repeat(2, 1fr); }
-      /* NEW: Tối ưu Gallery 2 cột trên Tablet */
       .gallery-wrapper img {
-          width: calc(50% - 8px); /* 2 cột trên tablet/mobile ngang (15px gap, 2 * 8px) */
+          width: calc(50% - 8px); 
           max-width: none;
       }
-      blockquote, .contact-info a { width: 100%; }
-      /* Ẩn tiêu đề nếu nav quá chật (Tùy chọn) */
-      header h1, header p { font-size: 90%; }
+      blockquote { width: 100%; }
     }
     
-    /* * PHẦN NÀY ĐÃ ĐƯỢC TỐI ƯU HÓA CHO MOBILE (TEELAB STYLE) */
     @media (max-width: 550px) { 
         
-        /* Điều chỉnh header, nav, layout cho mobile tốt hơn */
-        header { margin-top: 20px; }
-        header h1 { font-size: 32px; }
-        header p { font-size: 14px; }
-        nav a { font-size: 13px; padding: 6px 8px; }
+        header h1 { font-size: 36px; }
+        header p { font-size: 16px; }
+        nav a { font-size: 14px; padding: 8px 12px; }
         nav { padding: 10px 0; border-radius: 0; margin: 0; top: 0; }
         .layout { margin: 15px auto; width: 98%; }
         
-        /* 1. Giao diện Sản phẩm Dạng Danh sách (List View) */
+        /* Giao diện Sản phẩm Dạng Danh sách (List View) */
         .product-grid { 
             grid-template-columns: 1fr; 
             display: grid; 
             margin: 20px 0; 
-            padding: 0 10px; /* Thêm padding nhẹ để các card không dính vào mép */
+            padding: 0 10px; 
         }
         
         .product-card {
-            display: flex; /* Bố cục ngang */
-            text-align: left; /* Text căn trái */
+            display: flex; 
+            text-align: left; 
             gap: 12px;
             padding: 12px;
             border-radius: 12px;
             margin-bottom: 12px; 
-            align-items: center; /* Căn giữa theo chiều dọc */
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Bóng nhẹ hơn */
+            align-items: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
         }
-        .product-card:hover { transform: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); } /* Giảm hiệu ứng hover */
+        .product-card:hover { transform: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); } 
         
         .product-card img {
-            width: 90px; /* Cố định ảnh nhỏ */
+            width: 90px; 
             min-width: 90px;
             height: 90px;
             margin-bottom: 0;
@@ -532,28 +384,27 @@
             font-size: 14px; 
             margin: 0 0 5px; 
             min-height: auto; 
-            -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
+            -webkit-line-clamp: 2; 
         }
         .product-card p {
-            display: none; /* Ẩn mô tả để tiết kiệm không gian */
+            display: none; 
         }
         .product-price-display {
-            font-size: 13px; /* Giá nhỏ hơn một chút */
+            font-size: 14px; 
             margin-top: 5px;
         }
 
-        /* 2. Điều chỉnh Modal/Gallery (Áp dụng phong cách Teelab Mobile) */
+        /* Điều chỉnh Modal */
         .modal-content { 
-            padding: 0; /* Xóa padding ngoài cùng */
+            padding: 0; 
             width: 100%; 
             max-width: 100%; 
-            max-height: 100vh; /* Chiếm trọn chiều cao */
+            max-height: 100vh; 
             height: 100vh;
-            border-radius: 0; /* Xóa bo góc */
-            box-shadow: none; /* Xóa bóng đổ */
+            border-radius: 0; 
+            box-shadow: none; 
         } 
         
-        /* Nút đóng cố định trên Mobile (Teelab Style) */
         .close-btn { 
             position: fixed; 
             top: 10px; 
@@ -568,92 +419,60 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        /* Thêm padding cho các khối nội dung bên trong modal để không bị sát mép */
         .modal-content h2, 
-        .modal-content p, 
-        .modal-tabs,
-        .modal-view,
-        .modal-footer {
+        .modal-content p {
             padding-left: 15px;
             padding-right: 15px;
         }
-        .modal-content h2 { padding-top: 15px; } /* Thêm padding trên cùng */
+        .modal-content h2 { padding-top: 15px; } 
         
         .gallery-wrapper { 
-            /* Gallery 1 cột trên điện thoại (Đảm bảo flexbox vẫn hoạt động) */
             display: flex; 
-            flex-direction: column; /* Đảm bảo các ảnh xếp dọc */
-            align-items: center; /* Căn giữa ảnh khi chỉ còn 1 cột */
+            flex-direction: column; 
+            align-items: center; 
             margin: 20px auto; 
-            padding: 0 15px; /* Thêm padding ngang cho gallery */
+            padding: 0 15px; 
         }
         .gallery-wrapper img {
-             width: 100%; /* Ảnh chiếm 100% chiều rộng của gallery-wrapper (đã có padding) */
+             width: 100%; 
         }
-        
-        .modal-tabs .tab-btn { font-size: 14px; padding: 8px 15px; }
-        
-        /* Optional: Small adjustments for better flow (Added for better mobile UX) */
-        #modal-desc { margin: 10px 0; font-size: 14px; }
-        #modal-price { font-size: 16px; margin: 5px 0 15px; }
     }
   </style>
 </head>
 <body class="page-enter page-enter-active">
 
-  <header>
-    <h1>XÓM ĐẸP</h1>
+  <div class="background-overlay"></div>
     
-    <p>𝒳ó𝓂 Đ𝑒̣̂𝓅 ✿ 𝒩𝑜̛𝒾 𝒽𝑜̣̂𝒾 𝓉𝓊̣ 𝓉𝓲𝓃𝒽 𝒽𝑜𝒶 𝒸𝓊̉𝒶 𝒫𝒽𝒶́𝒾 Đ𝑒̣̂𝓅</p>
+  <header>
+    <h1>SẮC ĐẸP DÂN TỘC THÁI</h1>
+    
+    <p style="font-size: 14px; font-weight: 700;">Bản sắc dân tộc Thái ✿ Ẩm thực ✿ Văn hóa ✿ Kết nối dân tộc</p>
+    
+    <div class="social-icons">
+        <a href="#" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>
+    </div>
   </header>
 
   <nav aria-label="Chuyển mục">
-    <a href="#home" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-home"></i></span> LỜI CHÀO</a>
-    <a href="#beauty" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-magic"></i></span> LÀM ĐẸP</a>
-    <a href="#vay" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-female"></i></span> VÁY</a>
-    <a href="#quanao" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-tshirt"></i></span> QUẦN ÁO</a>
-    <a href="#bikini" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-swimmer"></i></span> BIKINI</a>
-    <a href="#contact" class="nav-link"><span class="icon-wrap icon-pink"><i class="fas fa-envelope"></i></span> LIÊN HỆ</a>
+    <a href="#home" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-gem"></i></span> GIỚI THIỆU</a>
+    <a href="#products" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-shopping-bag"></i></span> SẢN PHẨM</a>
   </nav>
 
   <div class="layout">
 
-    <aside class="sidebar" role="complementary">
-      <h3>GIỚI THIỆU</h3>
-      <p>Chào mừng đến với **XÓM ĐẸP** – Nơi chia sẻ các bí quyết làm đẹp, thời trang và phong cách sống tinh tế, dành riêng cho phái nữ.</p>
-      <h3>BÀI NỔI BẬT</h3>
-      <ul>
-        <li><i class="fas fa-dot-circle" style="color:var(--deep-pink); font-size: 10px; margin-right: 5px;"></i> Bí quyết chọn Váy tôn dáng</li>
-        <li><i class="fas fa-dot-circle" style="color:var(--deep-pink); font-size: 10px; margin-right: 5px;"></i> Review kem chống nắng hot nhất</li>
-        <li><i class="fas fa-dot-circle" style="color:var(--deep-pink); font-size: 10px; margin-right: 5px;"></i> Quần áo công sở thanh lịch</li>
-      </ul>
-      <h3>KẾT NỐI</h3>
-      <div class="social-icons" id="social-links-container" aria-hidden="true">
-        </div>
-    </aside>
-
-    <main class="container" role="main" id="main-content">
-      <section id="home" class="card">
-        <div class="section-title"><h2>LỜI CHÀO TỪ XÓM ĐẸP</h2></div>
-        <p>Thế giới của những người phụ nữ xinh đẹp, nơi bạn tìm thấy nguồn cảm hứng bất tận cho phong cách và cuộc sống.</p>
+    <main class="container full-width" role="main" id="main-content">
         
-        <h3 style="color: var(--deep-pink); margin-top: 30px;">🎁 GỬI TẶNG PHÁI ĐẸP NHỮNG VẦN THƠ DUYÊN DÁNG</h3>
-        <blockquote >"Em cứ vô tư và hồn nhiên trong sáng<br/>Sẽ thấy cuộc đời lấp lánh những ngôi sao."<footer style="font-size: 14px; margin-top: 10px; color: var(--text); padding: 0; background: none; text-align: left;">— Trích thơ **Lòng yêu đời**</footer></blockquote>
-        <blockquote >"Trong lòng em mùa xuân vẫn còn tươi<br/>Vẫn giữ cho em nét đẹp rạng ngời."<footer style="font-size: 14px; margin-top: 10px; color: var(--text); padding: 0; background: none; text-align: left;">— **Mùa xuân trong lòng em**</footer></blockquote>
-        <blockquote >"Thân ái dịu dàng, nụ cười rạng rỡ,<br/>Nét duyên thanh lịch, ánh mắt long lanh."<footer style="font-size: 14px; margin-top: 10px; color: var(--text); padding: 0; background: none; text-align: left;">— **Vẻ đẹp người Phụ nữ**</footer></blockquote>
-        <blockquote >"Hãy cứ là em, đừng vì ai khác cả,<br/>Độc đáo, kiêu sa, tỏa sáng rực rỡ vàng."<footer style="font-size: 14px; margin-top: 10px; color: var(--text); padding: 0; background: none; text-align: left;">— **Tự tin là chính em**</footer></blockquote>
+      <section id="home" class="card">
+        <div class="section-title"><h2>VỀ SẮC ĐẸP DÂN TỘC THÁI</h2></div>
+        <p>Đây là nơi chúng tôi chia sẻ và tôn vinh vẻ đẹp, văn hóa, ẩm thực đặc sắc của dân tộc Thái. Một hành trình khám phá tinh hoa truyền thống và phong cách sống đương đại.</p>
+        
+        <h3 style="color: var(--primary-red); margin-top: 30px;">🌟 TRIẾT LÝ SỐNG</h3>
+        <blockquote >"Tự hào về bản sắc, gìn giữ nét duyên truyền thống, mở lòng đón nhận tinh hoa hiện đại."<footer >— Triết lý Sắc Đẹp Thái</footer></blockquote>
+        <blockquote >"Vẻ đẹp thực sự nằm ở sự tự tin và nét thanh lịch toát ra từ bên trong."<footer >— Sắc Đẹp Dân Tộc Thái</footer></blockquote>
       </section>
 
-      <section id="beauty" class="card"><div class="section-title"><h2>LÀM ĐẸP</h2></div><p>Bí quyết Skincare và Makeup theo phong cách trong trẻo, tự nhiên, phù hợp với làn da châu Á.</p><div class="product-grid" id="beauty-products"></div></section>
-      <section id="vay" class="card"><div class="section-title"><h2>VÁY</h2></div><p>Bộ sưu tập Váy thiết kế và gợi ý mix & match các kiểu Váy A, Váy suông, Váy maxi cho mọi sự kiện.</p><div class="product-grid" id="vay-products"></div></section>
-      <section id="quanao" class="card"><div class="section-title"><h2>QUẦN ÁO</h2></div><p>Gợi ý các set Quần áo thanh lịch, cá tính, từ đồ công sở đến đồ đi chơi cuối tuần.</p><div class="product-grid" id="quanao-products"></div></section>
-      <section id="bikini" class="card"><div class="section-title"><h2>BIKINI</h2></div><p>Bikini và đồ bơi: Xu hướng màu sắc, kiểu dáng giúp bạn tự tin tỏa sáng trên bãi biển.</p><div class="product-grid" id="bikini-products"></div></section>
-      <section id="contact" class="card">
-        <div class="section-title"><h2>LIÊN HỆ</h2></div>
-        <p>Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ trực tiếp với chúng tôi qua các kênh sau:</p>
-        <div class="contact-info">
-          </div>
-      </section>
+      <section id="products" class="card"><div class="section-title"><h2>SẢN PHẨM & ĐẶC SẢN</h2></div><p>Các sản phẩm thủ công, trang phục truyền thống, và đặc sản ẩm thực được tuyển chọn.</p><div class="product-grid" id="all-products"></div></section>
 
     </main>
   </div>
@@ -666,25 +485,11 @@
           <p id="modal-desc" style="color: var(--text); font-weight: 400; margin-bottom: 20px; text-align: left;"></p>
           <p id="modal-price" style="text-align: center;"></p>
           
-          <div class="modal-tabs">
-            <button id="tab-gallery" class="tab-btn active">ẢNH SẢN PHẨM</button>
-            <button id="tab-video" class="tab-btn">VIDEO REVIEW</button>
-          </div>
-          
           <div id="modal-view-gallery" class="modal-view active">
             <div id="modal-gallery-container" class="gallery-wrapper">
                 </div>
           </div>
           
-          <div id="modal-view-video" class="modal-view">
-            <div class="video-container" id="video-container-embed" style="text-align: center;">
-                </div>
-            <div style="text-align:center; margin-top:15px; font-weight: 400;">(Hỗ trợ Video YouTube ID, TikTok Embed, Facebook Embed, hoặc link MP4 trực tiếp)</div>
-          </div>
-          
-          <div class="modal-footer">
-            <a href="#" target="_blank" id="modal-buy-button" class="buy-button">MUA NGAY</a>
-          </div>
       </div>
   </div>
 
@@ -697,7 +502,7 @@
 
 
   <footer>
-    © 2025 XÓM ĐẸP – HỘI TỤ TINH HOA CỦA PHÁI ĐẸP
+    © 2025 SẮC ĐẸP DÂN TỘC THÁI – BẢN SẮC TRUYỀN THỐNG VÀ HIỆN ĐẠI
   </footer>
 
   <script>
@@ -710,53 +515,22 @@
       const sections = document.querySelectorAll('#main-content .card');
       const navLinks = document.querySelectorAll('a.nav-link');
       const modal = document.getElementById('gallery-modal');
-      const sidebar = document.querySelector('.sidebar'); // NEW: Chọn Sidebar
-      const container = document.querySelector('.container'); // NEW: Chọn Container
-      const tabGalleryBtn = document.getElementById('tab-gallery');
-      const tabVideoBtn = document.getElementById('tab-video');
-      const viewGallery = document.getElementById('modal-view-gallery');
-      const viewVideo = document.getElementById('modal-view-video');
-      const socialContainer = document.getElementById('social-links-container');
-      const contactContainer = document.querySelector('#contact .contact-info');
-      const videoContainerEmbed = document.getElementById('video-container-embed');
-
-      // NEW: Khai báo biến cho Lightbox Zoom
       const lightbox = document.getElementById('zoom-lightbox');
       const lightboxImage = document.getElementById('lightbox-image');
-
       
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
-      
-      // --- DỮ LIỆU CỐ ĐỊNH (FALLBACK) CHO SOCIAL ICONS ---
-      const SOCIAL_LINKS_MAP = [
-          { key: 'instagram_url', icon: 'fab fa-instagram', name: 'Instagram', default_url: 'https://www.instagram.com/ten_instagram_cua_ban/' },
-          { key: 'tiktok_url', icon: 'fab fa-tiktok', name: 'TikTok', default_url: 'https://www.tiktok.com/@kenh_tiktok_cua_ban/' },
-          { key: 'facebook_url', icon: 'fab fa-facebook-f', name: 'Facebook', default_url: 'https://www.facebook.com/trang_facebook_cua_ban/' }, 
-      ];
-
-      // --- BẢN ĐỒ ICON NỀN TẢNG ---
-      const PLATFORM_ICONS = {
-        'shopee': { icon: 'fas fa-store', className: 'platform-shopee', text: 'SHOPEE' },
-        'lazada': { icon: 'fas fa-box', className: 'platform-lazada', text: 'LAZADA' },
-        'tiki': { icon: 'fas fa-feather-alt', className: 'platform-tiki', text: 'TIKI' },
-        'tiktok shop': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
-        'tiktok': { icon: 'fas fa-shopping-bag', className: 'platform-tiktok', text: 'TIKTOK SHOP' },
-        'website': { icon: 'fas fa-globe', className: 'platform-website', text: 'WEBSITE' },
-        'sendo': { icon: 'fas fa-hand-holding-usd', className: 'platform-website', text: 'SENDO' },
-        // Thêm các nền tảng khác tại đây
-        '': { icon: 'fas fa-shopping-cart', className: '', text: 'MUA NGAY' }
-      };
-
       
       // --- HÀM 1: PHÂN TÍCH DỮ LIỆU TSV (Sử dụng PapaParse) ---
       function parseTsvToArray(tsvText) {
           const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
           const data = parsed.data;
-          // console.log('Parsed data:', data); // Debug: Xem data parse được gì
           if (data.length > 0) {
               CONFIG_DATA = data[0]; // Hàng đầu tiên là config
-              return data.slice(1); // Products từ hàng tiếp theo
+              return data.slice(1).map((item, index) => ({
+                ...item,
+                id: item.id || `product-${index}`
+              })); 
           }
           return [];
       }
@@ -769,13 +543,14 @@
                   throw new Error(`HTTP error! status: ${response.status}`);
               }
               const tsvText = await response.text();
-              // console.log('Raw TSV text:', tsvText); // Debug: Xem text tải về
               
               PRODUCT_DATA = parseTsvToArray(tsvText);
               
-              // CẬP NHẬT THÔNG TIN CHUNG TỪ CONFIG_DATA
-              renderSocialLinks(CONFIG_DATA); 
-              updateContactInfo(CONFIG_DATA); 
+              // CẬP NHẬT ẢNH NỀN
+              updatePageBackground(CONFIG_DATA); 
+              
+              // CẬP NHẬT SOCIAL LINKS (MỚI)
+              updateSocialLinks(CONFIG_DATA);
               
               if (PRODUCT_DATA.length > 0) {
                   renderProducts(PRODUCT_DATA); 
@@ -784,37 +559,67 @@
               }
           } catch (error) {
               console.error('LỖI khi tải hoặc xử lý dữ liệu từ Google Sheet:', error);
-              renderSocialLinks({}); 
-              updateContactInfo({});
           }
       }
 
-      // --- HÀM 3: RENDER PRODUCTS (ĐÃ CẬP NHẬT DẠNG MOBILE LIST VIEW) ---
-      function renderProducts(data) {
-          const containers = ['beauty-products', 'vay-products', 'quanao-products', 'bikini-products']; 
-          containers.forEach(id => {
-              const container = document.getElementById(id);
-              if (container) container.innerHTML = '';
-          });
+      // --- HÀM CẬP NHẬT ẢNH NỀN ---
+      function updatePageBackground(config) {
+          const backgroundUrl = config.background_img || config.img || ''; 
+          const body = document.body;
+          if (backgroundUrl) {
+              body.style.backgroundImage = `url('${backgroundUrl}')`;
+              body.style.backgroundColor = 'transparent'; 
+          } else {
+              body.style.backgroundImage = 'none';
+              body.style.backgroundColor = 'var(--cream)';
+          }
+      }
 
-          data.forEach(product => {
-              const targetId = `${product.section}-products`;
-              const container = document.getElementById(targetId);
-              
+      // --- HÀM CẬP NHẬT SOCIAL LINKS (MỚI) ---
+      function updateSocialLinks(config) {
+          // Lấy links từ CONFIG_DATA
+          const fbLink = config.fb_link && config.fb_link.startsWith('http') ? config.fb_link : '#';
+          const bloggerLink = config.blogger_link && config.blogger_link.startsWith('http') ? config.blogger_link : '#';
+
+          // Áp dụng links vào thẻ <a>
+          const fbElement = document.querySelector('.social-icons a[aria-label="Facebook"]');
+          const bloggerElement = document.querySelector('.social-icons a[aria-label="Blogger"]');
+
+          if (fbElement) {
+              fbElement.href = fbLink;
+              // Ẩn icon nếu không có link hợp lệ
+              fbElement.style.display = fbLink === '#' ? 'none' : 'flex'; 
+          }
+          if (bloggerElement) {
+              bloggerElement.href = bloggerLink;
+              // Ẩn icon nếu không có link hợp lệ
+              bloggerElement.style.display = bloggerLink === '#' ? 'none' : 'flex';
+          }
+      }
+
+      // --- HÀM 3: RENDER PRODUCTS ---
+      function renderProducts(data) {
+          const container = document.getElementById('all-products');
+          if (container) container.innerHTML = '';
+
+          const productsToRender = data.filter(product => product.section !== 'review' || !product.section);
+
+          productsToRender.forEach(product => {
               const img_url = product.img || '';
-              // HIỂN THỊ GIÁ CÓ VNĐ (TRỪ REVIEW)
-              const priceDisplay = product.section === 'review' 
-                ? product.price 
-                : (product.price ? `${product.price} VNĐ` : '');
+              // Định dạng tiền tệ: Thêm dấu phẩy và VNĐ
+              const priceRaw = product.price ? product.price.toString().replace(/[^0-9]/g, '') : '';
+              const priceText = priceRaw ? 
+                  priceRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ' : 
+                  'Liên hệ';
 
               if (container) {
                   const html = `
                       <div data-product-id="${product.id}" class="product-card open-modal-btn">
-                          <img src="${img_url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />
+                          <img src="${img_url}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/FFD700/8B0000?text=Thai+Image';" />
                           <div class="product-card-details">
                             <h3>${product.title}</h3>
                             <p>${product.desc}</p> 
-                            <span class="product-price-display" style="color: ${product.section === 'review' ? 'orange' : 'var(--deep-pink)'};">${priceDisplay}</span>
+                            <span class="product-price-display">${priceText}</span>
                           </div>
                       </div>
                   `;
@@ -824,112 +629,44 @@
           attachModalListeners();
       }
       
-      // --- HÀM 4 & 5: RENDER SOCIAL & CONTACT (Giữ nguyên) ---
-      function renderSocialLinks(config) {
-          if (!socialContainer) return; 
-          socialContainer.innerHTML = ''; 
-          SOCIAL_LINKS_MAP.forEach(item => {
-              const url = config[item.key] || item.default_url;
-              // Chỉ hiển thị link nếu có dữ liệu hoặc sử dụng link mặc định
-              if (url) { 
-                  const linkHTML = `
-                      <a href="${url}" class="icon-fa" target="_blank" title="Kết nối với ${item.name}">
-                          <i class="${item.icon}"></i>
-                      </a>
-                  `;
-                  socialContainer.innerHTML += linkHTML;
-              }
-          });
-      }
-      
-      function updateContactInfo(config) {
-          if (!contactContainer) return;
-          contactContainer.innerHTML = ''; 
-          const email = config.email_address || 'emailcuaban@gmail.com';
-          const zalo = config.zalo_phone || '09xx.xxx.xxx (SĐT của bạn)';
-          contactContainer.innerHTML += `<a href="mailto:${email}" target="_blank"><i class="fas fa-envelope"></i><span>${email}</span></a>`;
-          const phone = zalo.replace(/\./g, '').replace(/ /g, ''); 
-          contactContainer.innerHTML += `<a href="https://zalo.me/${phone}" target="_blank"><i class="fas fa-mobile-alt"></i><span>Zalo: ${zalo}</span></a>`;
-      }
       
       // --- HÀM XỬ LÝ LIGHTBOX (ZOOM ẢNH) ---
       function openLightbox(imageUrl) {
           lightboxImage.src = imageUrl;
           lightbox.classList.add('visible');
-          // Áp dụng class để chặn cuộn và giữ modal cố định
           document.body.classList.add('modal-open'); 
       }
       
       function closeLightbox() {
           lightbox.classList.remove('visible');
-          // Nếu modal chính cũng đóng thì mới khôi phục overflow
           if (!modal.classList.contains('visible')) {
              document.body.classList.remove('modal-open');
           }
       }
       
       function handleLightboxOverlayClick(e) { 
-          // Nếu click vào nền lightbox hoặc ảnh (đã được đặt trong lightbox-content) thì đóng
           if (e.target === lightbox || e.target === lightboxImage || e.target.closest('.lightbox-content')) {
              closeLightbox(); 
           } 
       }
       
-      // --- HÀM XỬ LÝ MODAL ---
-      function switchModalView(view) {
-          // Khôi phục lại tab Video (đã bị lỗi xóa trong phiên bản trước)
-          tabGalleryBtn.classList.remove('active');
-          tabVideoBtn.classList.remove('active');
-          viewGallery.classList.remove('active');
-          viewVideo.classList.remove('active');
-          
-          if (view === 'gallery') {
-              tabGalleryBtn.classList.add('active');
-              viewGallery.classList.add('active');
-              // Tắt video khi chuyển tab (quan trọng để dừng video nền)
-              videoContainerEmbed.innerHTML = ''; 
-          } else if (view === 'video') {
-              tabVideoBtn.classList.add('active');
-              viewVideo.classList.add('active');
-              // Khi chuyển sang tab video, đảm bảo script TikTok chạy lại nếu cần
-              if (videoContainerEmbed.innerHTML.includes('tiktok-embed')) {
-                   if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
-                        const script = document.createElement('script');
-                        script.src = 'https://www.tiktok.com/embed.js';
-                        document.body.appendChild(script); 
-                   }
-              }
-          }
-      }
-      
+      // --- HÀM XỬ LÝ MODAL (Hiển thị chi tiết) ---
       function openModal(product) {
           // 1. Cập nhật thông tin Modal
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
           
-          const modalPriceDisplay = product.section === 'review' 
-            ? product.price 
-            : (product.price ? `${product.price} VNĐ` : '');
+          // Định dạng tiền tệ
+          const priceRaw = product.price ? product.price.toString().replace(/[^0-9]/g, '') : '';
+          const modalPriceDisplay = priceRaw ? 
+              priceRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ' : 
+              'Giá: Liên hệ';
           document.getElementById('modal-price').textContent = modalPriceDisplay;
 
-          // 2. Xử lý nút MUA HÀNG
-          const buyButton = document.getElementById('modal-buy-button');
-          const isReview = product.section === 'review';
-          buyButton.href = product.link || '#'; 
-          
-          const platformKey = (product.platform || '').toLowerCase().trim();
-          const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
-          const buttonText = isReview ? 'XEM BÀI REVIEW' : platformInfo.text;
-          const iconHtml = isReview ? `<i class="fas fa-star" style="color: orange;"></i>` : `<span class="platform-icon ${platformInfo.className}"><i class="${platformInfo.icon}"></i></span>`;
-          
-          buyButton.innerHTML = `${iconHtml}<span>${buttonText}</span>`;
-          buyButton.className = `buy-button`; 
-
-          // 3. Xử lý GALLERY và GẮN LISTENER CHO ZOOM
+          // 2. Xử lý GALLERY và GẮN LISTENER CHO ZOOM
           const galleryContainer = document.getElementById('modal-gallery-container');
           galleryContainer.innerHTML = ''; 
           
-          // Lấy tất cả ảnh, bao gồm ảnh chính và ảnh phụ
           const allImages = [];
           if (product.img) {
               allImages.push(product.img.trim());
@@ -937,16 +674,17 @@
           const secondaryImages = (product.gallery || '').split(',').map(url => url.trim()).filter(url => url.length > 0);
           allImages.push(...secondaryImages);
           
-          // Xử lý ảnh trùng lặp và render
           const uniqueImages = [...new Set(allImages)].filter(url => url.length > 0);
           
+          if(uniqueImages.length === 0) {
+              console.warn('Product has no images.');
+              return; 
+          }
+          
           uniqueImages.forEach(url => {
-              // Thêm class 'gallery-image' để dễ dàng gắn listener zoom
-              galleryContainer.innerHTML += `<img src="${url}" alt="${product.title}" loading="lazy" class="gallery-image" data-full-url="${url}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/f8bbd0/ffffff?text=Xom+Dep+Image';" />`;
+              galleryContainer.innerHTML += `<img src="${url}" alt="${product.title}" loading="lazy" class="gallery-image" data-full-url="${url}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300/FFD700/8B0000?text=Thai+Image';" />`;
           });
 
-          // Gắn listener cho tất cả ảnh trong gallery (để mở lightbox)
-          // Đảm bảo gắn lại mỗi khi Modal mở
           setTimeout(() => {
               document.querySelectorAll('#modal-gallery-container .gallery-image').forEach(img => {
                   img.addEventListener('click', (e) => {
@@ -956,86 +694,18 @@
               });
           }, 0); 
 
-          // 4. Xử lý VIDEO (Đã khôi phục)
-          const videoInput = product.video_id || ''; 
-          videoContainerEmbed.innerHTML = ''; 
-
-          if (videoInput) {
-              tabVideoBtn.style.display = 'inline-block';
-
-              let htmlToEmbed = '';
-              const trimmedInput = videoInput.trim();
-
-              if (trimmedInput.startsWith('<')) {
-                  htmlToEmbed = trimmedInput;
-              } 
-              else if (trimmedInput.length === 11 && !trimmedInput.includes(' ') && !trimmedInput.includes('/') && !trimmedInput.includes('.')) {
-                  const youtubeURL = `https://www.youtube.com/embed/${trimmedInput}?autoplay=1&rel=0&showinfo=0`;
-                  htmlToEmbed = `<iframe src="${youtubeURL}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
-              } 
-              else if (trimmedInput.startsWith('http') && (trimmedInput.includes('.mp4') || trimmedInput.includes('.mov') || trimmedInput.includes('.webm') || trimmedInput.includes('.ogg'))) {
-                  htmlToEmbed = `<video controls autoplay preload="auto" style="width: 100%; height: 100%; object-fit: cover;" src="${trimmedInput}"></video>`;
-              }
-              else if (trimmedInput.startsWith('http')) {
-                  if (trimmedInput.includes('youtube.com/watch?v=')) {
-                       const youtubeID = new URL(trimmedInput).searchParams.get('v');
-                       if (youtubeID) {
-                            htmlToEmbed = `<iframe src="https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0&showinfo=0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
-                       } else {
-                            htmlToEmbed = `<iframe src="${trimmedInput}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
-                       }
-                  } else {
-                       htmlToEmbed = `<iframe src="${trimmedInput}" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
-                  }
-              }
-
-              videoContainerEmbed.innerHTML = htmlToEmbed;
-              
-              if (htmlToEmbed.includes('tiktok-embed') && !document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
-                  const script = document.createElement('script');
-                  script.src = 'https://www.tiktok.com/embed.js';
-                  document.body.appendChild(script); 
-              }
-              
-          } else {
-              tabVideoBtn.style.display = 'none';
-          }
-          
-          // 5. Hiển thị modal và chọn tab mặc định
-          const hasImages = uniqueImages.length > 0;
-          const hasVideo = !!videoInput; 
-
-          if (hasImages) {
-              tabGalleryBtn.style.display = 'inline-block';
-              switchModalView('gallery');
-          } else if (hasVideo) {
-              tabGalleryBtn.style.display = 'none'; // Ẩn tab ảnh nếu không có ảnh
-              switchModalView('video');
-          } else {
-              closeModal(); // Đóng modal nếu không có cả ảnh lẫn video
-              return;
-          }
-
-          if (hasVideo && hasImages) {
-              // Đảm bảo tab video hiển thị nếu có video
-              tabVideoBtn.style.display = 'inline-block';
-          }
-
+          // 3. Hiển thị modal
           modal.classList.add('visible');
-          // FIX: Áp dụng class để chặn cuộn và giữ modal cố định
           document.body.classList.add('modal-open'); 
       }
 
       function closeModal() {
           modal.classList.remove('visible');
           lightbox.classList.remove('visible'); 
-          // FIX: Bỏ class khi modal đóng
           document.body.classList.remove('modal-open'); 
-          
-          videoContainerEmbed.innerHTML = '';
       }
       
-      // --- GẮN SỰ KIỆN LẮNG NGHE (ĐÃ CẬP NHẬT CHO LIGHTBOX) ---
+      // --- GẮN SỰ KIỆN LẮNG NGHE ---
       function attachModalListeners() {
           document.querySelectorAll('.open-modal-btn').forEach(card => {
               card.removeEventListener('click', handleCardClick); 
@@ -1048,43 +718,35 @@
               if (product) openModal(product);
           }
           
-          tabGalleryBtn.removeEventListener('click', handleSwitchGallery); 
-          tabVideoBtn.removeEventListener('click', handleSwitchVideo);
           document.querySelector('#gallery-modal .close-btn').removeEventListener('click', closeModal);
           document.querySelector('#zoom-lightbox .close-btn').removeEventListener('click', closeLightbox);
           modal.removeEventListener('click', handleModalOverlayClick);
           lightbox.removeEventListener('click', handleLightboxOverlayClick);
           document.removeEventListener('keydown', handleEscapeKey);
           
-          tabGalleryBtn.addEventListener('click', handleSwitchGallery);
-          tabVideoBtn.addEventListener('click', handleSwitchVideo);
           document.querySelector('#gallery-modal .close-btn').addEventListener('click', closeModal);
           document.querySelector('#zoom-lightbox .close-btn').addEventListener('click', closeLightbox);
           modal.addEventListener('click', handleModalOverlayClick);
           lightbox.addEventListener('click', handleLightboxOverlayClick);
           document.addEventListener('keydown', handleEscapeKey); 
 
-          function handleSwitchGallery() { switchModalView('gallery'); }
-          function handleSwitchVideo() { switchModalView('video'); }
           function handleModalOverlayClick(e) { 
-              // Đảm bảo chỉ đóng modal khi click vào nền overlay, không phải nội dung modal
               if (e.target === modal) closeModal(); 
           }
           function handleEscapeKey(e) { 
               if (e.key === 'Escape') {
                   if (lightbox.classList.contains('visible')) {
-                      closeLightbox(); // Ưu tiên đóng lightbox trước
+                      closeLightbox(); 
                   } else if (modal.classList.contains('visible')) {
-                      closeModal(); // Sau đó đóng modal chính
+                      closeModal(); 
                   }
               }
           }
       }
       
-      // --- LOGIC CHUYỂN VIEW VÀ CUỘN (ĐÃ CẬP NHẬT LOGIC ẨN SIDEBAR) ---
+      // --- LOGIC CHUYỂN VIEW VÀ CUỘN ---
       function showSection(targetId) {
           navLinks.forEach(link => {
-              // Xử lý active link
               if (link.getAttribute('href') === targetId) {
                   link.classList.add('active');
               } else {
@@ -1100,18 +762,8 @@
               }
           });
           
-          // LOGIC: Xử lý ẩn Sidebar trên Mobile/Tablet (< 900px) cho các mục sản phẩm
-          if (window.innerWidth <= 900 && ['#beauty', '#vay', '#quanao', '#bikini'].includes(targetId)) {
-              sidebar.classList.add('hidden-mobile');
-              container.classList.add('full-width');
-          } else {
-              sidebar.classList.remove('hidden-mobile');
-              container.classList.remove('full-width');
-          }
-
           const scrollTarget = document.getElementById(targetId.substring(1));
           if (scrollTarget && targetId !== '#home') {
-                  // Cuộn đến vị trí mới, trừ đi chiều cao của nav bar + margin
                   window.scrollTo({ top: scrollTarget.offsetTop - 70, behavior: 'smooth' });
           } else {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1119,19 +771,16 @@
       }
       
       // Hàm tự động tải lại dữ liệu sau 5 phút
-      const POLLING_INTERVAL = 300000; // 5 phút (300,000 miligiây)
+      const POLLING_INTERVAL = 300000; // 5 phút
 
       function startPolling() {
-          renderSocialLinks({});
-          updateContactInfo({});
-          
           fetchAndRenderProducts(); // Tải lần đầu từ sheet
           setInterval(fetchAndRenderProducts, POLLING_INTERVAL); // Tải lặp lại
       }
 
       // 🚨 KHỞI TẠO: Bắt đầu tải dữ liệu khi trang load
       startPolling(); 
-      showSection('#home');
+      showSection('#home'); // Mặc định mở trang Giới thiệu
 
       navLinks.forEach(a => {
           a.addEventListener('click', function(e){
@@ -1140,7 +789,6 @@
               e.preventDefault();
               document.body.classList.remove('page-enter-active');
               document.body.classList.add('page-exit-active');
-              // Thêm timeout để tạo hiệu ứng chuyển trang mượt mà
               setTimeout(() => {
                   showSection(href); 
                   document.body.classList.remove('page-exit-active');
@@ -1153,18 +801,6 @@
         setTimeout(()=>{
           document.body.classList.remove('page-enter', 'page-enter-active');
         }, 600);
-      });
-      
-      // Chạy lại logic ẩn/hiện sidebar khi thay đổi kích thước màn hình
-      window.addEventListener('resize', () => {
-          // Lấy ID section đang active để chạy lại logic ẩn/hiện sidebar
-          const activeLink = document.querySelector('.nav-link.active');
-          if (activeLink) {
-              showSection(activeLink.getAttribute('href'));
-          } else {
-              // Mặc định hiển thị trang chủ nếu không có link nào active
-              showSection('#home');
-          }
       });
     });
   </script>
