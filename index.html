@@ -44,7 +44,7 @@
       
       /* NỀN: Sẽ được JS thêm ảnh toàn trang */
       background-color: var(--cream);
-      background-size: cover;
+      background-size: contain; /* ĐÃ CHỈNH: Giữ ảnh rõ nét, không bị phóng to làm mờ */
       background-position: center center;
       background-repeat: no-repeat;
       background-attachment: fixed; 
@@ -328,9 +328,8 @@
     
     /* Lightbox Zoom */
     #zoom-lightbox { z-index: 2000; background: rgba(0, 0, 0, 0.95); }
-    /* ... (CSS Lightbox giữ nguyên) ... */
-
-
+    /* Giữ nguyên CSS Lightbox đã được thêm ở lần trước */
+    
     /* FOOTER */
     footer { 
         text-align:center; padding:22px; margin-top:36px; 
@@ -394,7 +393,6 @@
     <p style="font-size: 14px; font-weight: 700;">Bản sắc dân tộc Thái ✿ Ẩm thực ✿ Văn hóa ✿ Kết nối dân tộc</p>
     
     <div class="social-icons">
-        <a href="#" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
         <a href="#" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>
     </div>
   </header>
@@ -509,7 +507,7 @@
               // CẬP NHẬT ẢNH NỀN
               updatePageBackground(CONFIG_DATA); 
               
-              // CẬP NHẬT SOCIAL LINKS
+              // CẬP NHẬT SOCIAL LINKS (ĐÃ CÓ LOGIC ZALO/FB CHUNG)
               updateSocialLinks(CONFIG_DATA);
               
               if (PRODUCT_DATA.length > 0) {
@@ -527,12 +525,12 @@
           const backgroundUrl = config.background_img || config.img || ''; 
           const body = document.body;
           if (backgroundUrl) {
-              body.style.backgroundImage = `url('${backgroundUrl}')`;
-              body.style.backgroundColor = 'transparent'; 
               
               // SỬA: Đặt background-size là 'contain' (ảnh toàn bộ vào khung hình, rõ nét hơn)
+              // Và dùng background shorthand để đảm bảo không bị lỗi CSS
               body.style.background = `url('${backgroundUrl}') no-repeat center center fixed`;
               body.style.backgroundSize = 'contain'; 
+              body.style.backgroundColor = 'var(--cream)'; /* Giữ màu nền cố định */
               
           } else {
               // Fallback về gradient nếu không có ảnh
@@ -542,41 +540,30 @@
           }
       }
 
-      // --- HÀM CẬP NHẬT SOCIAL LINKS ---
+      // --- HÀM CẬP NHẬT SOCIAL LINKS (ĐÃ THÊM LOGIC ZALO) ---
       function updateSocialLinks(config) {
-          // Lấy links từ CONFIG_DATA (Lấy cả zalo link để dùng chung)
+          // Lấy links từ CONFIG_DATA
           const fbLink = config.fb_link && config.fb_link.startsWith('http') ? config.fb_link : '#';
           const bloggerLink = config.blogger_link && config.blogger_link.startsWith('http') ? config.blogger_link : '#';
-          // Zalo link: Dùng cho nút Zalo ở ngoài Header nếu có
+          // Zalo link: Lấy từ zalo_link hoặc tạo từ zalo_phone
           const zaloLink = config.zalo_link && config.zalo_link.startsWith('http') ? config.zalo_link : 
                            (config.zalo_phone ? `https://zalo.me/${config.zalo_phone.replace(/[^0-9]/g, '')}` : '#');
 
 
           const socialContainer = document.querySelector('.social-icons');
-          if (socialContainer) socialContainer.innerHTML = '';
+          if (socialContainer) socialContainer.innerHTML = ''; // Xóa hết để render lại
           
           // Thêm Zalo link vào social icons nếu có (dùng icon mobile)
           if (zaloLink && zaloLink !== '#') {
-              socialContainer.innerHTML += `<a href="${zaloLink}" target="_blank" aria-label="Zalo"><i class="fas fa-mobile-alt"></i></a>`;
+              socialContainer.innerHTML += `<a href="${zaloLink}" target="_blank" aria-label="Zalo"><i class="fas fa-comment-dots"></i></a>`;
           }
 
-          // Áp dụng links vào thẻ <a> FB và Blogger
-          const fbElement = document.querySelector('.social-icons a[aria-label="Facebook"]');
-          const bloggerElement = document.querySelector('.social-icons a[aria-label="Blogger"]');
-
-          if (fbElement) {
-              fbElement.href = fbLink;
-              fbElement.style.display = fbLink === '#' ? 'none' : 'flex'; 
-          }
-          if (bloggerElement) {
-              bloggerElement.href = bloggerLink;
-              bloggerElement.style.display = bloggerLink === '#' ? 'none' : 'flex';
-          }
-
-          // Re-render FB link cho chắc chắn
+          // Thêm FB link vào social icons nếu có
           if (fbLink && fbLink !== '#') {
               socialContainer.innerHTML += `<a href="${fbLink}" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>`;
           }
+          
+           // Thêm Blogger link vào social icons nếu có
            if (bloggerLink && bloggerLink !== '#') {
               socialContainer.innerHTML += `<a href="${bloggerLink}" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>`;
           }
@@ -597,12 +584,16 @@
                   priceRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ' : 
                   'Liên hệ';
 
-              // Lấy link cho nút bấm nhanh
+              // Lấy link cho nút bấm nhanh FB: Ưu tiên link riêng của sản phẩm, nếu không có thì lấy link chung từ CONFIG_DATA
               const fbLink = product.fb_link && product.fb_link.startsWith('http') ? product.fb_link : 
                              (CONFIG_DATA.fb_link && CONFIG_DATA.fb_link.startsWith('http') ? CONFIG_DATA.fb_link : '#');
-              // SỬA: Lấy Zalo link từ cột mới
+              
+              // Lấy link cho nút bấm nhanh Zalo: Ưu tiên link riêng của sản phẩm, nếu không có thì lấy link chung từ CONFIG_DATA
               const zaloLink = product.zalo_link && product.zalo_link.startsWith('http') ? product.zalo_link :
-                               (product.zalo_phone ? `https://zalo.me/${product.zalo_phone.replace(/[^0-9]/g, '')}` : '#');
+                               (product.zalo_phone ? `https://zalo.me/${product.zalo_phone.replace(/[^0-9]/g, '')}` : 
+                                (CONFIG_DATA.zalo_link && CONFIG_DATA.zalo_link.startsWith('http') ? CONFIG_DATA.zalo_link : 
+                                 (CONFIG_DATA.zalo_phone ? `https://zalo.me/${CONFIG_DATA.zalo_phone.replace(/[^0-9]/g, '')}` : '#')));
+                             
 
               if (container) {
                   const html = `
@@ -663,9 +654,9 @@
               'Giá: Liên hệ';
           document.getElementById('modal-price').textContent = modalPriceDisplay;
 
-          // 2. Xử lý nút MUA HÀNG TRONG MODAL
+          // 2. Xử lý nút MUA HÀNG TRONG MODAL (TRỎ ĐẾN PRODUCT.LINK)
           const buyButton = document.getElementById('modal-buy-button');
-          buyButton.href = product.link || '#'; 
+          buyButton.href = product.link || '#'; // Lấy link từ cột 'link'
           
           const platformKey = (product.platform || '').toLowerCase().trim();
           const platformInfo = PLATFORM_ICONS[platformKey] || PLATFORM_ICONS[''];
@@ -720,11 +711,9 @@
       
       // --- GẮN SỰ KIỆN LẮNG NGHE ---
       function attachModalListeners() {
-          // THAY ĐỔI: Gắn listener cho từng Card, không phải toàn bộ product-card
+          // Gắn listener cho từng Card, đảm bảo không mở modal khi click vào quick-actions
           document.querySelectorAll('.product-card').forEach(card => {
-              // Loại bỏ listener cũ trước để tránh click đúp
               card.removeEventListener('click', handleCardClick); 
-              // Chỉ gắn listener cho khu vực không phải là quick-actions
               card.addEventListener('click', function(e) {
                   // Nếu click vào nút quick-actions, KHÔNG mở modal
                   if (e.target.closest('.quick-actions a')) {
