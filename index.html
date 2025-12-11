@@ -451,9 +451,10 @@
         color: var(--text);
     }
     /* Thêm style cho trạng thái, tùy chọn màu */
+    /* Màu đỏ đậm cho trạng thái hoàn thành */
+    #tracking-result .status-delivered { color: var(--primary-red); font-weight: 900; } 
+    /* Màu xanh lá cho trạng thái đã xác nhận */
     #tracking-result .status-confirmed { color: #008000; font-weight: 900; }
-    #tracking-result .status-shipped { color: #0000FF; font-weight: 900; }
-    #tracking-result .status-delivered { color: var(--primary-red); font-weight: 900; }
     /* Style cho thông báo lỗi theo yêu cầu của bạn */
     #tracking-result .status-error { color: #cc0000; font-weight: 900; text-align: center; padding: 20px 0; font-size: 16px;}
     #tracking-result .status-error i { margin-right: 10px; font-size: 20px; }
@@ -609,8 +610,9 @@
       const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
       // ⚠️ URL TSV MỚI CHO BẢNG ĐƠN HÀNG ⚠️
-      // THAY THẾ BẰNG URL PUBLIC TSV CỦA SHEET CHỨA DỮ LIỆU ĐƠN HÀNG CỦA BẠN (CẦN CÁC CỘT: order_id, customer_name, phone, address, status, note)
-      const ORDER_TRACKING_API_URL = ''; // BẠN CẦN ĐIỀN VÀO ĐÂY
+      // THAY THẾ BẰNG URL PUBLIC TSV CỦA SHEET CHỨA DỮ LIỆU ĐƠN HÀNG CỦA BẠN 
+      // CÁC CỘT CẦN CÓ: order_id, customer_name, phone, address, status, progress, note
+      const ORDER_TRACKING_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv'; // BẠN CẦN ĐIỀN VÀO ĐÂY
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -883,7 +885,7 @@
           document.body.classList.remove('modal-open'); 
       }
       
-      // --- HÀM MỚI: XỬ LÝ TRA CỨU ĐƠN HÀNG ---
+      // --- HÀM MỚI: XỬ LÝ TRA CỨU ĐƠN HÀNG (LOGIC MỚI CỦA BẠN) ---
       function trackOrder() {
           const orderIdInput = document.getElementById('order-id-input');
           const resultDiv = document.getElementById('tracking-result');
@@ -900,27 +902,47 @@
           const foundOrder = ORDER_DATA.find(order => order.order_id && order.order_id.trim().toUpperCase() === orderId);
           
           if (foundOrder) {
-              // Chuẩn hóa Status để có CSS khác nhau
-              const statusLower = foundOrder.status ? foundOrder.status.trim().toLowerCase() : 'đang xử lý';
-              let statusClass = 'status-default';
-              if (statusLower.includes('xác nhận') || statusLower.includes('đã xác nhận')) {
-                  statusClass = 'status-confirmed';
-              } else if (statusLower.includes('đang giao') || statusLower.includes('đã gửi') || statusLower.includes('shipped')) {
-                  statusClass = 'status-shipped';
-              } else if (statusLower.includes('hoàn thành') || statusLower.includes('delivered')) {
+              
+              const progressLower = foundOrder.progress ? foundOrder.progress.trim().toLowerCase() : '';
+              const statusLower = foundOrder.status ? foundOrder.status.trim().toLowerCase() : '';
+
+              // --- BƯỚC 1: KIỂM TRA ĐIỀU KIỆN 'CHƯA XÁC NHẬN' (ĐIỀU KIỆN KHÓA) ---
+              if (statusLower.includes('chưa xác nhận')) {
+                  // Yêu cầu: Nếu status là 'chưa xác nhận' -> trả về thông báo lỗi/không tồn tại
+                  resultDiv.innerHTML = `
+                      <p class="status-error" style="font-size: 16px;">
+                          <i class="fas fa-sad-cry"></i> XIN LỖI! Đơn hàng của bạn không tồn tại hoặc chưa được xác nhận.
+                      </p>
+                  `;
+                  return; 
+              } 
+              
+              // --- BƯỚC 2: XỬ LÝ ĐƠN ĐÃ XÁC NHẬN (Hoặc các trạng thái hợp lệ khác) ---
+              
+              let displayStatusText = '';
+              let statusClass = 'status-confirmed'; 
+
+              if (progressLower.includes('hoàn thành')) {
+                  // ĐIỀU KIỆN 2A: Cột progress có chữ 'hoàn thành'
+                  displayStatusText = 'Đơn hàng đã được giao hoàn thành';
                   statusClass = 'status-delivered';
+              } else {
+                  // ĐIỀU KIỆN 2B: Cột progress trống/không hoàn thành. Trả về trạng thái xác nhận.
+                  displayStatusText = 'Đơn hàng của bạn đã được xác nhận'; 
+                  statusClass = 'status-confirmed'; 
               }
 
+              // --- BƯỚC 3: HIỂN THỊ KẾT QUẢ CHI TIẾT (Bao gồm Note) ---
               resultDiv.innerHTML = `
                   <h3><i class="fas fa-box-open"></i> Đơn Hàng #${orderId}</h3>
                   <p><strong>Tên Khách Hàng:</strong> ${foundOrder.customer_name || 'N/A'}</p>
                   <p><strong>Số Điện Thoại:</strong> ${foundOrder.phone || 'N/A'}</p>
                   <p><strong>Địa Chỉ Giao Hàng:</strong> ${foundOrder.address || 'N/A'}</p>
-                  <p><strong>Trạng Thái Đơn:</strong> <span class="${statusClass}">${foundOrder.status || 'Đang xử lý'}</span></p>
+                  <p><strong>Trạng Thái Đơn:</strong> <span class="${statusClass}">${displayStatusText}</span></p>
                   ${foundOrder.note ? `<p><strong>Ghi chú:</strong> ${foundOrder.note}</p>` : ''}
               `;
           } else {
-              // Thông báo lỗi theo yêu cầu của người dùng
+              // --- XỬ LÝ KHÔNG TÌM THẤY MÃ ĐƠN HÀNG (Mặc định) ---
               resultDiv.innerHTML = `
                   <p class="status-error" style="font-size: 16px;">
                       <i class="fas fa-sad-cry"></i> XIN LỖI! Đơn hàng của bạn không tồn tại hoặc chưa được xác nhận.
