@@ -134,10 +134,6 @@
         color: var(--primary-red);
     }
     
-    /* ĐÃ BỎ: Không ẩn Icon Blogger nữa */
-    /* .social-icons a[aria-label="Blogger"] {
-        display: none !important;
-    } */
 
     nav { 
       background: var(--trans-white); 
@@ -450,7 +446,9 @@
         }
         .modal-content h2 { padding-top: 15px; } 
         .gallery-wrapper img { width: 100%; max-width: none; }
-    }\n  </style>\n</head>
+    }
+  </style>
+</head>
 <body class="page-enter page-enter-active">
     
   <header>
@@ -532,11 +530,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       
-      // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
+      // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET SẢN PHẨM ⚠️
       const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
-      // ⚠️ URL TSV MỚI CHO BẢNG ĐƠN HÀNG ⚠️
-      const ORDER_TRACKING_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv'; // <= Link TSV của bạn
+      // ⚠️ URL TSV CHO BẢNG ĐƠN HÀNG (ĐÃ CHÈN LINK CỦA BẠN) ⚠️
+      const ORDER_TRACKING_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -545,7 +543,7 @@
       const lightbox = document.getElementById('zoom-lightbox');
       const lightboxImage = document.getElementById('lightbox-image');
       
-      let ORDER_DATA = []; // BIẾN MỚI LƯU TRỮ DỮ LIỆU ĐƠN HÀNG
+      let ORDER_DATA = []; // BIẾN LƯU TRỮ DỮ LIỆU ĐƠN HÀNG
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
       
@@ -574,10 +572,7 @@
               
               PRODUCT_DATA = parseTsvToArray(tsvText);
               
-              // CẬP NHẬT ẢNH NỀN
               updatePageBackground(CONFIG_DATA); 
-              
-              // CẬP NHẬT SOCIAL LINKS
               updateSocialLinks(CONFIG_DATA);
               
               if (PRODUCT_DATA.length > 0) {
@@ -586,60 +581,46 @@
                   console.warn('No products found in sheet.');
               }
           } catch (error) {
-              console.error('LỖI khi tải hoặc xử lý dữ liệu từ Google Sheet:', error);
+              console.error('LỖI khi tải hoặc xử lý dữ liệu từ Google Sheet SẢN PHẨM:', error);
           }
       }
 
-      // --- HÀM CẬP NHẬT ẢNH NỀN (ĐÃ CHỈNH background-size: cover) ---
+      // --- HÀM CẬP NHẬT ẢNH NỀN & SOCIAL LINKS (GIỮ NGUYÊN) ---
       function updatePageBackground(config) {
-          const backgroundUrl = config.background_img || config.img || ''; 
           const body = document.body;
+          const backgroundUrl = config.background_img || config.img || ''; 
           if (backgroundUrl) {
-              
-              // ĐÃ CHỈNH: Đặt background-size là 'cover' (full màn hình)
               body.style.background = `url('${backgroundUrl}') no-repeat center center fixed`;
               body.style.backgroundSize = 'cover'; 
               body.style.backgroundColor = 'var(--cream)'; 
-              
           } else {
-              // Fallback về gradient nếu không có ảnh
               body.style.backgroundImage = 'none';
               body.style.background = 'linear-gradient(145deg, var(--cream), var(--fffaf0))';
               body.style.backgroundSize = 'auto';
           }
       }
 
-      // --- HÀM CẬP NHẬT SOCIAL LINKS ---
       function updateSocialLinks(config) {
-          // Lấy links từ CONFIG_DATA
           const fbLink = config.fb_link && config.fb_link.startsWith('http') ? config.fb_link : '#';
           const bloggerLink = config.blogger_link && config.blogger_link.startsWith('http') ? config.blogger_link : '#';
-          // Zalo link: Lấy từ zalo_link hoặc tạo từ zalo_phone
           const zaloLink = config.zalo_link && config.zalo_link.startsWith('http') ? config.zalo_link : 
                            (config.zalo_phone ? `https://zalo.me/${config.zalo_phone.replace(/[^0-9]/g, '')}` : '#');
 
-
           const socialContainer = document.querySelector('.social-icons');
-          if (socialContainer) socialContainer.innerHTML = ''; // Xóa hết để render lại
+          if (socialContainer) socialContainer.innerHTML = ''; 
           
-          // Thêm Zalo link vào social icons nếu có (dùng icon mobile)
           if (zaloLink && zaloLink !== '#') {
               socialContainer.innerHTML += `<a href="${zaloLink}" target="_blank" aria-label="Zalo"><i class="fas fa-comment-dots"></i></a>`;
           }
 
-          // Thêm FB link vào social icons nếu có
           if (fbLink && fbLink !== '#') {
               socialContainer.innerHTML += `<a href="${fbLink}" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>`;
           }
-          
-           // Thêm Blogger link vào social icons (ĐÃ KHÔI PHỤC)
-           // Chỉ hiển thị nếu có link hợp lệ
            if (bloggerLink && bloggerLink !== '#') {
               socialContainer.innerHTML += `<a href="${bloggerLink}" target="_blank" aria-label="Blogger"><i class="fab fa-blogger-b"></i></a>`;
            }
       }
 
-      // --- HÀM LẤY LINK CHUNG (ĐỂ TRÁNH TRÙNG LẶP CODE) ---
       function getProductLinks(product) {
           const fbLink = product.fb_link && product.fb_link.startsWith('http') ? product.fb_link : 
                          (CONFIG_DATA.fb_link && CONFIG_DATA.fb_link.startsWith('http') ? CONFIG_DATA.fb_link : '#');
@@ -652,7 +633,6 @@
           return { fbLink, zaloLink };
       }
 
-      // --- HÀM 3: RENDER PRODUCTS (ĐÃ THÊM NÚT ZALO & FB) ---
       function renderProducts(data) {
           const container = document.getElementById('all-products');
           if (container) container.innerHTML = '';
@@ -695,8 +675,6 @@
           attachModalListeners();
       }
       
-      
-      // --- HÀM XỬ LÝ LIGHTBOX (ZOOM ẢNH) ---
       function openLightbox(imageUrl) {
           lightboxImage.src = imageUrl;
           lightbox.classList.add('visible');
@@ -716,9 +694,7 @@
           } 
       }
       
-      // --- HÀM XỬ LÝ MODAL (Hiển thị chi tiết - ĐÃ CHỈNH NÚT MUA NGAY) ---
       function openModal(product) {
-          // 1. Cập nhật thông tin Modal
           document.getElementById('modal-title').textContent = product.title;
           document.getElementById('modal-desc').textContent = product.desc;
           
@@ -728,7 +704,6 @@
               'Giá: Liên hệ';
           document.getElementById('modal-price').textContent = modalPriceDisplay;
 
-          // 2. Xử lý nút MUA HÀNG TRONG MODAL (THAY THẾ BẰNG FB & ZALO)
           const { fbLink, zaloLink } = getProductLinks(product);
           const modalFooter = document.querySelector('.modal-footer');
 
@@ -743,7 +718,6 @@
               </div>
           `;
           
-          // 3. Xử lý GALLERY và GẮN LISTENER CHO ZOOM
           const galleryContainer = document.getElementById('modal-gallery-container');
           galleryContainer.innerHTML = ''; 
           
@@ -757,7 +731,6 @@
           const uniqueImages = [...new Set(allImages)].filter(url => url.length > 0);
           
           if(uniqueImages.length === 0) {
-              console.warn('Product has no images. Closing Modal.');
               closeModal(); 
               return;
           }
@@ -775,7 +748,6 @@
               });
           }, 0); 
 
-          // 4. Hiển thị modal
           modal.classList.add('visible');
           document.body.classList.add('modal-open'); 
       }
@@ -786,8 +758,10 @@
           document.body.classList.remove('modal-open'); 
       }
       
-      // --- HÀM 4: FETCH DỮ LIỆU ĐƠN HÀNG (MỚI) ---
+      // --- HÀM 4: FETCH DỮ LIỆU ĐƠN HÀNG (ĐÃ THÊM LOG VÀ BÁO LỖI UI RÕ RÀNG) ---
       async function fetchOrderData() {
+          const resultDiv = document.getElementById('order-tracking-result');
+          
           try {
               const response = await fetch(ORDER_TRACKING_API_URL, { cache: 'no-cache' });
               if (!response.ok) {
@@ -795,28 +769,67 @@
               }
               const tsvText = await response.text();
               
+              // PapaParse sẽ tự động tìm header và bỏ qua các dòng trống (skipEmptyLines: true)
               const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
+              
               ORDER_DATA = parsed.data.map(item => ({
                   ...item,
-                  order_id: item.order_id ? item.order_id.toUpperCase() : '' // Chuẩn hóa order_id
+                  // TÊN CỘT Ở ĐÂY CẦN PHẢI KHỚP CHÍNH XÁC VỚI HEADER CỦA SHEET
+                  order_id: item.order_id ? item.order_id.trim().toUpperCase() : '' 
               })).filter(item => item.order_id);
               
-              console.log(`Order Data Loaded: ${ORDER_DATA.length} orders.`);
               
+              // ⚠️ PHẦN KIỂM TRA TÊN CỘT BẮT BUỘC ⚠️
+              const requiredKeys = ['order_id', 'customer_name', 'address', 'status', 'progress', 'note'];
+              if (ORDER_DATA.length > 0) {
+                  const firstOrderKeys = Object.keys(ORDER_DATA[0]);
+                  
+                  // In ra console để người dùng kiểm tra:
+                  console.warn("--- DEBUG LOG: Tên cột (keys) thực tế đọc được từ dòng dữ liệu đầu tiên ---");
+                  console.log("CẦN CÓ: order_id, customer_name, phone, address, status, progress, note");
+                  console.log("KEYS THỰC TẾ:", firstOrderKeys);
+                  console.warn("----------------------------------------------------------------------");
+
+                  const missingKeys = requiredKeys.filter(key => !firstOrderKeys.includes(key));
+                  
+                  if (missingKeys.length > 0) {
+                      console.error(`LỖI TRỌNG YẾU: Thiếu các cột bắt buộc: ${missingKeys.join(', ')}. Vui lòng sửa tên cột trong Sheet.`);
+                      
+                      // BÁO LỖI RÕ RÀNG TRÊN UI
+                      if (resultDiv) {
+                          resultDiv.innerHTML = `<p style="color: #8B0000; text-align: center; font-weight: 800; padding: 10px; border: 1px dashed #8B0000; border-radius: 8px;"><i class="fas fa-exclamation-triangle"></i> LỖI DỮ LIỆU CỘT: Thiếu cột quan trọng (${missingKeys.join(', ')}). Vui lòng kiểm tra lại TÊN CỘT trong Google Sheet theo hướng dẫn.</p>`;
+                      }
+                      return; // Dừng nếu có lỗi tên cột
+                  }
+              }
+              // ⚠️ KẾT THÚC PHẦN KIỂM TRA TÊN CỘT ⚠️
+
+              if (resultDiv) {
+                  resultDiv.innerHTML = '<p style="text-align: center; color: #888;">Nhập mã đơn hàng và bấm TRA CỨU.</p>';
+              }
               attachOrderTrackingListener(); 
               
           } catch (error) {
               console.error('LỖI khi tải hoặc xử lý dữ liệu Đơn hàng:', error);
+              if (resultDiv) {
+                  resultDiv.innerHTML = '<p style="color: #FF4500; text-align: center; font-weight: 800;"><i class="fas fa-exclamation-triangle"></i> Lỗi kết nối dữ liệu đơn hàng. Vui lòng kiểm tra lại Google Sheet TSV.</p>';
+              }
           }
       }
 
-      // --- HÀM 5: XỬ LÝ TRA CỨU ĐƠN HÀNG (MỚI) ---
+      // --- HÀM 5: XỬ LÝ TRA CỨU ĐƠN HÀNG ---
       function handleTrackOrder() {
           const inputElement = document.getElementById('order-id-input');
           const resultDiv = document.getElementById('order-tracking-result');
           const orderId = inputElement.value.trim().toUpperCase(); // Chuẩn hóa đầu vào người dùng
           
+          // Tránh gọi API liên tục
           resultDiv.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Đang tra cứu...</p>';
+
+          if (ORDER_DATA.length === 0) {
+               resultDiv.innerHTML = '<p style="color: #A52A2A; text-align: center; font-weight: 800;"><i class="fas fa-exclamation-triangle"></i> Lỗi: Dữ liệu đơn hàng chưa được tải. Vui lòng đợi 1 lát hoặc tải lại trang.</p>';
+               return;
+          }
 
           if (!orderId) {
               resultDiv.innerHTML = '<p style="color: #FF4500; text-align: center;"><i class="fas fa-exclamation-triangle"></i> Vui lòng nhập Mã Đơn Hàng.</p>';
@@ -826,7 +839,7 @@
           // 1. Tìm kiếm đơn hàng
           const foundOrder = ORDER_DATA.find(order => order.order_id === orderId);
 
-          if (!foundOrder || foundOrder.status.toLowerCase().includes('chưa xác nhận')) {
+          if (!foundOrder || !foundOrder.order_id || foundOrder.status === undefined || foundOrder.status === null || foundOrder.status.trim() === '' || foundOrder.status.toLowerCase().includes('chưa xác nhận')) {
               // 2. Không tìm thấy hoặc trạng thái là "Chưa xác nhận"
               resultDiv.innerHTML = `
                   <p style="color: #A52A2A; font-weight: 800; text-align: center; font-size: 16px;">
@@ -835,23 +848,28 @@
               `;
           } else {
               // 3. Đơn hàng được tìm thấy và đã xác nhận
-              let statusText = foundOrder.status || 'Đang xử lý';
-              let progressIcon = '<i class="fas fa-sync-alt fa-spin"></i>'; // Icon mặc định: Đang xử lý
-              let progressColor = '#FFA500'; // Màu cam
+              let statusText = foundOrder.status.trim() || 'Đang xử lý';
+              let progressIcon = '<i class="fas fa-sync-alt fa-spin"></i>'; 
+              let progressColor = '#FFA500'; 
 
+              // Logic để đổi màu và icon
               if (foundOrder.progress && foundOrder.progress.toLowerCase().includes('hoàn thành')) {
-                  // Đơn hàng đã hoàn thành (ưu tiên progress)
-                  statusText = 'Đơn hàng đã được giao hoàn thành.';
+                  statusText = foundOrder.status.trim() || 'Đã giao hoàn thành.';
                   progressIcon = '<i class="fas fa-check-circle"></i>';
-                  progressColor = '#008000'; // Màu xanh lá cây
-              } else if (foundOrder.status.toLowerCase().includes('đã xác nhận')) {
-                  // Đơn hàng đang được xác nhận/xử lý
-                  statusText = 'Đơn hàng của bạn đã được xác nhận và đang được xử lý.';
+                  progressColor = '#008000'; // Xanh lá cây
+              } else if (foundOrder.status.toLowerCase().includes('đã hủy')) {
+                  statusText = foundOrder.status.trim() || 'Đã hủy.';
+                  progressIcon = '<i class="fas fa-ban"></i>';
+                  progressColor = '#8B0000'; // Đỏ đô
+              } else if (foundOrder.status.toLowerCase().includes('đang vận chuyển')) {
+                  progressIcon = '<i class="fas fa-shipping-fast"></i>';
+                  progressColor = '#1e90ff'; // Xanh dương
               }
+
               
               // Tạo bảng thông tin chi tiết
               resultDiv.innerHTML = `
-                  <div style="border: 1px solid ${progressColor}; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.9);">
+                  <div style="border: 1px solid ${progressColor}; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.9); border-left: 5px solid ${progressColor};">\n
                       <h3 style="color: ${progressColor}; margin-top: 0; text-align: center; text-transform: uppercase;">
                           ${progressIcon} ${statusText}
                       </h3>
@@ -859,6 +877,7 @@
                           <tr><td style="padding: 8px 0; font-weight: 700; width: 30%;">Mã Đơn:</td><td style="padding: 8px 0; color: #8B0000; font-weight: 900;">${foundOrder.order_id}</td></tr>
                           <tr><td style="padding: 8px 0; font-weight: 700;">Khách hàng:</td><td style="padding: 8px 0;">${foundOrder.customer_name || 'N/A'}</td></tr>
                           <tr><td style="padding: 8px 0; font-weight: 700;">Địa chỉ:</td><td style="padding: 8px 0;">${foundOrder.address || 'N/A'}</td></tr>
+                          <tr><td style="padding: 8px 0; font-weight: 700;">Tiến độ:</td><td style="padding: 8px 0; color: ${progressColor}; font-weight: 900;">${foundOrder.progress || 'Chưa cập nhật'}</td></tr>
                           <tr><td style="padding: 8px 0; font-weight: 700;">Ghi chú:</td><td style="padding: 8px 0; font-style: italic;">${foundOrder.note || 'Không có ghi chú.'}</td></tr>
                       </table>
                   </div>
@@ -866,14 +885,13 @@
           }
       }
 
-      // --- HÀM GẮN LISTENER CHO NÚT TRA CỨU ĐƠN HÀNG (MỚI) ---
+      // --- HÀM GẮN LISTENER CHO NÚT TRA CỨU ĐƠN HÀNG (GIỮ NGUYÊN) ---
       function attachOrderTrackingListener() {
           const trackButton = document.getElementById('track-order-btn');
           if (trackButton) {
               trackButton.removeEventListener('click', handleTrackOrder);
               trackButton.addEventListener('click', handleTrackOrder);
               
-              // Gắn sự kiện Enter cho input
               const inputElement = document.getElementById('order-id-input');
               inputElement.removeEventListener('keydown', handleEnterKey);
               inputElement.addEventListener('keydown', handleEnterKey);
@@ -887,13 +905,11 @@
           }
       }
       
-      // --- GẮN SỰ KIỆN LẮNG NGHE ---
+      // --- CÁC HÀM XỬ LÝ KHÁC (GIỮ NGUYÊN) ---
       function attachModalListeners() {
-          // Gắn listener cho từng Card, đảm bảo không mở modal khi click vào quick-actions
           document.querySelectorAll('.product-card').forEach(card => {
               card.removeEventListener('click', handleCardClick); 
               card.addEventListener('click', function(e) {
-                  // Nếu click vào nút quick-actions, KHÔNG mở modal
                   if (e.target.closest('.quick-actions a')) {
                       return; 
                   }
@@ -933,7 +949,6 @@
           }
       }
       
-      // --- LOGIC CHUYỂN VIEW VÀ CUỘN ---
       function showSection(targetId) {
           navLinks.forEach(link => {
               if (link.getAttribute('href') === targetId) {
@@ -959,17 +974,16 @@
           }
       }
       
-      // Hàm tự động tải lại dữ liệu sau 5 phút
       const POLLING_INTERVAL = 300000; // 5 phút
 
       function startPolling() {
-          fetchAndRenderProducts(); // Tải lần đầu từ sheet
-          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); // Tải lặp lại
+          fetchAndRenderProducts(); 
+          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); 
       }
 
       // 🚨 KHỞI TẠO: Bắt đầu tải dữ liệu khi trang load
       startPolling(); 
-      fetchOrderData(); // THÊM DÒNG NÀY ĐỂ TẢI DỮ LIỆU ĐƠN HÀNG
+      fetchOrderData(); // Tải dữ liệu đơn hàng
       showSection('#home'); 
 
       navLinks.forEach(a => {
