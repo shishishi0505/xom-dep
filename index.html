@@ -6,7 +6,7 @@
   
   <title>🌸 SẮC ĐẸP DÂN TỘC THÁI 🇹🇭</title>
   
-  <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUAAADu8u7x8fHx8fHx8fHu8u7u8u7x8fHx8fHu8u7x8fHx8fHx8fHu8u7u8u7u8u7x8fHx8fHx8fEAAADw8vH///+JvNfNAAAACnRSTlMA6wL66gMBDQECdYk870MAAACPSURVDjLrdLnEkAwEIXh/d84y4J+p6p7oP9Z4t8kM5kIeF3/eG8wYdIe7yX6A6h39v2xO80h59f8JcO7lPj/d4zD9y32R8Y8c4w8/x8L+d5E+N/g453fD732Vw48/D8P3fX+w411D5/x/l93wJ/f/i5b9/p+D9V5o/9t9797YcAAAAAElFTkSuQmCC">
+  <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUAAADu8u7x8fHx8fHx8fHu8u7u8u7x8fHx8fHu8u7x8fHx8fHx8fHu8u7u8u7u8u7x8fHx8fHx8fEAAADw8vH///+JvNfNAAAACnRSTlMA6wL66gMBDQECdYk870MAAACPSURVDjLrdLnEkAwEIXh/d84y4J+p6p7oP9Z4t8kM5kIeF3/eG8wYdIe7yX6A6h39v2xO80h59f8JcO7lPj/d4zD9y32R8Y8c4w8/x8L+d5E+N/g453fD732Vw448/D8P3fX+w411D5/x/l93wJ/f/i5b9/p+D9V5o/9t9797YcAAAAAElFTkSuQmCC">
   
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
   
@@ -16,7 +16,7 @@
   
   <style>
     /* ------------------------------------ */
-    /* KHAI BÁO FONT CHỮ VIẾT TAY DFVN BUNGALOW (ĐÃ CHÚ THÍCH ĐỂ TRÁNH LỖI 404 TRONG CONSOLE) */
+    /* ĐÃ VÔ HIỆU HÓA: KHAI BÁO FONT CHỮ VIẾT TAY DFVN BUNGALOW ĐỂ TRÁNH LỖI 404 */
     /* ------------------------------------ */
     /*
     @font-face {
@@ -94,7 +94,8 @@
         letter-spacing: 1px; 
         text-transform: uppercase; 
         text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7); /* Thêm bóng chữ đen */
-        font-family: 'DFVN Bungalow', cursive, 'Nunito', sans-serif; /* Font chữ viết tay */
+        /* ĐÃ CHỈNH: Dùng Nunito thay vì DFVN Bungalow để tránh lỗi 404 */
+        font-family: 'Nunito', sans-serif; 
     }
     
     header p { 
@@ -533,7 +534,7 @@
       // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET SẢN PHẨM ⚠️
       const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
-      // ⚠️ URL TSV CHO BẢNG ĐƠN HÀNG (ĐÃ CHÈN LINK CỦA BẠN) ⚠️
+      // ⚠️ URL TSV CHO BẢNG ĐƠN HÀNG (ĐÃ CHÈN LINK CỦA BẠN TỪ LẦN TRƯỚC) ⚠️
       const ORDER_TRACKING_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv'; 
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
@@ -561,7 +562,7 @@
           return [];
       }
       
-      // --- HÀM 2: FETCH VÀ RENDER SẢN PHẨM ---
+      // --- HÀM 2: FETCH VÀ RENDER SẢN PHẨM (GIỮ NGUYÊN) ---
       async function fetchAndRenderProducts() {
           try {
               const response = await fetch(SHEET_API_URL, { cache: 'no-cache' });
@@ -769,27 +770,20 @@
               }
               const tsvText = await response.text();
               
-              // PapaParse sẽ tự động tìm header và bỏ qua các dòng trống (skipEmptyLines: true)
               const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
               
               ORDER_DATA = parsed.data.map(item => ({
                   ...item,
-                  // TÊN CỘT Ở ĐÂY CẦN PHẢI KHỚP CHÍNH XÁC VỚI HEADER CỦA SHEET
                   order_id: item.order_id ? item.order_id.trim().toUpperCase() : '' 
               })).filter(item => item.order_id);
               
               
               // ⚠️ PHẦN KIỂM TRA TÊN CỘT BẮT BUỘC ⚠️
-              const requiredKeys = ['order_id', 'customer_name', 'address', 'status', 'progress', 'note'];
+              const requiredKeys = ['order_id', 'customer_name', 'phone', 'address', 'status', 'progress', 'note']; 
               if (ORDER_DATA.length > 0) {
-                  const firstOrderKeys = Object.keys(ORDER_DATA[0]);
+                  // Lấy keys từ dữ liệu đã parse và chuẩn hóa
+                  const firstOrderKeys = Object.keys(ORDER_DATA[0]).map(key => key.toLowerCase().trim()); 
                   
-                  // In ra console để người dùng kiểm tra:
-                  console.warn("--- DEBUG LOG: Tên cột (keys) thực tế đọc được từ dòng dữ liệu đầu tiên ---");
-                  console.log("CẦN CÓ: order_id, customer_name, phone, address, status, progress, note");
-                  console.log("KEYS THỰC TẾ:", firstOrderKeys);
-                  console.warn("----------------------------------------------------------------------");
-
                   const missingKeys = requiredKeys.filter(key => !firstOrderKeys.includes(key));
                   
                   if (missingKeys.length > 0) {
@@ -797,9 +791,11 @@
                       
                       // BÁO LỖI RÕ RÀNG TRÊN UI
                       if (resultDiv) {
-                          resultDiv.innerHTML = `<p style="color: #8B0000; text-align: center; font-weight: 800; padding: 10px; border: 1px dashed #8B0000; border-radius: 8px;"><i class="fas fa-exclamation-triangle"></i> LỖI DỮ LIỆU CỘT: Thiếu cột quan trọng (${missingKeys.join(', ')}). Vui lòng kiểm tra lại TÊN CỘT trong Google Sheet theo hướng dẫn.</p>`;
+                          resultDiv.innerHTML = `<p style="color: #8B0000; text-align: center; font-weight: 800; padding: 10px; border: 1px dashed #8B0000; border-radius: 8px;"><i class="fas fa-exclamation-triangle"></i> LỖI CẤU TRÚC DỮ LIỆU: Thiếu cột bắt buộc (${missingKeys.join(', ')}). Vui lòng kiểm tra lại TÊN CỘT trong Google Sheet theo hướng dẫn.</p>`;
                       }
-                      return; // Dừng nếu có lỗi tên cột
+                      // Đặt lại ORDER_DATA về mảng rỗng để chặn tra cứu lỗi
+                      ORDER_DATA = []; 
+                      return; 
                   }
               }
               // ⚠️ KẾT THÚC PHẦN KIỂM TRA TÊN CỘT ⚠️
@@ -814,6 +810,8 @@
               if (resultDiv) {
                   resultDiv.innerHTML = '<p style="color: #FF4500; text-align: center; font-weight: 800;"><i class="fas fa-exclamation-triangle"></i> Lỗi kết nối dữ liệu đơn hàng. Vui lòng kiểm tra lại Google Sheet TSV.</p>';
               }
+              // Đặt lại ORDER_DATA về mảng rỗng để chặn tra cứu lỗi
+              ORDER_DATA = []; 
           }
       }
 
@@ -827,7 +825,10 @@
           resultDiv.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Đang tra cứu...</p>';
 
           if (ORDER_DATA.length === 0) {
-               resultDiv.innerHTML = '<p style="color: #A52A2A; text-align: center; font-weight: 800;"><i class="fas fa-exclamation-triangle"></i> Lỗi: Dữ liệu đơn hàng chưa được tải. Vui lòng đợi 1 lát hoặc tải lại trang.</p>';
+               // Báo lỗi nếu dữ liệu chưa sẵn sàng
+               resultDiv.innerHTML = '<p style="color: #A52A2A; text-align: center; font-weight: 800;"><i class="fas fa-exclamation-triangle"></i> Lỗi: Dữ liệu đơn hàng chưa sẵn sàng (có thể do lỗi cấu trúc cột hoặc kết nối). Vui lòng tải lại trang.</p>';
+               // Thử tải lại dữ liệu trong nền
+               fetchOrderData();
                return;
           }
 
@@ -836,7 +837,7 @@
               return;
           }
 
-          // 1. Tìm kiếm đơn hàng
+          // 1. Tìm kiếm đơn hàng (Dùng key order_id chuẩn hóa)
           const foundOrder = ORDER_DATA.find(order => order.order_id === orderId);
 
           if (!foundOrder || !foundOrder.order_id || foundOrder.status === undefined || foundOrder.status === null || foundOrder.status.trim() === '' || foundOrder.status.toLowerCase().includes('chưa xác nhận')) {
