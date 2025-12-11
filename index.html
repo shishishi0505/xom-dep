@@ -450,10 +450,14 @@
         font-weight: 800;
         color: var(--text);
     }
+    /* Thêm style cho trạng thái, tùy chọn màu */
     #tracking-result .status-confirmed { color: #008000; font-weight: 900; }
     #tracking-result .status-shipped { color: #0000FF; font-weight: 900; }
     #tracking-result .status-delivered { color: var(--primary-red); font-weight: 900; }
-    #tracking-result .status-error { color: #cc0000; font-weight: 900; text-align: center; }
+    /* Style cho thông báo lỗi theo yêu cầu của bạn */
+    #tracking-result .status-error { color: #cc0000; font-weight: 900; text-align: center; padding: 20px 0; font-size: 16px;}
+    #tracking-result .status-error i { margin-right: 10px; font-size: 20px; }
+
 
     /* FOOTER */
     footer { 
@@ -470,6 +474,7 @@
           max-width: none;
       }
       blockquote { max-width: 100%; }
+      /* Responsive cho tracking form */
       .tracking-form { flex-direction: column; padding: 15px; }
       .tracking-form input, .tracking-form button { width: 100%; }
     }
@@ -604,8 +609,7 @@
       const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
       // ⚠️ URL TSV MỚI CHO BẢNG ĐƠN HÀNG ⚠️
-      // THAY THẾ BẰNG URL PUBLIC TSV CỦA SHEET CHỨA DỮ LIỆU ĐƠN HÀNG CỦA BẠN (CẦN CÁC CỘT: order_id, customer_name, phone, address, status)
-      // VÍ DỤ: https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?gid=1234567890&output=tsv
+      // THAY THẾ BẰNG URL PUBLIC TSV CỦA SHEET CHỨA DỮ LIỆU ĐƠN HÀNG CỦA BẠN (CẦN CÁC CỘT: order_id, customer_name, phone, address, status, note)
       const ORDER_TRACKING_API_URL = ''; // BẠN CẦN ĐIỀN VÀO ĐÂY
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
@@ -788,6 +792,7 @@
           attachModalListeners();
       }
       
+      
       // --- HÀM XỬ LÝ LIGHTBOX (ZOOM ẢNH) ---
       function openLightbox(imageUrl) {
           lightboxImage.src = imageUrl;
@@ -884,6 +889,7 @@
           const resultDiv = document.getElementById('tracking-result');
           const orderId = orderIdInput.value.trim().toUpperCase();
           
+          // Hiển thị trạng thái chờ
           resultDiv.innerHTML = `<p style="text-align: center; color: #888;">Đang tra cứu...</p>`;
           
           if (!orderId) {
@@ -914,6 +920,7 @@
                   ${foundOrder.note ? `<p><strong>Ghi chú:</strong> ${foundOrder.note}</p>` : ''}
               `;
           } else {
+              // Thông báo lỗi theo yêu cầu của người dùng
               resultDiv.innerHTML = `
                   <p class="status-error" style="font-size: 16px;">
                       <i class="fas fa-sad-cry"></i> XIN LỖI! Đơn hàng của bạn không tồn tại hoặc chưa được xác nhận.
@@ -921,7 +928,7 @@
               `;
           }
       }
-
+      
       // --- GẮN SỰ KIỆN LẮNG NGHE ---
       function attachModalListeners() {
           // Gắn listener cho từng Card, đảm bảo không mở modal khi click vào quick-actions
@@ -953,7 +960,7 @@
           modal.addEventListener('click', handleModalOverlayClick);
           lightbox.addEventListener('click', handleLightboxOverlayClick);
           document.addEventListener('keydown', handleEscapeKey); 
-          
+
           // GẮN LISTENER MỚI CHO TRA CỨU ĐƠN HÀNG
           const trackButton = document.getElementById('track-button');
           if (trackButton) {
@@ -971,7 +978,6 @@
                   trackOrder();
               }
           }
-
 
           function handleModalOverlayClick(e) { 
               if (e.target === modal) closeModal(); 
@@ -998,7 +1004,7 @@
           });
 
           sections.forEach(section => {
-              if ('#' + section.id === targetId.substring(1)) {
+              if ('#' + section.id === targetId) {
                   section.classList.remove('hidden');
               } else {
                   section.classList.add('hidden');
