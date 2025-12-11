@@ -388,6 +388,72 @@
     /* Lightbox Zoom */
     #zoom-lightbox { z-index: 2000; background: rgba(0, 0, 0, 0.95); }
 
+    /* --- CSS CHO TRACKING MỚI --- */
+    .tracking-form {
+        max-width: 450px;
+        margin: 20px auto 30px;
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--secondary-gold);
+        border-radius: 12px;
+    }
+    .tracking-form input[type="text"] {
+        flex: 1;
+        padding: 12px 15px;
+        border: 2px solid var(--cream);
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+    .tracking-form input[type="text"]:focus {
+        border-color: var(--primary-red);
+    }
+    .tracking-form button {
+        padding: 12px 20px;
+        background: var(--primary-red);
+        color: var(--white);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 900;
+        font-size: 16px;
+        transition: background 0.3s, transform 0.1s;
+    }
+    .tracking-form button:hover {
+        background: var(--secondary-gold);
+        color: var(--primary-red);
+        transform: translateY(-1px);
+    }
+    
+    #tracking-result {
+        text-align: left;
+        padding: 15px 25px;
+        border-radius: 12px;
+        min-height: 100px;
+        transition: all 0.5s ease;
+        margin-top: 20px;
+        background: var(--trans-white);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    #tracking-result h3 {
+        color: var(--primary-red);
+        font-size: 22px;
+        border-bottom: 2px dashed var(--secondary-gold);
+        padding-bottom: 10px;
+        margin-top: 0;
+    }
+    #tracking-result p {
+        margin: 8px 0;
+        font-weight: 800;
+        color: var(--text);
+    }
+    #tracking-result .status-confirmed { color: #008000; font-weight: 900; }
+    #tracking-result .status-shipped { color: #0000FF; font-weight: 900; }
+    #tracking-result .status-delivered { color: var(--primary-red); font-weight: 900; }
+    #tracking-result .status-error { color: #cc0000; font-weight: 900; text-align: center; }
 
     /* FOOTER */
     footer { 
@@ -404,6 +470,8 @@
           max-width: none;
       }
       blockquote { max-width: 100%; }
+      .tracking-form { flex-direction: column; padding: 15px; }
+      .tracking-form input, .tracking-form button { width: 100%; }
     }
     
     @media (max-width: 550px) { 
@@ -466,6 +534,7 @@
   <nav aria-label="Chuyển mục">
     <a href="#home" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-gem"></i></span> GIỚI THIỆU</a>
     <a href="#products" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-shopping-bag"></i></span> SẢN PHẨM</a>
+    <a href="#tracking" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-truck-fast"></i></span> THEO DÕI ĐƠN</a>
   </nav>
 
   <div class="layout">
@@ -481,8 +550,21 @@
       </section>
 
       <section id="products" class="card"><div class="section-title"><h2>SẢN PHẨM & ĐẶC SẢN</h2></div><p>Các sản phẩm thủ công, trang phục truyền thống, và đặc sản ẩm thực được tuyển chọn.</p><div class="product-grid" id="all-products"></div></section>
-
-    </main>
+      
+      <section id="tracking" class="card">
+        <div class="section-title"><h2><i class="fas fa-search"></i> TRA CỨU ĐƠN HÀNG</h2></div>
+        <p>Vui lòng nhập **Mã Đơn Hàng** của bạn để kiểm tra trạng thái vận chuyển.</p>
+        
+        <div class="tracking-form">
+            <input type="text" id="order-id-input" placeholder="Nhập Mã Đơn Hàng (Ví dụ: DT2025001)" />
+            <button id="track-button"><i class="fas fa-search"></i> TRA CỨU</button>
+        </div>
+        
+        <div id="tracking-result">
+            <p style="text-align: center; color: #888;">Kết quả tra cứu sẽ hiển thị ở đây.</p>
+        </div>
+      </section>
+      </main>
   </div>
 
   <div id="gallery-modal" class="modal-overlay">
@@ -521,6 +603,11 @@
       // ⚠️ ĐẶT URL TSV CÔNG KHAI CỦA GOOGLE SHEET ĐÃ ĐƯỢC CHÈN ⚠️
       const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
+      // ⚠️ URL TSV MỚI CHO BẢNG ĐƠN HÀNG ⚠️
+      // THAY THẾ BẰNG URL PUBLIC TSV CỦA SHEET CHỨA DỮ LIỆU ĐƠN HÀNG CỦA BẠN (CẦN CÁC CỘT: order_id, customer_name, phone, address, status)
+      // VÍ DỤ: https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?gid=1234567890&output=tsv
+      const ORDER_TRACKING_API_URL = ''; // BẠN CẦN ĐIỀN VÀO ĐÂY
+      
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
       const navLinks = document.querySelectorAll('a.nav-link');
@@ -530,19 +617,22 @@
       
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
+      let ORDER_DATA = []; // Biến mới để lưu dữ liệu đơn hàng
       
       // --- HÀM 1: PHÂN TÍCH DỮ LIỆU TSV (Sử dụng PapaParse) ---
-      function parseTsvToArray(tsvText) {
+      function parseTsvToArray(tsvText, isProductSheet = true) {
           const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
           const data = parsed.data;
-          if (data.length > 0) {
+          
+          if (isProductSheet && data.length > 0) {
               CONFIG_DATA = data[0]; // Hàng đầu tiên là config
               return data.slice(1).map((item, index) => ({
                 ...item,
                 id: item.id || `product-${index}`
               })); 
           }
-          return [];
+          // Nếu là sheet đơn hàng thì lấy tất cả
+          return data;
       }
       
       // --- HÀM 2: FETCH VÀ RENDER SẢN PHẨM ---
@@ -554,7 +644,7 @@
               }
               const tsvText = await response.text();
               
-              PRODUCT_DATA = parseTsvToArray(tsvText);
+              PRODUCT_DATA = parseTsvToArray(tsvText, true);
               
               // CẬP NHẬT ẢNH NỀN
               updatePageBackground(CONFIG_DATA); 
@@ -569,6 +659,27 @@
               }
           } catch (error) {
               console.error('LỖI khi tải hoặc xử lý dữ liệu từ Google Sheet:', error);
+          }
+      }
+      
+      // --- HÀM MỚI: FETCH DỮ LIỆU ĐƠN HÀNG ---
+      async function fetchOrderData() {
+          if (!ORDER_TRACKING_API_URL) {
+              console.warn('⚠️ Vui lòng điền ORDER_TRACKING_API_URL vào biến JS.');
+              ORDER_DATA = [];
+              return;
+          }
+          try {
+              const response = await fetch(ORDER_TRACKING_API_URL, { cache: 'no-cache' });
+              if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              const tsvText = await response.text();
+              ORDER_DATA = parseTsvToArray(tsvText, false).filter(item => item.order_id); // Chỉ lấy những dòng có mã đơn
+              console.log('Order Data Loaded:', ORDER_DATA.length, 'orders.');
+          } catch (error) {
+              console.error('LỖI khi tải hoặc xử lý dữ liệu Đơn hàng:', error);
+              ORDER_DATA = [];
           }
       }
 
@@ -677,7 +788,6 @@
           attachModalListeners();
       }
       
-      
       // --- HÀM XỬ LÝ LIGHTBOX (ZOOM ẢNH) ---
       function openLightbox(imageUrl) {
           lightboxImage.src = imageUrl;
@@ -768,6 +878,50 @@
           document.body.classList.remove('modal-open'); 
       }
       
+      // --- HÀM MỚI: XỬ LÝ TRA CỨU ĐƠN HÀNG ---
+      function trackOrder() {
+          const orderIdInput = document.getElementById('order-id-input');
+          const resultDiv = document.getElementById('tracking-result');
+          const orderId = orderIdInput.value.trim().toUpperCase();
+          
+          resultDiv.innerHTML = `<p style="text-align: center; color: #888;">Đang tra cứu...</p>`;
+          
+          if (!orderId) {
+              resultDiv.innerHTML = `<p class="status-error"><i class="fas fa-exclamation-circle"></i> Vui lòng nhập Mã Đơn Hàng.</p>`;
+              return;
+          }
+          
+          const foundOrder = ORDER_DATA.find(order => order.order_id && order.order_id.trim().toUpperCase() === orderId);
+          
+          if (foundOrder) {
+              // Chuẩn hóa Status để có CSS khác nhau
+              const statusLower = foundOrder.status ? foundOrder.status.trim().toLowerCase() : 'đang xử lý';
+              let statusClass = 'status-default';
+              if (statusLower.includes('xác nhận') || statusLower.includes('đã xác nhận')) {
+                  statusClass = 'status-confirmed';
+              } else if (statusLower.includes('đang giao') || statusLower.includes('đã gửi') || statusLower.includes('shipped')) {
+                  statusClass = 'status-shipped';
+              } else if (statusLower.includes('hoàn thành') || statusLower.includes('delivered')) {
+                  statusClass = 'status-delivered';
+              }
+
+              resultDiv.innerHTML = `
+                  <h3><i class="fas fa-box-open"></i> Đơn Hàng #${orderId}</h3>
+                  <p><strong>Tên Khách Hàng:</strong> ${foundOrder.customer_name || 'N/A'}</p>
+                  <p><strong>Số Điện Thoại:</strong> ${foundOrder.phone || 'N/A'}</p>
+                  <p><strong>Địa Chỉ Giao Hàng:</strong> ${foundOrder.address || 'N/A'}</p>
+                  <p><strong>Trạng Thái Đơn:</strong> <span class="${statusClass}">${foundOrder.status || 'Đang xử lý'}</span></p>
+                  ${foundOrder.note ? `<p><strong>Ghi chú:</strong> ${foundOrder.note}</p>` : ''}
+              `;
+          } else {
+              resultDiv.innerHTML = `
+                  <p class="status-error" style="font-size: 16px;">
+                      <i class="fas fa-sad-cry"></i> XIN LỖI! Đơn hàng của bạn không tồn tại hoặc chưa được xác nhận.
+                  </p>
+              `;
+          }
+      }
+
       // --- GẮN SỰ KIỆN LẮNG NGHE ---
       function attachModalListeners() {
           // Gắn listener cho từng Card, đảm bảo không mở modal khi click vào quick-actions
@@ -799,6 +953,25 @@
           modal.addEventListener('click', handleModalOverlayClick);
           lightbox.addEventListener('click', handleLightboxOverlayClick);
           document.addEventListener('keydown', handleEscapeKey); 
+          
+          // GẮN LISTENER MỚI CHO TRA CỨU ĐƠN HÀNG
+          const trackButton = document.getElementById('track-button');
+          if (trackButton) {
+              trackButton.removeEventListener('click', trackOrder);
+              trackButton.addEventListener('click', trackOrder);
+          }
+          const orderIdInput = document.getElementById('order-id-input');
+          if (orderIdInput) {
+              orderIdInput.removeEventListener('keydown', handleTrackEnter);
+              orderIdInput.addEventListener('keydown', handleTrackEnter);
+          }
+          function handleTrackEnter(e) {
+              if (e.key === 'Enter') {
+                  e.preventDefault();
+                  trackOrder();
+              }
+          }
+
 
           function handleModalOverlayClick(e) { 
               if (e.target === modal) closeModal(); 
@@ -825,7 +998,7 @@
           });
 
           sections.forEach(section => {
-              if ('#' + section.id === targetId) {
+              if ('#' + section.id === targetId.substring(1)) {
                   section.classList.remove('hidden');
               } else {
                   section.classList.add('hidden');
@@ -844,19 +1017,25 @@
       const POLLING_INTERVAL = 300000; // 5 phút
 
       function startPolling() {
-          fetchAndRenderProducts(); // Tải lần đầu từ sheet
-          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); // Tải lặp lại
+          fetchAndRenderProducts(); // Tải lần đầu từ sheet sản phẩm/config
+          fetchOrderData(); // Tải lần đầu dữ liệu đơn hàng
+          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); // Tải lặp lại sản phẩm
+          setInterval(fetchOrderData, POLLING_INTERVAL); // Tải lặp lại đơn hàng
       }
 
       // 🚨 KHỞI TẠO: Bắt đầu tải dữ liệu khi trang load
       startPolling(); 
-      showSection('#home'); 
+      
+      // Kiểm tra URL Hash để hiển thị mục chính xác khi load
+      const initialHash = window.location.hash || '#home';
+      showSection(initialHash); 
 
       navLinks.forEach(a => {
           a.addEventListener('click', function(e){
               const href = this.getAttribute('href');
               if (!href || href.charAt(0) !== '#') return;
               e.preventDefault();
+              window.location.hash = href; // Cập nhật hash
               document.body.classList.remove('page-enter-active');
               document.body.classList.add('page-exit-active');
               setTimeout(() => {
