@@ -16,16 +16,17 @@
   
   <style>
     /* ------------------------------------ */
-    /* KHAI BÁO FONT CHỮ VIẾT TAY DFVN BUNGALOW (BẠN CẦN CHÈN FILE FONT) */
+    /* KHAI BÁO FONT CHỮ VIẾT TAY DFVN BUNGALOW (ĐÃ CHÚ THÍCH ĐỂ TRÁNH LỖI 404 TRONG CONSOLE) */
     /* ------------------------------------ */
+    /*
     @font-face {
         font-family: 'DFVN Bungalow';
         src: url('fonts/DFVNBungalow.woff2') format('woff2'),
              url('fonts/DFVNBungalow.woff') format('woff');
-        /* THAY 'fonts/...' BẰNG ĐƯỜNG DẪN THỰC TẾ ĐẾN FILE FONT CỦA BẠN */
         font-weight: normal;
         font-style: normal;
     }
+    */
     
     /* ------------------------------------ */
     /* CSS CHỦ ĐỀ SẮC ĐẸP DÂN TỘC THÁI (ĐỎ - VÀNG) */
@@ -172,7 +173,7 @@
     }
     nav a:hover { background: var(--secondary-gold); color: var(--primary-red); transform: translateY(-3px); }
     nav a.active { background: var(--primary-red); color: var(--white); } 
-    nav a:focus { background: var(--primary-red); color: var(--white); outline: 2px solid var(--secondary-gold); outline-offset: 2px; }
+    nav a:focus { background: var(--primary-red); color: var(--white); outline: 2px solid var(--secondary-gold); outline-offset: 2px; } 
 
     /* simple pastel icon style */
     .icon-wrap { width: 24px; height: 24px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; }
@@ -212,7 +213,7 @@
         transition: opacity 0.4s ease, transform 0.4s ease; 
     }
     .card.hidden { display: none !important; }
-    .section-title h2 { margin:0; color:var(--title); text-transform: uppercase; }
+    .section-title h2 { margin:0; color:var(--title); text-transform: uppercase; } 
     
     blockquote {
         text-align: left; 
@@ -249,7 +250,7 @@
         flex-direction: column;
         justify-content: space-between;
     }
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); } 
     
     .product-card img { 
         width: 100%; height: auto; border-radius: 12px; margin-bottom: 10px; 
@@ -259,7 +260,7 @@
       text-align: center; 
       flex-grow: 1; 
     }
-    .product-card h3 { color: var(--title); font-size: 16px; margin: 8px 0 5px; font-weight: 900; min-height: 40px; }
+    .product-card h3 { color: var(--title); font-size: 16px; margin: 8px 0 5px; font-weight: 900; min-height: 40px; } 
     .product-card p {
         font-size: 13px; 
         color: #888; 
@@ -363,7 +364,7 @@
         font-weight: 900; 
         font-size: 18px; 
     } 
-    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; z-index: 1001; }
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: 300; line-height: 1; cursor: pointer; background: none; border: none; color: var(--text); transition: color 0.2s; z-index: 1001; } 
     .close-btn:hover { color: var(--primary-red); }
     
     /* Căn giữa Gallery */
@@ -388,77 +389,6 @@
     /* Lightbox Zoom */
     #zoom-lightbox { z-index: 2000; background: rgba(0, 0, 0, 0.95); }
 
-    /* --- CSS CHO TRACKING MỚI --- */
-    .tracking-form {
-        max-width: 450px;
-        margin: 20px auto 30px;
-        display: flex;
-        gap: 10px;
-        padding: 10px;
-        border: 1px solid var(--secondary-gold);
-        border-radius: 12px;
-    }
-    .tracking-form input[type="text"] {
-        flex: 1;
-        padding: 12px 15px;
-        border: 2px solid var(--cream);
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 700;
-        outline: none;
-        transition: border-color 0.3s;
-    }
-    .tracking-form input[type="text"]:focus {
-        border-color: var(--primary-red);
-    }
-    .tracking-form button {
-        padding: 12px 20px;
-        background: var(--primary-red);
-        color: var(--white);
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 900;
-        font-size: 16px;
-        transition: background 0.3s, transform 0.1s;
-    }
-    .tracking-form button:hover {
-        background: var(--secondary-gold);
-        color: var(--primary-red);
-        transform: translateY(-1px);
-    }
-    
-    #tracking-result {
-        text-align: left;
-        padding: 15px 25px;
-        border-radius: 12px;
-        min-height: 100px;
-        transition: all 0.5s ease;
-        margin-top: 20px;
-        background: var(--trans-white);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-    #tracking-result h3 {
-        color: var(--primary-red);
-        font-size: 22px;
-        border-bottom: 2px dashed var(--secondary-gold);
-        padding-bottom: 10px;
-        margin-top: 0;
-    }
-    #tracking-result p {
-        margin: 8px 0;
-        font-weight: 800;
-        color: var(--text);
-    }
-    /* Thêm style cho trạng thái, tùy chọn màu */
-    /* Màu đỏ đậm cho trạng thái hoàn thành */
-    #tracking-result .status-delivered { color: var(--primary-red); font-weight: 900; } 
-    /* Màu xanh lá cho trạng thái đã xác nhận */
-    #tracking-result .status-confirmed { color: #008000; font-weight: 900; }
-    /* Style cho thông báo lỗi theo yêu cầu của bạn */
-    #tracking-result .status-error { color: #cc0000; font-weight: 900; text-align: center; padding: 20px 0; font-size: 16px;}
-    #tracking-result .status-error i { margin-right: 10px; font-size: 20px; }
-
 
     /* FOOTER */
     footer { 
@@ -475,9 +405,6 @@
           max-width: none;
       }
       blockquote { max-width: 100%; }
-      /* Responsive cho tracking form */
-      .tracking-form { flex-direction: column; padding: 15px; }
-      .tracking-form input, .tracking-form button { width: 100%; }
     }
     
     @media (max-width: 550px) { 
@@ -513,7 +440,7 @@
         }
         
         .modal-content { padding: 0; border-radius: 0; box-shadow: none; width: 100%; max-width: 100%; max-height: 100vh; height: 100vh; } 
-        .close-btn { position: fixed; top: 10px; right: 15px; z-index: 1002; color: #505050; background: rgba(255, 255, 255, 0.8); padding: 5px 10px; border-radius: 50%; line-height: 1; font-size: 24px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .close-btn { position: fixed; top: 10px; right: 15px; z-index: 1002; color: #505050; background: rgba(255, 255, 255, 0.8); padding: 5px 10px; border-radius: 50%; line-height: 1; font-size: 24px; box-shadow: 0 0 10px rgba(0,0,0,0.1); } 
 
         .modal-content h2, 
         .modal-content p, 
@@ -523,9 +450,7 @@
         }
         .modal-content h2 { padding-top: 15px; } 
         .gallery-wrapper img { width: 100%; max-width: none; }
-    }
-  </style>
-</head>
+    }\n  </style>\n</head>
 <body class="page-enter page-enter-active">
     
   <header>
@@ -540,7 +465,7 @@
   <nav aria-label="Chuyển mục">
     <a href="#home" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-gem"></i></span> GIỚI THIỆU</a>
     <a href="#products" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-shopping-bag"></i></span> SẢN PHẨM</a>
-    <a href="#tracking" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-truck-fast"></i></span> THEO DÕI ĐƠN</a>
+    <a href="#order-tracking" class="nav-link"><span class="icon-wrap icon-thai"><i class="fas fa-truck"></i></span> THEO DÕI ĐƠN</a>
   </nav>
 
   <div class="layout">
@@ -556,21 +481,22 @@
       </section>
 
       <section id="products" class="card"><div class="section-title"><h2>SẢN PHẨM & ĐẶC SẢN</h2></div><p>Các sản phẩm thủ công, trang phục truyền thống, và đặc sản ẩm thực được tuyển chọn.</p><div class="product-grid" id="all-products"></div></section>
-      
-      <section id="tracking" class="card">
-        <div class="section-title"><h2><i class="fas fa-search"></i> TRA CỨU ĐƠN HÀNG</h2></div>
-        <p>Vui lòng nhập **Mã Đơn Hàng** của bạn để kiểm tra trạng thái vận chuyển.</p>
-        
-        <div class="tracking-form">
-            <input type="text" id="order-id-input" placeholder="Nhập Mã Đơn Hàng (Ví dụ: DT2025001)" />
-            <button id="track-button"><i class="fas fa-search"></i> TRA CỨU</button>
-        </div>
-        
-        <div id="tracking-result">
-            <p style="text-align: center; color: #888;">Kết quả tra cứu sẽ hiển thị ở đây.</p>
-        </div>
+
+      <section id="order-tracking" class="card hidden">
+          <div class="section-title"><h2>Q TRA CỨU ĐƠN HÀNG</h2></div>
+          <p>Vui lòng nhập **"Mã Đơn Hàng"** của bạn để kiểm tra trạng thái vận chuyển.</p>
+          
+          <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px auto; max-width: 400px;">
+              <input type="text" id="order-id-input" placeholder="Nhập Mã Đơn Hàng (Ví dụ: D03)" style="padding: 12px; border: 1px solid #ccc; border-radius: 10px; flex-grow: 1; font-size: 16px; text-transform: uppercase;" />
+              <button id="track-order-btn" style="padding: 12px 20px; background: var(--primary-red); color: white; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: background 0.2s;">TRA CỨU</button>
+          </div>
+          
+          <div id="order-tracking-result" style="margin-top: 25px; padding: 15px; border-radius: 15px; background: var(--trans-white); text-align: left; min-height: 50px;">
+              <p style="text-align: center; color: #888;">Nhập mã đơn hàng và bấm TRA CỨU.</p>
+          </div>
       </section>
-      </main>
+
+    </main>
   </div>
 
   <div id="gallery-modal" class="modal-overlay">
@@ -610,9 +536,7 @@
       const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
       
       // ⚠️ URL TSV MỚI CHO BẢNG ĐƠN HÀNG ⚠️
-      // THAY THẾ BẰNG URL PUBLIC TSV CỦA SHEET CHỨA DỮ LIỆU ĐƠN HÀNG CỦA BẠN 
-      // CÁC CỘT CẦN CÓ: order_id, customer_name, phone, address, status, progress, note
-      const ORDER_TRACKING_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv'; // BẠN CẦN ĐIỀN VÀO ĐÂY
+      const ORDER_TRACKING_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv'; // <= Link TSV của bạn
       
       // --- KHAI BÁO BIẾN DÙNG CHUNG ---
       const sections = document.querySelectorAll('#main-content .card');
@@ -621,24 +545,22 @@
       const lightbox = document.getElementById('zoom-lightbox');
       const lightboxImage = document.getElementById('lightbox-image');
       
+      let ORDER_DATA = []; // BIẾN MỚI LƯU TRỮ DỮ LIỆU ĐƠN HÀNG
       let PRODUCT_DATA = []; 
       let CONFIG_DATA = {}; 
-      let ORDER_DATA = []; // Biến mới để lưu dữ liệu đơn hàng
       
       // --- HÀM 1: PHÂN TÍCH DỮ LIỆU TSV (Sử dụng PapaParse) ---
-      function parseTsvToArray(tsvText, isProductSheet = true) {
+      function parseTsvToArray(tsvText) {
           const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
           const data = parsed.data;
-          
-          if (isProductSheet && data.length > 0) {
+          if (data.length > 0) {
               CONFIG_DATA = data[0]; // Hàng đầu tiên là config
               return data.slice(1).map((item, index) => ({
                 ...item,
                 id: item.id || `product-${index}`
               })); 
           }
-          // Nếu là sheet đơn hàng thì lấy tất cả
-          return data;
+          return [];
       }
       
       // --- HÀM 2: FETCH VÀ RENDER SẢN PHẨM ---
@@ -650,7 +572,7 @@
               }
               const tsvText = await response.text();
               
-              PRODUCT_DATA = parseTsvToArray(tsvText, true);
+              PRODUCT_DATA = parseTsvToArray(tsvText);
               
               // CẬP NHẬT ẢNH NỀN
               updatePageBackground(CONFIG_DATA); 
@@ -665,27 +587,6 @@
               }
           } catch (error) {
               console.error('LỖI khi tải hoặc xử lý dữ liệu từ Google Sheet:', error);
-          }
-      }
-      
-      // --- HÀM MỚI: FETCH DỮ LIỆU ĐƠN HÀNG ---
-      async function fetchOrderData() {
-          if (!ORDER_TRACKING_API_URL) {
-              console.warn('⚠️ Vui lòng điền ORDER_TRACKING_API_URL vào biến JS.');
-              ORDER_DATA = [];
-              return;
-          }
-          try {
-              const response = await fetch(ORDER_TRACKING_API_URL, { cache: 'no-cache' });
-              if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              const tsvText = await response.text();
-              ORDER_DATA = parseTsvToArray(tsvText, false).filter(item => item.order_id); // Chỉ lấy những dòng có mã đơn
-              console.log('Order Data Loaded:', ORDER_DATA.length, 'orders.');
-          } catch (error) {
-              console.error('LỖI khi tải hoặc xử lý dữ liệu Đơn hàng:', error);
-              ORDER_DATA = [];
           }
       }
 
@@ -885,69 +786,104 @@
           document.body.classList.remove('modal-open'); 
       }
       
-      // --- HÀM MỚI: XỬ LÝ TRA CỨU ĐƠN HÀNG (LOGIC MỚI CỦA BẠN) ---
-      function trackOrder() {
-          const orderIdInput = document.getElementById('order-id-input');
-          const resultDiv = document.getElementById('tracking-result');
-          const orderId = orderIdInput.value.trim().toUpperCase();
+      // --- HÀM 4: FETCH DỮ LIỆU ĐƠN HÀNG (MỚI) ---
+      async function fetchOrderData() {
+          try {
+              const response = await fetch(ORDER_TRACKING_API_URL, { cache: 'no-cache' });
+              if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              const tsvText = await response.text();
+              
+              const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
+              ORDER_DATA = parsed.data.map(item => ({
+                  ...item,
+                  order_id: item.order_id ? item.order_id.toUpperCase() : '' // Chuẩn hóa order_id
+              })).filter(item => item.order_id);
+              
+              console.log(`Order Data Loaded: ${ORDER_DATA.length} orders.`);
+              
+              attachOrderTrackingListener(); 
+              
+          } catch (error) {
+              console.error('LỖI khi tải hoặc xử lý dữ liệu Đơn hàng:', error);
+          }
+      }
+
+      // --- HÀM 5: XỬ LÝ TRA CỨU ĐƠN HÀNG (MỚI) ---
+      function handleTrackOrder() {
+          const inputElement = document.getElementById('order-id-input');
+          const resultDiv = document.getElementById('order-tracking-result');
+          const orderId = inputElement.value.trim().toUpperCase(); // Chuẩn hóa đầu vào người dùng
           
-          // Hiển thị trạng thái chờ
-          resultDiv.innerHTML = `<p style="text-align: center; color: #888;">Đang tra cứu...</p>`;
-          
+          resultDiv.innerHTML = '<p style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Đang tra cứu...</p>';
+
           if (!orderId) {
-              resultDiv.innerHTML = `<p class="status-error"><i class="fas fa-exclamation-circle"></i> Vui lòng nhập Mã Đơn Hàng.</p>`;
+              resultDiv.innerHTML = '<p style="color: #FF4500; text-align: center;"><i class="fas fa-exclamation-triangle"></i> Vui lòng nhập Mã Đơn Hàng.</p>';
               return;
           }
-          
-          const foundOrder = ORDER_DATA.find(order => order.order_id && order.order_id.trim().toUpperCase() === orderId);
-          
-          if (foundOrder) {
-              
-              const progressLower = foundOrder.progress ? foundOrder.progress.trim().toLowerCase() : '';
-              const statusLower = foundOrder.status ? foundOrder.status.trim().toLowerCase() : '';
 
-              // --- BƯỚC 1: KIỂM TRA ĐIỀU KIỆN 'CHƯA XÁC NHẬN' (ĐIỀU KIỆN KHÓA) ---
-              if (statusLower.includes('chưa xác nhận')) {
-                  // Yêu cầu: Nếu status là 'chưa xác nhận' -> trả về thông báo lỗi/không tồn tại
-                  resultDiv.innerHTML = `
-                      <p class="status-error" style="font-size: 16px;">
-                          <i class="fas fa-sad-cry"></i> XIN LỖI! Đơn hàng của bạn không tồn tại hoặc chưa được xác nhận.
-                      </p>
-                  `;
-                  return; 
-              } 
-              
-              // --- BƯỚC 2: XỬ LÝ ĐƠN ĐÃ XÁC NHẬN (Hoặc các trạng thái hợp lệ khác) ---
-              
-              let displayStatusText = '';
-              let statusClass = 'status-confirmed'; 
+          // 1. Tìm kiếm đơn hàng
+          const foundOrder = ORDER_DATA.find(order => order.order_id === orderId);
 
-              if (progressLower.includes('hoàn thành')) {
-                  // ĐIỀU KIỆN 2A: Cột progress có chữ 'hoàn thành'
-                  displayStatusText = 'Đơn hàng đã được giao hoàn thành';
-                  statusClass = 'status-delivered';
-              } else {
-                  // ĐIỀU KIỆN 2B: Cột progress trống/không hoàn thành. Trả về trạng thái xác nhận.
-                  displayStatusText = 'Đơn hàng của bạn đã được xác nhận'; 
-                  statusClass = 'status-confirmed'; 
-              }
-
-              // --- BƯỚC 3: HIỂN THỊ KẾT QUẢ CHI TIẾT (Bao gồm Note) ---
+          if (!foundOrder || foundOrder.status.toLowerCase().includes('chưa xác nhận')) {
+              // 2. Không tìm thấy hoặc trạng thái là "Chưa xác nhận"
               resultDiv.innerHTML = `
-                  <h3><i class="fas fa-box-open"></i> Đơn Hàng #${orderId}</h3>
-                  <p><strong>Tên Khách Hàng:</strong> ${foundOrder.customer_name || 'N/A'}</p>
-                  <p><strong>Số Điện Thoại:</strong> ${foundOrder.phone || 'N/A'}</p>
-                  <p><strong>Địa Chỉ Giao Hàng:</strong> ${foundOrder.address || 'N/A'}</p>
-                  <p><strong>Trạng Thái Đơn:</strong> <span class="${statusClass}">${displayStatusText}</span></p>
-                  ${foundOrder.note ? `<p><strong>Ghi chú:</strong> ${foundOrder.note}</p>` : ''}
-              `;
-          } else {
-              // --- XỬ LÝ KHÔNG TÌM THẤY MÃ ĐƠN HÀNG (Mặc định) ---
-              resultDiv.innerHTML = `
-                  <p class="status-error" style="font-size: 16px;">
-                      <i class="fas fa-sad-cry"></i> XIN LỖI! Đơn hàng của bạn không tồn tại hoặc chưa được xác nhận.
+                  <p style="color: #A52A2A; font-weight: 800; text-align: center; font-size: 16px;">
+                      <i class="fas fa-times-circle"></i> XIN LỖI! Đơn hàng của bạn không tồn tại hoặc chưa được xác nhận.
                   </p>
               `;
+          } else {
+              // 3. Đơn hàng được tìm thấy và đã xác nhận
+              let statusText = foundOrder.status || 'Đang xử lý';
+              let progressIcon = '<i class="fas fa-sync-alt fa-spin"></i>'; // Icon mặc định: Đang xử lý
+              let progressColor = '#FFA500'; // Màu cam
+
+              if (foundOrder.progress && foundOrder.progress.toLowerCase().includes('hoàn thành')) {
+                  // Đơn hàng đã hoàn thành (ưu tiên progress)
+                  statusText = 'Đơn hàng đã được giao hoàn thành.';
+                  progressIcon = '<i class="fas fa-check-circle"></i>';
+                  progressColor = '#008000'; // Màu xanh lá cây
+              } else if (foundOrder.status.toLowerCase().includes('đã xác nhận')) {
+                  // Đơn hàng đang được xác nhận/xử lý
+                  statusText = 'Đơn hàng của bạn đã được xác nhận và đang được xử lý.';
+              }
+              
+              // Tạo bảng thông tin chi tiết
+              resultDiv.innerHTML = `
+                  <div style="border: 1px solid ${progressColor}; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.9);">
+                      <h3 style="color: ${progressColor}; margin-top: 0; text-align: center; text-transform: uppercase;">
+                          ${progressIcon} ${statusText}
+                      </h3>
+                      <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+                          <tr><td style="padding: 8px 0; font-weight: 700; width: 30%;">Mã Đơn:</td><td style="padding: 8px 0; color: #8B0000; font-weight: 900;">${foundOrder.order_id}</td></tr>
+                          <tr><td style="padding: 8px 0; font-weight: 700;">Khách hàng:</td><td style="padding: 8px 0;">${foundOrder.customer_name || 'N/A'}</td></tr>
+                          <tr><td style="padding: 8px 0; font-weight: 700;">Địa chỉ:</td><td style="padding: 8px 0;">${foundOrder.address || 'N/A'}</td></tr>
+                          <tr><td style="padding: 8px 0; font-weight: 700;">Ghi chú:</td><td style="padding: 8px 0; font-style: italic;">${foundOrder.note || 'Không có ghi chú.'}</td></tr>
+                      </table>
+                  </div>
+              `;
+          }
+      }
+
+      // --- HÀM GẮN LISTENER CHO NÚT TRA CỨU ĐƠN HÀNG (MỚI) ---
+      function attachOrderTrackingListener() {
+          const trackButton = document.getElementById('track-order-btn');
+          if (trackButton) {
+              trackButton.removeEventListener('click', handleTrackOrder);
+              trackButton.addEventListener('click', handleTrackOrder);
+              
+              // Gắn sự kiện Enter cho input
+              const inputElement = document.getElementById('order-id-input');
+              inputElement.removeEventListener('keydown', handleEnterKey);
+              inputElement.addEventListener('keydown', handleEnterKey);
+              
+              function handleEnterKey(e) {
+                  if (e.key === 'Enter') {
+                      e.preventDefault(); 
+                      handleTrackOrder();
+                  }
+              }
           }
       }
       
@@ -982,24 +918,6 @@
           modal.addEventListener('click', handleModalOverlayClick);
           lightbox.addEventListener('click', handleLightboxOverlayClick);
           document.addEventListener('keydown', handleEscapeKey); 
-
-          // GẮN LISTENER MỚI CHO TRA CỨU ĐƠN HÀNG
-          const trackButton = document.getElementById('track-button');
-          if (trackButton) {
-              trackButton.removeEventListener('click', trackOrder);
-              trackButton.addEventListener('click', trackOrder);
-          }
-          const orderIdInput = document.getElementById('order-id-input');
-          if (orderIdInput) {
-              orderIdInput.removeEventListener('keydown', handleTrackEnter);
-              orderIdInput.addEventListener('keydown', handleTrackEnter);
-          }
-          function handleTrackEnter(e) {
-              if (e.key === 'Enter') {
-                  e.preventDefault();
-                  trackOrder();
-              }
-          }
 
           function handleModalOverlayClick(e) { 
               if (e.target === modal) closeModal(); 
@@ -1045,25 +963,20 @@
       const POLLING_INTERVAL = 300000; // 5 phút
 
       function startPolling() {
-          fetchAndRenderProducts(); // Tải lần đầu từ sheet sản phẩm/config
-          fetchOrderData(); // Tải lần đầu dữ liệu đơn hàng
-          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); // Tải lặp lại sản phẩm
-          setInterval(fetchOrderData, POLLING_INTERVAL); // Tải lặp lại đơn hàng
+          fetchAndRenderProducts(); // Tải lần đầu từ sheet
+          setInterval(fetchAndRenderProducts, POLLING_INTERVAL); // Tải lặp lại
       }
 
       // 🚨 KHỞI TẠO: Bắt đầu tải dữ liệu khi trang load
       startPolling(); 
-      
-      // Kiểm tra URL Hash để hiển thị mục chính xác khi load
-      const initialHash = window.location.hash || '#home';
-      showSection(initialHash); 
+      fetchOrderData(); // THÊM DÒNG NÀY ĐỂ TẢI DỮ LIỆU ĐƠN HÀNG
+      showSection('#home'); 
 
       navLinks.forEach(a => {
           a.addEventListener('click', function(e){
               const href = this.getAttribute('href');
               if (!href || href.charAt(0) !== '#') return;
               e.preventDefault();
-              window.location.hash = href; // Cập nhật hash
               document.body.classList.remove('page-enter-active');
               document.body.classList.add('page-exit-active');
               setTimeout(() => {
