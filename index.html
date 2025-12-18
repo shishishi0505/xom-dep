@@ -9,7 +9,9 @@
   <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAWlBMVEUAAADu8u7x8fHx8fHx8fHu8u7u8u7x8fHx8fHu8u7x8fHx8fHx8fHu8u7u8u7u8u7x8fHx8fHx8fEAAADw8vH///+JvNfNAAAACnRSTlMA6wL66gMBDQECdYk870MAAACPSURVDjLrdLnEkAwEIXh/d84y4J+p6p7oP9Z4t8kM5kIeF3/eG8wYdIe7yX6A6h39v2xO80h59f8JcO7lPj/d4zD9y32R8Y8c4w8/x8L+d5E+N/g453fD732Vw448/D8P3fX+w411D5/x/l93wJ/f/i5b9/p+D9V5o/9t9797YcAAAAAElFTkSuQmCC">
   
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
@@ -20,9 +22,9 @@
       --text: #333333;
       --white: #ffffff;
       --cream: #fffaf0;
-      --trans-white: rgba(255, 255, 255, 0.75); /* Tăng độ trong suốt */
+      --trans-white: rgba(255, 255, 255, 0.75);
       --trans-cream: rgba(255, 255, 255, 0.65);
-      --blur-bg: blur(8px); /* Mờ nền nhẹ */
+      --blur-bg: blur(5px); /* Mờ nhẹ */
     }
 
     * { box-sizing: border-box; }
@@ -49,100 +51,373 @@
     }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-    .home-social a { width: 50px; height: 50px; border-radius: 50%; background: var(--primary-red); color: var(--white); font-size: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s; }
+    .home-social { margin: 30px 0 20px; display: flex; justify-content: center; gap: 20px; }
+    .home-social a { width: 50px; height: 50px; border-radius: 50%; background: var(--primary-red); color: var(--white); font-size: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s; }
     .home-social a:hover { background: var(--secondary-gold); color: var(--primary-red); transform: translateY(-4px); }
 
-    nav { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 12px 14px; position: sticky; top: 14px; z-index: 40; margin: 0 10px; border-radius: 22px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+    nav { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 12px 14px; position: sticky; top: 14px; z-index: 40; margin: 0 10px; border-radius: 22px; display: flex; gap: 8px; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,0.1); overflow-x: auto; white-space: nowrap; }
+    nav a { padding: 10px 18px; border-radius: 18px; color: var(--primary-red); font-weight: 900; text-decoration: none; transition: all 0.25s; text-transform: uppercase; font-size: 16px; }
+    nav a:hover { background: var(--secondary-gold); color: var(--primary-red); transform: translateY(-3px); }
+    nav a.active { background: var(--primary-red); color: var(--white); }
 
     .layout { width: 95%; max-width: 1200px; margin: 30px auto; }
     .container { background: var(--trans-cream); backdrop-filter: var(--blur-bg); padding: 26px; border-radius: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 
     .card { background: var(--trans-cream); backdrop-filter: var(--blur-bg); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+    .card.hidden { display: none !important; }
 
-    .product-card { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 12px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    blockquote { border-left: 4px solid var(--primary-red); padding-left: 15px; background: var(--trans-cream); backdrop-filter: var(--blur-bg); margin: 20px auto; max-width: 90%; font-style: italic; text-align: left; display: inline-block; }
 
-    .modal-content { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
+    .product-card { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 12px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.3s; }
+    .product-card:hover { transform: translateY(-8px); }
+    .product-card img { width: 100%; border-radius: 12px; aspect-ratio: 1/1; object-fit: cover; }
 
-    /* Box upload ảnh chứng từ trong suốt */
-    #proof-upload-box { background: var(--trans-cream); backdrop-filter: var(--blur-bg); border-left: 4px solid var(--primary-red); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 1000; }
+    .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+    .modal-content { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 850px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.4); position: relative; }
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; background: none; border: none; cursor: pointer; color: #555; }
+    .close-btn:hover { color: var(--primary-red); }
 
-    #order-form input, #order-form textarea { background: rgba(255,255,255,0.8); backdrop-filter: var(--blur-bg); }
-
-    #qr-container canvas, #success-qr-container canvas { background: white; padding: 10px; border-radius: 12px; }
+    #order-form input, #order-form textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: var(--trans-white); backdrop-filter: var(--blur-bg); }
+    #qr-container { text-align: center; margin: 25px 0; }
+    #qr-container canvas { max-width: 100%; border: 8px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.2); border-radius: 12px; background: white; }
 
     .buy-button { width: 100%; padding: 15px; background: var(--primary-red); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; margin: 15px 0; transition: 0.3s; }
     .buy-button:hover { background: #a00000; transform: translateY(-2px); }
+    .buy-button:disabled { opacity: 0.7; cursor: not-allowed; }
 
-    #order-success-section { display: none; text-align: center; margin: 30px 0; padding: 25px; background: rgba(0, 128, 0, 0.15); border-radius: 20px; border: 3px solid #008000; backdrop-filter: var(--blur-bg); }
+    #zalo-float { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #0088ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 999; animation: zaloPulse 1.5s infinite; }
+    #zalo-float i { font-size: 30px; color: white; }
+    @keyframes zaloPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-    #zalo-float { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #0088ff; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 999; animation: zaloPulse 2s infinite; }
+    #order-success-section { display: none; text-align: center; margin: 20px 0; padding: 20px; background: rgba(0,128,0,0.1); border-radius: 15px; border: 2px solid #008000; }
 
-    @media (max-width: 768px) { header h1 { font-size: 32px; } .product-grid { grid-template-columns: 1fr 1fr; } .modal-content { padding: 15px; border-radius: 0; width: 100%; height: 100vh; } }
+    @media (max-width: 768px) { header h1 { font-size: 32px; } .product-grid { grid-template-columns: 1fr 1fr; } .modal-content { padding: 15px; border-radius: 0; width: 100%; height: 100vh; max-height: 100vh; } }
   </style>
 </head>
 <body>
-  <!-- (giữ nguyên header, nav, layout như trước) -->
+  <header>
+    <h1>SẮC ĐẸP DÂN TỘC THÁI</h1>
+    <p>Bản sắc dân tộc Thái ✿ Ẩm thực ✿ Văn hóa ✿ Kết nối dân tộc</p>
+  </header>
 
-  <!-- Trong modal -->
-  <div id="order-form-section" style="margin-top:20px;">
-    <h3 style="color:var(--primary-red);">THÔNG TIN ĐẶT HÀNG</h3>
-    <form id="order-form">
-      <!-- Các input giữ nguyên -->
+  <nav>
+    <a href="#home" class="active">GIỚI THIỆU</a>
+    <a href="#products">SẢN PHẨM</a>
+    <a href="#order-tracking">THEO DÕI ĐƠN</a>
+  </nav>
 
-      <div id="proof-upload-box" style="margin:20px 0; padding:15px; border-radius:12px; text-align:left;">
-        <!-- Nội dung box upload ảnh giữ nguyên -->
+  <div class="layout">
+    <main class="container">
+      <section id="home" class="card">
+        <h2>VỀ SẮC ĐẸP DÂN TỘC THÁI</h2>
+        <p>Đây là nơi chúng tôi chia sẻ và tôn vinh vẻ đẹp, văn hóa, ẩm thực đặc sắc của dân tộc Thái.</p>
+
+        <h3 style="color: var(--primary-red); margin: 30px 0 20px;">🌟 TRIẾT LÝ SỐNG</h3>
+        <blockquote>"Tự hào về bản sắc, gìn giữ nét duyên truyền thống, mở lòng đón nhận tinh hoa hiện đại."<footer>— Triết lý Sắc Đẹp Thái</footer></blockquote>
+        <blockquote>"Vẻ đẹp thực sự nằm ở sự tự tin và nét thanh lịch toát ra từ bên trong."<footer>— Sắc Đẹp Dân Tộc Thái</footer></blockquote>
+
+        <div class="announcement" id="shop-announcement">Đang tải...</div>
+
+        <div class="home-social" id="home-social-links"></div>
+      </section>
+
+      <section id="products" class="card hidden">
+        <h2>SẢN PHẨM & ĐẶC SẢN</h2>
+        <p>Các sản phẩm thủ công, trang phục truyền thống và đặc sản được tuyển chọn kỹ lưỡng.</p>
+        <div class="product-grid" id="all-products"></div>
+      </section>
+
+      <section id="order-tracking" class="card hidden">
+        <h2>TRA CỨU ĐƠN HÀNG</h2>
+        <p>Nhập <strong>Mã Đơn Hàng</strong> (ví dụ: VAY1234) để xem trạng thái.</p>
+        <div style="display:flex; justify-content:center; gap:10px; max-width:400px; margin:20px auto;">
+          <input type="text" id="order-id-input" placeholder="Nhập mã đơn hàng" style="padding:12px; border-radius:10px; border:1px solid #ccc; flex:1; text-transform:uppercase;" />
+          <button id="track-order-btn" style="padding:12px 20px; background:var(--primary-red); color:white; border:none; border-radius:10px; font-weight:800;">TRA CỨU</button>
+        </div>
+        <div id="order-tracking-result" style="margin-top:20px; min-height:50px; background:var(--trans-white); padding:15px; border-radius:15px;"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="gallery-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="close-btn">&times;</button>
+      <h2 id="modal-title"></h2>
+      <p id="modal-desc" style="text-align:left; margin-bottom:20px;"></p>
+      <p id="modal-price" style="font-size:18px; color:var(--primary-red); font-weight:900;"></p>
+
+      <div class="gallery-wrapper" id="modal-gallery-container" style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px; margin:20px 0;"></div>
+
+      <div id="order-form-section" style="display:none;">
+        <h3 style="color:var(--primary-red);">THÔNG TIN ĐẶT HÀNG</h3>
+        <form id="order-form">
+          <input type="text" id="customer-name" placeholder="Họ và tên (*)" required />
+          <input type="tel" id="customer-phone" placeholder="Số điện thoại (*)" required />
+          <input type="tel" id="customer-zalo" placeholder="Số Zalo (nếu khác SĐT)" />
+          <textarea id="customer-address" placeholder="Địa chỉ nhận hàng đầy đủ (*)" rows="3" required></textarea>
+
+          <div style="margin:20px 0; padding:15px; background:var(--trans-cream); backdrop-filter:var(--blur-bg); border-radius:12px; border-left:4px solid var(--primary-red); text-align:left;">
+            <p style="margin:0 0 10px 0; font-weight:800; color:var(--primary-red);">
+              <i class="fas fa-camera"></i> BẮT BUỘC: Chụp ảnh biên lai chuyển khoản
+            </p>
+            <p style="margin:0; font-size:14px; color:#555;">
+              Sau khi chuyển cọc xong, vui lòng chụp màn hình biên lai (hiển thị rõ nội dung chuyển khoản và số tiền) rồi upload tại đây.
+            </p>
+            <input type="file" id="proof-upload" accept="image/*" required style="margin-top:10px; padding:10px; border:1px dashed #ccc; border-radius:8px; width:100%;" />
+            <small style="color:#888;">Định dạng: JPG, PNG. Tối đa 5MB</small>
+          </div>
+
+          <div id="qr-container"></div>
+          <p style="font-weight:800;">Chuyển khoản cọc: <span id="deposit-amount" style="color:var(--primary-red); font-size:18px;"></span></p>
+
+          <button type="submit" class="buy-button" id="submit-order-btn">
+            <i class="fas fa-paper-plane"></i> HOÀN TẤT ĐẶT HÀNG
+          </button>
+          <button type="button" id="send-zalo-btn" class="buy-button" style="background:#0088ff; display:none;">GỬI THÔNG TIN QUA ZALO</button>
+        </form>
       </div>
 
-      <div id="qr-container" style="margin:25px 0;"></div>
-      <p style="font-weight:800;">Chuyển khoản cọc: <span id="deposit-amount" style="color:var(--primary-red); font-size:18px;"></span></p>
-
-      <button type="submit" class="buy-button" id="submit-order-btn">
-        <i class="fas fa-paper-plane"></i> HOÀN TẤT ĐẶT HÀNG
-      </button>
-    </form>
-
-    <div id="order-success-section">
-      <!-- Nội dung thành công giữ nguyên -->
+      <button id="buy-now-btn" class="buy-button" style="display:none;">MUA NGAY</button> <!-- Ẩn nút này -->
     </div>
   </div>
 
-  <!-- Bỏ nút "MUA NGAY" vì không cần nữa -->
+  <a href="#" id="zalo-float" target="_blank"><i class="fas fa-comment-dots"></i></a>
+
+  <footer style="padding:22px; background:var(--trans-white); backdrop-filter:var(--blur-bg); margin-top:40px; color:var(--primary-red);">
+    © 2025 SẮC ĐẸP DÂN TỘC THÁI – BẢN SẮC TRUYỀN THỐNG VÀ HIỆN ĐẠI
+  </footer>
 
   <script>
-    // Trong openProductModal(product)
-    function openProductModal(product) {
-      // ... giữ nguyên phần đầu
+    document.addEventListener('DOMContentLoaded', () => {
+      const SHEET_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv'; 
+      const ORDER_TRACKING_API_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv'; 
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7qswsd2VdAPzQvy1ljB9s-N2W37gjbbRNhwIgjIn3unBgUBVVIQt4pQDhF9SgnoLR/exec';
 
-      document.getElementById('order-form-section').style.display = 'block';
-      document.getElementById('order-form').style.display = 'block';
-      document.getElementById('order-success-section').style.display = 'none';
+      let PRODUCT_DATA = []; 
+      let CONFIG_DATA = {}; 
+      let ORDER_DATA = [];
+      let CURRENT_PRODUCT = null;
 
-      // TẠO QR NGAY KHI MỞ MODAL
-      const price = Number(product.price?.replace(/[^0-9]/g,'') || 0);
-      const deposit = Math.round(price * 0.5);
-      document.getElementById('deposit-amount').textContent = deposit.toLocaleString() + ' VNĐ';
+      const modal = document.getElementById('gallery-modal');
+      const lightbox = document.getElementById('zoom-lightbox');
+      const lightboxImage = document.getElementById('lightbox-image');
+      const zaloFloat = document.getElementById('zalo-float');
 
-      const orderId = product.id.toUpperCase() + Math.floor(1000 + Math.random() * 9000);
-      document.getElementById('customer-name').dataset.orderId = orderId;
+      function parseTsvToArray(tsvText) {
+          const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
+          const data = parsed.data;
+          if (data.length > 0) {
+              CONFIG_DATA = data[0];
+              return data.slice(1).map((item, index) => ({
+                ...item,
+                id: item.id || `product-${index}`
+              })).filter(item => item.id.trim() !== ''); 
+          }
+          return [];
+      }
 
-      const bankId = (CONFIG.bank_id || 'tpbank').toLowerCase();
-      const account = CONFIG.bank_account || '';
-      const name = encodeURIComponent(CONFIG.bank_name || '');
-      const content = encodeURIComponent(`${product.id.toUpperCase()}-${orderId}`);
-      const qrUrl = `https://img.vietqr.io/image/${bankId}-${account}-compact2.png?amount=${deposit}&addInfo=${content}&accountName=${name}`;
+      async function fetchAndRenderProducts() {
+          try {
+              const response = await fetch(SHEET_API_URL, { cache: 'no-cache' });
+              const tsvText = await response.text();
+              PRODUCT_DATA = parseTsvToArray(tsvText);
+              
+              updatePageBackground(CONFIG_DATA); 
+              updateSocialLinks(CONFIG_DATA);
+              renderProducts(PRODUCT_DATA); 
+          } catch (error) {
+              console.error('Lỗi tải sản phẩm:', error);
+          }
+      }
 
-      const canvas = document.createElement('canvas');
-      document.getElementById('qr-container').innerHTML = '';
-      document.getElementById('qr-container').appendChild(canvas);
-      QRCode.toCanvas(canvas, qrUrl, { width: 280 }, err => {
-        if (err) console.error(err);
+      function updatePageBackground(config) {
+          const backgroundUrl = config.background_img || config.img || ''; 
+          if (backgroundUrl) {
+              document.body.style.backgroundImage = `url('${backgroundUrl}')`;
+          }
+      }
+
+      function updateSocialLinks(config) {
+          const fbLink = config.fb_link && config.fb_link.startsWith('http') ? config.fb_link : '#';
+          const bloggerLink = config.blogger_link && config.blogger_link.startsWith('http') ? config.blogger_link : '#';
+          const zaloLink = config.zalo_link && config.zalo_link.startsWith('http') ? config.zalo_link : 
+                           (config.zalo_phone ? `https://zalo.me/${config.zalo_phone.replace(/[^0-9]/g, '')}` : '#');
+
+          const homeSocial = document.getElementById('home-social-links');
+          if (homeSocial) {
+              homeSocial.innerHTML = '';
+              if (zaloLink !== '#') homeSocial.innerHTML += `<a href="${zaloLink}" target="_blank"><i class="fas fa-comment-dots"></i></a>`;
+              if (fbLink !== '#') homeSocial.innerHTML += `<a href="${fbLink}" target="_blank"><i class="fab fa-facebook-f"></i></a>`;
+              if (bloggerLink !== '#') homeSocial.innerHTML += `<a href="${bloggerLink}" target="_blank"><i class="fab fa-blogger-b"></i></a>`;
+          }
+
+          if (zaloLink !== '#') zaloFloat.href = zaloLink;
+      }
+
+      function renderProducts(data) {
+          const container = document.getElementById('all-products');
+          container.innerHTML = '';
+
+          data.filter(p => p.section !== 'review').forEach(product => {
+              const priceText = product.price ? Number(product.price.replace(/[^0-9]/g,'')).toLocaleString() + ' VNĐ' : 'Liên hệ';
+              const img = product.img || 'https://via.placeholder.com/300x300/FFD700/8B0000?text=Thai+Image';
+
+              container.innerHTML += `
+                  <div data-product-id="${product.id}" class="product-card">
+                      <img src="${img}" alt="${product.title}" loading="lazy" />
+                      <div class="product-card-details">
+                          <h3>${product.title}</h3>
+                          <p>${product.desc || ''}</p> 
+                          <span class="product-price-display">${priceText}</span>
+                          <div class="quick-actions">
+                              <a href="javascript:void(0)" class="open-modal-btn"><i class="fas fa-eye"></i> XEM CHI TIẾT</a>
+                          </div>
+                      </div>
+                  </div>
+              `;
+          });
+          attachModalListeners();
+      }
+
+      function openModal(product) {
+          CURRENT_PRODUCT = product;
+          document.getElementById('modal-title').textContent = product.title;
+          document.getElementById('modal-desc').textContent = product.desc || '';
+          
+          const priceRaw = product.price ? Number(product.price.replace(/[^0-9]/g,'')) : 0;
+          const priceText = priceRaw ? priceRaw.toLocaleString() + ' VNĐ' : 'Liên hệ';
+          document.getElementById('modal-price').textContent = 'Giá: ' + priceText;
+
+          const galleryContainer = document.getElementById('modal-gallery-container');
+          galleryContainer.innerHTML = '';
+          const images = [product.img, ...(product.gallery || '').split(',').map(u=>u.trim())].filter(u=>u);
+          [...new Set(images)].forEach(url => {
+              galleryContainer.innerHTML += `<img src="${url}" class="gallery-image" data-full-url="${url}" />`;
+          });
+
+          document.getElementById('order-form-section').style.display = 'block';
+          document.getElementById('order-form').style.display = 'block';
+          document.getElementById('order-success-section').style.display = 'none';
+          document.getElementById('qr-container').innerHTML = '';
+
+          // Tạo QR ngay khi mở modal
+          const deposit = Math.round(priceRaw * 0.5);
+          document.getElementById('deposit-amount').textContent = deposit.toLocaleString() + ' VNĐ';
+
+          const orderId = product.id.toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+          document.getElementById('customer-name').dataset.orderId = orderId;
+
+          const bankId = CONFIG_DATA.bank_id.toLowerCase() || 'tpbank';
+          const account = CONFIG_DATA.bank_account || '';
+          const bankName = encodeURIComponent(CONFIG_DATA.bank_name || '');
+          const content = encodeURIComponent(`${product.id.toUpperCase()}-${orderId}`);
+
+          const qrUrl = `https://img.vietqr.io/image/${bankId}-${account}-compact2.png?amount=${deposit}&addInfo=${content}&accountName=${bankName}`;
+
+          const qrCanvas = document.createElement('canvas');
+          document.getElementById('qr-container').appendChild(qrCanvas);
+          QRCode.toCanvas(qrCanvas, qrUrl, { width: 260 }, err => { if (err) console.error(err); });
+
+          modal.classList.add('visible');
+          document.body.classList.add('modal-open');
+      }
+
+      function attachModalListeners() {
+          document.querySelectorAll('.product-card').forEach(card => {
+              card.addEventListener('click', () => {
+                  const id = card.dataset.productId;
+                  const product = PRODUCT_DATA.find(p => p.id === id);
+                  if (product) openModal(product);
+              });
+          });
+
+          document.querySelectorAll('#modal-gallery-container .gallery-image').forEach(img => {
+              img.addEventListener('click', () => {
+                  lightboxImage.src = img.dataset.fullUrl;
+                  lightbox.classList.add('visible');
+              });
+          });
+      }
+
+      async function fetchOrderData() {
+          try {
+              const response = await fetch(ORDER_TRACKING_API_URL);
+              const tsvText = await response.text();
+              const parsed = Papa.parse(tsvText, { header: true, skipEmptyLines: true, delimiter: '\t' });
+              ORDER_DATA = parsed.data.map(item => ({
+                  ...item,
+                  order_id: item.order_id ? item.order_id.trim().toUpperCase() : ''
+              })).filter(item => item.order_id);
+          } catch (error) {
+              console.error('Lỗi tải dữ liệu đơn hàng:', error);
+          }
+      }
+
+      function handleTrackOrder() {
+          const orderId = document.getElementById('order-id-input').value.trim().toUpperCase();
+          const resultDiv = document.getElementById('order-tracking-result');
+          
+          if (!orderId) {
+              resultDiv.innerHTML = '<p style="color:#FF4500;">Vui lòng nhập mã đơn hàng.</p>';
+              return;
+          }
+
+          const order = ORDER_DATA.find(o => o.order_id === orderId);
+          if (!order) {
+              resultDiv.innerHTML = '<p style="color:#8B0000; font-weight:800;">Không tìm thấy đơn hàng hoặc chưa được xác nhận.</p>';
+          } else {
+              let color = '#FFA500';
+              if (order.progress && order.progress.toLowerCase().includes('hoàn thành')) color = '#008000';
+              if (order.status && order.status.toLowerCase().includes('hủy')) color = '#8B0000';
+
+              resultDiv.innerHTML = `
+                  <div style="border:1px solid ${color}; padding:15px; border-radius:12px; background:var(--trans-white); text-align:left;">
+                      <h3 style="color:${color}; text-align:center;">${order.status || 'Đang xử lý'}</h3>
+                      <table style="width:100%; font-size:15px;">
+                          <tr><td style="font-weight:700;">Mã đơn:</td><td><strong>${order.order_id}</strong></td></tr>
+                          <tr><td style="font-weight:700;">Khách hàng:</td><td>${order.customer_name || ''}</td></tr>
+                          <tr><td style="font-weight:700;">Địa chỉ:</td><td>${order.address || ''}</td></tr>
+                          <tr><td style="font-weight:700;">Tiến độ:</td><td style="color:${color}; font-weight:900;">${order.progress || 'Chưa cập nhật'}</td></tr>
+                          <tr><td style="font-weight:700;">Ghi chú:</td><td>${order.note || 'Không có'}</td></tr>
+                      </table>
+                  </div>`;
+          }
+      }
+
+      document.getElementById('track-order-btn').addEventListener('click', handleTrackOrder);
+      document.getElementById('order-id-input').addEventListener('keydown', e => { if (e.key === 'Enter') handleTrackOrder(); });
+
+      // Đóng modal/lightbox
+      document.querySelector('#gallery-modal .close-btn').addEventListener('click', () => {
+          modal.classList.remove('visible');
+          document.body.classList.remove('modal-open');
+      });
+      document.getElementById('lightbox-close-btn').addEventListener('click', () => {
+          lightbox.classList.remove('visible');
+      });
+      modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('visible'); document.body.classList.remove('modal-open'); });
+      lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('visible'); });
+
+      // Navigation
+      document.querySelectorAll('a.nav-link').forEach(link => {
+          link.addEventListener('click', e => {
+              e.preventDefault();
+              const target = link.getAttribute('href');
+              document.querySelectorAll('.card').forEach(s => s.classList.add('hidden'));
+              document.querySelector(target).classList.remove('hidden');
+              document.querySelectorAll('a.nav-link').forEach(l => l.classList.remove('active'));
+              link.classList.add('active');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
       });
 
-      modal.classList.add('visible');
-      document.body.classList.add('modal-open');
-    }
-
-    // Phần submit giữ nguyên như file trước (sau thành công tạo QR lớn hơn)
+      // Khởi chạy
+      fetchAndRenderProducts();
+      fetchOrderData();
+      document.querySelector('a[href="#home"]').click();
+    });
   </script>
 </body>
 </html>
