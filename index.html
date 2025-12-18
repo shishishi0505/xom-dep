@@ -4,233 +4,343 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🌸 SẮC ĐẸP DÂN TỘC THÁI 🇹🇭</title>
+  
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   
   <style>
-    /* CSS CỐ ĐỊNH & GIAO DIỆN MỚI */
-    :root { --primary-red: #8B0000; --secondary-gold: #FFD700; --cream: #fffaf0; }
-    body { font-family: 'Nunito', sans-serif; margin: 0; background: var(--cream); text-align: center; }
-    
-    .zalo-float { position: fixed; bottom: 20px; left: 20px; z-index: 999; width: 60px; height: 60px; background: #0088ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: pulse 2s infinite; text-decoration: none; }
-    .zalo-float i { color: white; font-size: 30px; }
-    @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
+    /* GIỮ NGUYÊN TOÀN BỘ STYLE CŨ CỦA BẠN */
+    :root {
+      --primary-red: #8B0000;
+      --secondary-gold: #FFD700;
+      --text: #333333;
+      --white: #ffffff;
+      --cream: #fffaf0;
+      --trans-white: rgba(255, 255, 255, 0.8);
+      --trans-cream: rgba(255, 255, 255, 0.65);
+    }
 
-    header { padding: 40px 20px; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://i.pinimg.com/736x/8e/31/34/8e31346294747796d860e61d87c88b48.jpg'); background-size: cover; color: white; }
-    nav { background: white; padding: 12px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: center; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    nav a { text-decoration: none; color: var(--primary-red); font-weight: 800; padding: 8px 15px; border-radius: 20px; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      margin: 0; padding: 0;
+      background-color: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: opacity 0.4s ease-in-out;
+    }
+
+    /* HIỆU ỨNG CHUYỂN TRANG CỦA BẠN */
+    .page-enter { opacity: 0; transform: translateY(15px); }
+    .page-enter-active { opacity: 1; transform: translateY(0); transition: all 0.4s ease-out; }
+    .page-exit-active { opacity: 0; transform: translateY(-15px); transition: all 0.3s ease-in; }
+
+    header {
+      padding: 50px 20px;
+      background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), 
+                  url('https://i.pinimg.com/736x/8e/31/34/8e31346294747796d860e61d87c88b48.jpg');
+      background-size: cover; background-position: center;
+      color: var(--white); text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    }
+
+    nav {
+      background: var(--trans-white);
+      backdrop-filter: blur(10px);
+      padding: 12px;
+      position: sticky; top: 14px; z-index: 1000;
+      margin: 0 10px; border-radius: 22px;
+      display: flex; justify-content: center; gap: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+
+    nav a {
+      text-decoration: none; color: var(--primary-red);
+      font-weight: 900; padding: 10px 18px; border-radius: 18px;
+      transition: 0.3s; font-size: 0.95rem;
+    }
+
     nav a.active { background: var(--primary-red); color: white; }
 
-    .card { background: white; border-radius: 20px; padding: 20px; margin: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 10px; }
-    .product-item { background: #fff; padding: 10px; border-radius: 15px; border: 1px solid #eee; cursor: pointer; }
-    .product-item img { width: 100%; border-radius: 10px; }
+    .card {
+      background: var(--trans-cream);
+      backdrop-filter: blur(8px);
+      border-radius: 30px; padding: 26px; margin: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.4);
+    }
 
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-    .modal-content { background: white; padding: 20px; border-radius: 20px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; position: relative; }
-    .checkout-form input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-    .btn-buy { background: var(--primary-red); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px; }
-    .qr-box { background: #fef9f9; padding: 15px; border-radius: 15px; border: 2px dashed #8b0000; margin-top: 15px; }
-    .qr-box img { width: 180px; }
+    /* NÚT ZALO RUNG RINH GÓC TRÁI */
+    .zalo-float {
+      position: fixed; bottom: 30px; left: 30px; z-index: 9999;
+      width: 60px; height: 60px; background: #0088ff;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: pulse-zalo 2s infinite;
+    }
+    .zalo-float i { color: white; font-size: 32px; }
+    @keyframes pulse-zalo {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,136,255,0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(0,136,255,0); }
+      100% { transform: scale(1); }
+    }
+
+    /* GRID SẢN PHẨM */
+    .product-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;
+    }
+
+    .product-card {
+      background: white; border-radius: 25px; padding: 15px;
+      transition: 0.3s; border: 1px solid #eee; cursor: pointer;
+    }
+    .product-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .product-card img { width: 100%; border-radius: 20px; aspect-ratio: 1; object-fit: cover; }
+
+    /* MODAL & FORM THANH TOÁN */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      display: none; align-items: center; justify-content: center; z-index: 2000; padding: 15px;
+    }
+    .modal-content {
+      background: white; border-radius: 30px; width: 100%; max-width: 480px;
+      max-height: 90vh; overflow-y: auto; position: relative; padding: 25px;
+    }
+
+    .checkout-form input, .checkout-form textarea {
+      width: 100%; padding: 14px; margin: 10px 0;
+      border: 1.5px solid #eee; border-radius: 12px; font-family: inherit; box-sizing: border-box;
+    }
+
+    .qr-box {
+      background: #fffcf0; padding: 20px; border-radius: 20px;
+      border: 2px dashed var(--primary-red); margin: 20px 0; text-align: center;
+    }
+    .qr-box img { width: 200px; border-radius: 10px; }
+
+    .btn-action {
+      background: var(--primary-red); color: white; border: none;
+      width: 100%; padding: 16px; border-radius: 15px;
+      font-weight: 900; cursor: pointer; font-size: 1.1rem;
+    }
+    .btn-zalo { background: #0088ff; margin-top: 10px; }
+
     .hidden { display: none; }
-    .success-msg { color: green; font-weight: bold; margin: 15px 0; }
   </style>
 </head>
-<body>
+<body class="page-enter page-enter-active">
 
-  <a id="zalo-link" href="#" target="_blank" class="zalo-float"><i class="fas fa-comment"></i></a>
+  <a id="zalo-float-link" href="#" target="_blank" class="zalo-float">
+    <i class="fa-brands fa-zalo"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" width="35"></i>
+  </a>
 
   <header>
-    <h1>SẮC ĐẸP DÂN TỘC THÁI</h1>
-    <p id="shop-note">Đang tải thông báo...</p>
+    <h1 style="font-size: 2.5rem; margin-bottom: 5px;">SẮC ĐẸP DÂN TỘC THÁI</h1>
+    <div id="shop-announcement" style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; display: inline-block; font-style: italic;">
+      Đang tải thông báo mới nhất...
+    </div>
   </header>
 
   <nav>
     <a href="#home" class="nav-link active">GIỚI THIỆU</a>
-    <a href="#shop" class="nav-link">SẢN PHẨM</a>
-    <a href="#track" class="nav-link">TRA ĐƠN</a>
+    <a href="#products" class="nav-link">SẢN PHẨM</a>
+    <a href="#track" class="nav-link">THEO DÕI ĐƠN</a>
   </nav>
 
-  <section id="home" class="card">
-    <h2>Chào mừng quý khách!</h2>
-    <p>Nơi lưu giữ nét đẹp văn hóa và đặc sản Tây Bắc.</p>
-  </section>
+  <div id="home" class="section">
+    <section class="card">
+      <h2 style="color: var(--primary-red);">TỰ HÀO BẢN SẮC THÁI</h2>
+      <p>Chào mừng bạn đến với nơi gìn giữ và lan tỏa những nét đẹp tinh hoa từ trang phục, ẩm thực đến văn hóa đặc trưng của đồng bào dân tộc Thái.</p>
+    </section>
+  </div>
 
-  <section id="shop" class="card hidden">
-    <div class="product-grid" id="product-list"></div>
-  </section>
+  <div id="products" class="section hidden">
+    <section class="card">
+      <h2 style="color: var(--primary-red);">DANH SÁCH SẢN PHẨM</h2>
+      <div class="product-grid" id="product-container"></div>
+    </section>
+  </div>
 
-  <section id="track" class="card hidden">
-    <h2>TRA CỨU ĐƠN HÀNG</h2>
-    <input type="text" id="input-track" placeholder="Nhập mã đơn (Ví dụ: SDT1234)" style="padding:12px; border-radius:10px; border:1px solid #ddd; width: 80%;">
-    <button onclick="trackOrder()" class="btn-buy" style="width: auto; padding: 12px 30px;">KIỂM TRA</button>
-    <div id="track-result" style="margin-top:20px; text-align: left; line-height: 1.6;"></div>
-  </section>
+  <div id="track" class="section hidden">
+    <section class="card">
+      <h2 style="color: var(--primary-red);">TRA CỨU ĐƠN HÀNG</h2>
+      <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <input type="text" id="track-id" placeholder="Nhập mã đơn (Ví dụ: SDT1234)" style="flex:1; padding:15px; border-radius:15px; border:1px solid #ddd;">
+        <button onclick="handleTrack()" style="background:var(--primary-red); color:white; border:none; padding:0 25px; border-radius:15px; font-weight:bold;">TRA CỨU</button>
+      </div>
+      <div id="track-result"></div>
+    </section>
+  </div>
 
-  <div id="modal" class="modal">
+  <div id="modal" class="modal-overlay">
     <div class="modal-content">
-      <button onclick="closeModal()" style="position:absolute; right:15px; top:10px; border:none; background:none; font-size:24px;">&times;</button>
-      <h3 id="m-title"></h3>
-      <p id="m-price" style="color:var(--primary-red); font-weight:800;"></p>
+      <button onclick="closeModal()" style="position:absolute; right:20px; top:15px; border:none; background:none; font-size:30px; cursor:pointer;">&times;</button>
       
-      <div id="step-1">
-        <button onclick="showStep2()" class="btn-buy">MUA NGAY</button>
+      <div id="m-step-1">
+        <h2 id="m-title"></h2>
+        <p id="m-price" style="font-size:1.5rem; color:var(--primary-red); font-weight:900;"></p>
+        <button onclick="showCheckoutForm()" class="btn-action">MUA NGAY</button>
       </div>
 
-      <div id="step-2" class="hidden">
+      <div id="m-step-2" class="hidden">
+        <h3>THÔNG TIN NHẬN HÀNG</h3>
         <div class="checkout-form">
           <input type="text" id="f-name" placeholder="Họ tên người nhận">
-          <input type="text" id="f-phone" placeholder="Số điện thoại nhận hàng">
-          <input type="text" id="f-zalo" placeholder="Số Zalo hỗ trợ (không bắt buộc)">
-          <input type="text" id="f-address" placeholder="Địa chỉ chi tiết">
+          <input type="text" id="f-phone" placeholder="Số điện thoại">
+          <input type="text" id="f-zalo" placeholder="Số Zalo (để nhận mã vận đơn)">
+          <textarea id="f-address" rows="2" placeholder="Địa chỉ giao hàng"></textarea>
         </div>
+        
         <div class="qr-box">
-          <p style="font-size:14px; margin-bottom:5px;">Quét mã cọc 50%: <b id="deposit-text"></b>đ</p>
-          <img id="qr-img" src="" alt="QR Chuyển khoản">
-          <p style="font-size:11px; color:#666;">Nội dung: <b id="qr-info"></b></p>
+          <p>Số tiền cọc 50%: <b id="deposit-amt" style="color:red; font-size:1.2rem;"></b>đ</p>
+          <img id="qr-code" src="" alt="VietQR">
+          <p style="font-size:12px; color:#666; margin-top:10px;">Nội dung: <b id="qr-desc"></b></p>
         </div>
-        <button id="btn-finish" onclick="submitOrder()" class="btn-buy">XÁC NHẬN ĐÃ CHUYỂN CỌC</button>
+        
+        <button id="btn-submit" onclick="processOrder()" class="btn-action">XÁC NHẬN ĐÃ CHUYỂN CỌC</button>
       </div>
 
-      <div id="step-3" class="hidden">
-        <div class="success-msg">🎉 ĐẶT HÀNG THÀNH CÔNG!</div>
-        <p>Mã đơn hàng của bạn là: <b id="final-id" style="color:red; font-size:20px;"></b></p>
-        <p style="font-size:13px; color:#555;">(Bạn hãy CHỤP MÀN HÌNH hoặc SAO CHÉP mã này để theo dõi đơn hàng nhé)</p>
-        <button id="btn-zalo-confirm" class="btn-buy" style="background:#0088ff;">GỬI MÃ ĐƠN QUA ZALO SHOP</button>
+      <div id="m-step-3" class="hidden" style="text-align: center;">
+        <div style="font-size: 50px; color: #4CAF50;">✔️</div>
+        <h3>ĐẶT HÀNG THÀNH CÔNG!</h3>
+        <p>Mã đơn hàng của bạn:</p>
+        <h2 id="final-order-id" style="color:red; letter-spacing: 2px;"></h2>
+        <p style="font-size: 13px; color:#777;">Vui lòng chụp ảnh màn hình hoặc Sao chép mã đơn này.</p>
+        <button id="btn-send-zalo" class="btn-action btn-zalo">GỬI MÃ ĐƠN QUA ZALO SHOP</button>
       </div>
     </div>
   </div>
 
   <script>
     const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv';
-    const ORDER_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv';
+    const ORDER_SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv';
     
-    // DÁN LINK APPS SCRIPT CỦA BẠN VÀO ĐÂY
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbze1k6huhD9s9dKSaFW_cuOISflxejjY8Ly_fdyQ1QWEhl0dKcCNMKDpkzi0wLC0WkY/exec';
+    // !!! QUAN TRỌNG: DÁN URL APPS SCRIPT CỦA BẠN VÀO ĐÂY !!!
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbze1k6huhD9s9dKSaFW_cuOISflxejjY8Ly_fdyQ1QWEhl0dKcCNMKDpkzi0wLC0WkY/exec';
 
-    let shopConfig = {};
-    let products = [];
-    let selectedProduct = {};
+    let shopData = {};
+    let productList = [];
+    let activeProduct = {};
 
-    async function init() {
+    async function fetchData() {
       const res = await fetch(CONFIG_URL);
-      const data = await res.text();
-      const rows = Papa.parse(data, {header:true, delimiter:'\t'}).data;
-      shopConfig = rows[0];
-      products = rows.slice(1);
-
-      document.getElementById('shop-note').innerText = shopConfig.shop_announcement;
-      document.getElementById('zalo-link').href = `https://zalo.me/${shopConfig.zalo_phone.replace(/'/g, '')}`;
+      const text = await res.text();
+      const rows = Papa.parse(text, {header:true, delimiter:'\t'}).data;
       
-      const list = document.getElementById('product-list');
-      list.innerHTML = products.map(p => `
-        <div class="product-item" onclick="openModal('${p.title}', '${p.price}')">
-          <img src="${p.img}">
-          <h4>${p.title}</h4>
-          <p style="color:red; font-weight:bold;">${p.price}đ</p>
+      shopData = rows[0];
+      productList = rows.slice(1);
+
+      // Cập nhật giao diện từ Sheet
+      document.getElementById('shop-announcement').innerText = shopData.shop_announcement;
+      document.getElementById('zalo-float-link').href = `https://zalo.me/${shopData.zalo_phone.replace(/'/g, '')}`;
+      
+      const container = document.getElementById('product-container');
+      container.innerHTML = productList.map(p => `
+        <div class="product-card" onclick="openModal('${p.title}', '${p.price}')">
+          <img src="${p.img}" alt="${p.title}">
+          <h3 style="margin:10px 0 5px 0; font-size:1.1rem;">${p.title}</h3>
+          <p style="color:var(--primary-red); font-weight:900; margin:0;">${p.price}đ</p>
         </div>
       `).join('');
     }
 
     function openModal(title, price) {
-      selectedProduct = { title, price };
+      activeProduct = { title, price };
       document.getElementById('m-title').innerText = title;
-      document.getElementById('m-price').innerText = "Giá: " + price + " VNĐ";
-      document.getElementById('step-1').classList.remove('hidden');
-      document.getElementById('step-2').classList.add('hidden');
-      document.getElementById('step-3').classList.add('hidden');
+      document.getElementById('m-price').innerText = price + " VNĐ";
+      document.getElementById('m-step-1').classList.remove('hidden');
+      document.getElementById('m-step-2').classList.add('hidden');
+      document.getElementById('m-step-3').classList.add('hidden');
       document.getElementById('modal').style.display = 'flex';
     }
 
-    function showStep2() {
-      document.getElementById('step-1').classList.add('hidden');
-      document.getElementById('step-2').classList.remove('hidden');
+    function showCheckoutForm() {
+      document.getElementById('m-step-1').classList.add('hidden');
+      document.getElementById('m-step-2').classList.remove('hidden');
       
-      const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
-      selectedProduct.id = orderId;
+      const oId = "SDT" + Math.floor(1000 + Math.random() * 8999);
+      activeProduct.id = oId;
 
-      const priceNum = parseInt(selectedProduct.price.replace(/\D/g,''));
-      const deposit = priceNum * 0.5;
-      const cleanTitle = selectedProduct.title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, "");
-      const info = `COC ${orderId} ${cleanTitle}`.toUpperCase();
+      const cleanPrice = parseInt(activeProduct.price.replace(/\D/g,''));
+      const deposit = cleanPrice * 0.5;
+      const cleanTitle = activeProduct.title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g, "");
+      const desc = `COC ${oId} ${cleanTitle}`.toUpperCase();
 
-      document.getElementById('deposit-text').innerText = deposit.toLocaleString();
-      document.getElementById('qr-info').innerText = info;
-      document.getElementById('qr-img').src = `https://img.vietqr.io/image/${shopConfig.bank_id}-${shopConfig.bank_account}-compact.png?amount=${deposit}&addInfo=${info}&accountName=${shopConfig.bank_name}`;
+      document.getElementById('deposit-amt').innerText = deposit.toLocaleString();
+      document.getElementById('qr-desc').innerText = desc;
+      document.getElementById('qr-code').src = `https://img.vietqr.io/image/${shopData.bank_id}-${shopData.bank_account}-compact.png?amount=${deposit}&addInfo=${desc}&accountName=${shopData.bank_name}`;
     }
 
-    async function submitOrder() {
+    async function processOrder() {
       const name = document.getElementById('f-name').value;
       const phone = document.getElementById('f-phone').value;
-      if(!name || !phone) return alert("Vui lòng nhập Tên và Số điện thoại!");
+      if(!name || !phone) return alert("Vui lòng nhập đầy đủ Tên và SĐT!");
 
-      document.getElementById('btn-finish').innerText = "ĐANG GỬI...";
-      document.getElementById('btn-finish').disabled = true;
+      const btn = document.getElementById('btn-submit');
+      btn.innerText = "ĐANG XỬ LÝ...";
+      btn.disabled = true;
 
-      const orderData = {
-        order_id: selectedProduct.id,
+      const payload = {
+        order_id: activeProduct.id,
         customer_name: name,
         phone: phone,
         address: document.getElementById('f-address').value,
-        product_name: selectedProduct.title,
+        product_name: activeProduct.title,
         note: "Zalo: " + document.getElementById('f-zalo').value
       };
 
       try {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) });
+        await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
         
-        document.getElementById('step-2').classList.add('hidden');
-        document.getElementById('step-3').classList.remove('hidden');
-        document.getElementById('final-id').innerText = selectedProduct.id;
+        document.getElementById('m-step-2').classList.add('hidden');
+        document.getElementById('m-step-3').classList.remove('hidden');
+        document.getElementById('final-order-id').innerText = activeProduct.id;
 
-        // Cấu hình nút gửi Zalo cho shop
-        const zaloMsg = encodeURIComponent(`Chào Shop, tôi vừa đặt đơn ${selectedProduct.id} cho sản phẩm ${selectedProduct.title}. Vui lòng xác nhận đơn cho tôi!`);
-        document.getElementById('btn-zalo-confirm').onclick = () => {
-          window.open(`https://zalo.me/${shopConfig.zalo_phone.replace(/'/g, '')}?text=${zaloMsg}`, '_blank');
+        const msg = encodeURIComponent(`Chào Shop, tôi vừa đặt đơn ${activeProduct.id} cho sản phẩm ${activeProduct.title}. Vui lòng xác nhận đơn!`);
+        document.getElementById('btn-send-zalo').onclick = () => {
+          window.open(`https://zalo.me/${shopData.zalo_phone.replace(/'/g, '')}?text=${msg}`, '_blank');
         };
-
       } catch (e) {
-        alert("Có lỗi khi gửi đơn. Bạn hãy liên hệ Zalo shop để đặt trực tiếp nhé!");
+        alert("Gửi đơn thất bại, hãy chụp màn hình QR và gửi cho shop qua Zalo!");
       }
     }
 
-    async function trackOrder() {
-      const id = document.getElementById('input-track').value.trim().toUpperCase();
-      const res = await fetch(ORDER_URL);
-      const data = await res.text();
-      const orders = Papa.parse(data, {header:true, delimiter:'\t'}).data;
+    async function handleTrack() {
+      const id = document.getElementById('track-id').value.trim().toUpperCase();
+      const res = await fetch(ORDER_SHEET);
+      const text = await res.text();
+      const orders = Papa.parse(text, {header:true, delimiter:'\t'}).data;
       
-      const order = orders.find(o => o.order_id === id);
-      const resultDiv = document.getElementById('track-result');
-      if(order) {
-        resultDiv.innerHTML = `
-          <div style="background:#e6fffa; padding:15px; border-radius:10px; border-left:5px solid green;">
-            <p>✅ <b>Mã đơn:</b> ${order.order_id}</p>
-            <p>👤 <b>Khách hàng:</b> ${order.customer_name}</p>
-            <p>📦 <b>Sản phẩm:</b> ${order.product_name}</p>
-            <p>📍 <b>Trạng thái:</b> <span style="color:red; font-weight:bold;">${order.status}</span></p>
-            <p>🚚 <b>Tiến độ:</b> ${order.progress}</p>
+      const found = orders.find(o => o.order_id === id);
+      const resDiv = document.getElementById('track-result');
+      if(found) {
+        resDiv.innerHTML = `
+          <div style="background:#f0fff4; border-left:6px solid #38a169; padding:20px; border-radius:15px;">
+            <p>📦 <b>Sản phẩm:</b> ${found.product_name}</p>
+            <p>👤 <b>Khách hàng:</b> ${found.customer_name}</p>
+            <p>🚩 <b>Trạng thái:</b> <span style="color:red; font-weight:bold;">${found.status}</span></p>
+            <p>🚚 <b>Tiến độ:</b> ${found.progress}</p>
           </div>`;
       } else {
-        resultDiv.innerHTML = "❌ Không tìm thấy mã đơn này. Vui lòng kiểm tra lại!";
+        resDiv.innerHTML = "<p style='color:red;'>❌ Không tìm thấy mã đơn hàng này!</p>";
       }
     }
 
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-    // Chuyển tab
+    // XỬ LÝ CHUYỂN TAB CỦA BẠN
     document.querySelectorAll('.nav-link').forEach(link => {
       link.onclick = (e) => {
         e.preventDefault();
+        const target = link.getAttribute('href').substring(1);
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
-        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-        document.querySelector(link.getAttribute('href')).classList.remove('hidden');
+        
+        document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(target).classList.remove('hidden');
+        window.scrollTo({top: 0, behavior: 'smooth'});
       }
     });
 
-    init();
+    fetchData();
   </script>
 </body>
 </html>
