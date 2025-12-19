@@ -16,6 +16,38 @@
       --trans-cream: rgba(255, 255, 255, 0.25);
       --blur-bg: blur(12px);
     }
+    /* Khung chứa bài viết Blog chuyên nghiệp */
+.blog-post-full {
+    text-align: left;
+    line-height: 1.8;
+    color: #ffffff;
+    font-size: 17px;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.4); /* Nền tối nhẹ để nổi bật chữ trắng */
+    border-radius: 25px;
+    margin-top: 20px;
+    border: 1px solid var(--secondary-gold);
+}
+
+/* Định dạng hình ảnh trong bài viết giống như mẫu của bạn */
+.blog-post-full img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    margin: 20px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.blog-post-full h1, .blog-post-full h2 {
+    color: var(--secondary-gold);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--secondary-gold);
+    padding-bottom: 10px;
+    margin-top: 30px;
+}
 
     body {
       font-family: 'Nunito', sans-serif;
@@ -243,17 +275,56 @@
         renderProducts();
     }
 
-    function renderHome() {
-        document.body.style.backgroundImage = `url('${DB.settings.background_img || DB.settings.img}')`;
-        document.getElementById('shop-announcement').innerText = DB.settings.shop_announcement;
-        document.getElementById('zalo-ring').href = `https://zalo.me/${DB.settings.zalo_phone}`;
+   async function renderHome() {
+    // Cài đặt hình nền và các liên kết cũ
+    document.body.style.backgroundImage = `url('${DB.settings.background_img || DB.settings.img}')`;
+    document.getElementById('zalo-ring').href = `https://zalo.me/${DB.settings.zalo_phone}`;
+    
+    const homeSection = document.getElementById('home');
+    
+    // Tạo cấu trúc tiêu đề và vùng chờ cho Blog
+    homeSection.innerHTML = `
+        <h2 style="color: var(--secondary-gold); margin-bottom:10px;">🌸 CHUYỆN BẢN LÀNG</h2>
+        <div id="blog-content" class="blog-post-full">Đang kết nối tới bản làng...</div>
+        <div class="social-under-poem" id="home-socials"></div>
+    `;
+
+    // Thiết lập icon mạng xã hội bên dưới
+    document.getElementById('home-socials').innerHTML = `
+        <a href="${DB.settings.fb_link}"><i class="fab fa-facebook"></i></a>
+        <a href="${DB.settings.blogger_link}"><i class="fab fa-blogger"></i></a>
+        <a href="https://zalo.me/${DB.settings.zalo_phone}"><i class="fas fa-comment-dots"></i></a>
+    `;
+
+    // Gọi hàm lấy bài viết từ Blogger
+    fetchBloggerContent();
+}
+    async function fetchBloggerContent() {
+    try {
+        // Lấy link Blogger từ Google Sheets và xử lý chuẩn hóa
+        const blogUrl = DB.settings.blogger_link.replace(/\/$/, ""); 
         
-        document.getElementById('home-socials').innerHTML = `
-            <a href="${DB.settings.fb_link}"><i class="fab fa-facebook"></i></a>
-            <a href="${DB.settings.blogger_link}"><i class="fab fa-blogger"></i></a>
-            <a href="https://zalo.me/${DB.settings.zalo_phone}"><i class="fas fa-comment-dots"></i></a>
-        `;
+        // Sử dụng rss2json để chuyển đổi nội dung từ Blogger sang JSON dễ đọc
+        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${blogUrl}/feeds/posts/default`);
+        const data = await response.json();
+
+        if (data.status === 'ok' && data.items.length > 0) {
+            const latestPost = data.items[0]; // Lấy bài viết mới nhất
+            document.getElementById('blog-content').innerHTML = `
+                <h1 style="font-size: 24px; margin-top:0;">${latestPost.title}</h1>
+                <p style="font-size:13px; color:var(--secondary-gold); margin-bottom:20px;">
+                   <i class="far fa-calendar-alt"></i> Ngày đăng: ${new Date(latestPost.pubDate).toLocaleDateString('vi-VN')}
+                </p>
+                <div class="post-body-content">${latestPost.content}</div>
+            `;
+        } else {
+            document.getElementById('blog-content').innerText = "Chào mừng bạn đến với trang văn hóa dân tộc Thái!";
+        }
+    } catch (error) {
+        console.error("Lỗi lấy Blog:", error);
+        document.getElementById('blog-content').innerText = "Không thể tải nội dung Blog lúc này. Mời bạn quay lại sau!";
     }
+}
 
     function renderProducts() {
         const list = document.getElementById('product-list');
