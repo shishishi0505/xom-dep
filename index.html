@@ -296,21 +296,21 @@
         renderProducts();
     }
 
-   async function renderHome() {
-    // Cài đặt hình nền và các liên kết cũ
+   // 1. Khai báo biến lưu bài viết ở ngoài để các hàm đều dùng được
+let ALL_POSTS = []; 
+
+// 2. Hàm render giao diện trang chủ
+async function renderHome() {
     document.body.style.backgroundImage = `url('${DB.settings.background_img || DB.settings.img}')`;
     document.getElementById('zalo-ring').href = `https://zalo.me/${DB.settings.zalo_phone}`;
     
     const homeSection = document.getElementById('home');
-    
-    // Tạo cấu trúc tiêu đề và vùng chờ cho Blog
     homeSection.innerHTML = `
         <h2 style="color: var(--secondary-gold); margin-bottom:10px;">🌸 CHUYỆN BẢN LÀNG</h2>
         <div id="blog-content" class="blog-post-full">Đang kết nối tới bản làng...</div>
         <div class="social-under-poem" id="home-socials"></div>
     `;
 
-    // Thiết lập icon mạng xã hội bên dưới
     document.getElementById('home-socials').innerHTML = `
         <a href="${DB.settings.fb_link}"><i class="fab fa-facebook"></i></a>
         <a href="${DB.settings.blogger_link}"><i class="fab fa-blogger"></i></a>
@@ -318,8 +318,10 @@
     `;
 
     // Gọi hàm lấy bài viết từ Blogger
-    let ALL_POSTS = []; // Lưu trữ tất cả bài viết
+    fetchBloggerContent();
+} // Dấu đóng ngoặc kết thúc hàm renderHome
 
+// 3. Hàm lấy dữ liệu từ Blogger
 async function fetchBloggerContent() {
     try {
         const blogUrl = DB.settings.blogger_link.replace(/\/$/, ""); 
@@ -328,18 +330,20 @@ async function fetchBloggerContent() {
 
         if (data.status === 'ok' && data.items.length > 0) {
             ALL_POSTS = data.items;
-            displayPost(0); // Mặc định hiện bài mới nhất
+            displayPost(0); // Hiện bài mới nhất ngay khi tải xong
+        } else {
+            document.getElementById('blog-content').innerText = "Chào mừng bạn đến với chúng tôi!";
         }
     } catch (error) {
         document.getElementById('blog-content').innerText = "Lỗi tải bài viết!";
     }
 }
 
+// 4. Hàm hiển thị nội dung bài viết cụ thể và danh sách bài cũ
 function displayPost(index) {
     const post = ALL_POSTS[index];
     const contentDiv = document.getElementById('blog-content');
     
-    // Phần nội dung bài đang đọc
     let html = `
         <h1 style="font-size: 24px; margin-top:0;">${post.title}</h1>
         <p style="font-size:13px; color:var(--secondary-gold); margin-bottom:20px;">
@@ -348,11 +352,14 @@ function displayPost(index) {
         <div class="post-body-content">${post.content}</div>
     `;
 
-    // Phần danh sách các bài khác để chọn
     if (ALL_POSTS.length > 1) {
-        html += `<div class="old-posts-list"><h3><i class="fas fa-list"></i> BÀI VIẾT KHÁC</h3>`;
+        html += `
+            <div class="old-posts-list">
+                <h3><i class="fas fa-list"></i> BÀI VIẾT KHÁC</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+        `;
         ALL_POSTS.forEach((p, i) => {
-            if (i !== index) { // Không hiện lại bài đang đọc trong danh sách dưới
+            if (i !== index) {
                 html += `
                     <div class="old-post-item" onclick="displayPost(${i}); window.scrollTo(0,0);">
                         <img src="${p.thumbnail || 'https://via.placeholder.com/60'}">
@@ -361,9 +368,8 @@ function displayPost(index) {
                 `;
             }
         });
-        html += `</div>`;
+        html += `</div></div>`;
     }
-
     contentDiv.innerHTML = html;
 }
 
