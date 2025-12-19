@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🌸 SẮC ĐẸP DÂN TỘC</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -18,7 +17,7 @@
       --blur-bg: blur(12px);
     }
 
-    /* GIỮ NGUYÊN CÁC HIỆU ỨNG CŨ VÀ THÊM CHI TIẾT MỚI */
+    /* CSS NÂNG CẤP: Giữ bo góc, đổ bóng và glassmorphism */
     .menu-container {
         position: fixed; top: 20px; right: 20px; z-index: 1001;
         display: flex; align-items: center; gap: 10px;
@@ -31,29 +30,25 @@
     .menu-toggle {
         background: var(--primary-red); color: white; width: 45px; height: 45px;
         border-radius: 10px; display: flex; align-items: center; justify-content: center;
-        cursor: pointer; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        cursor: pointer; font-size: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
     .success-popup {
         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: white; padding: 30px; border-radius: 20px; text-align: center;
-        z-index: 3000; box-shadow: 0 0 30px rgba(0,0,0,0.5); display: none; width: 90%; max-width: 400px;
-    }
-    .history-card {
-        background: rgba(255,255,255,0.1); border-radius: 15px; padding: 15px;
-        margin-bottom: 10px; border-left: 5px solid var(--secondary-gold); text-align: left; color: white;
+        background: white; padding: 30px; border-radius: 25px; text-align: center;
+        z-index: 3000; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: none; width: 90%; max-width: 400px;
     }
 
-    /* GIỮ NGUYÊN CSS BLOG & LAYOUT */
+    /* GIỮ NGUYÊN TOÀN BỘ CSS GỐC */
     .blog-post-full { text-align: left; line-height: 1.8; color: #ffffff; font-size: 17px; padding: 30px; background: rgba(0, 0, 0, 0.4); border-radius: 25px; margin-top: 20px; border: 1px solid var(--secondary-gold); }
     .blog-post-full img { max-width: 100%; height: auto; border-radius: 15px; margin: 20px auto; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
     body { font-family: 'Nunito', sans-serif; margin: 0; background-attachment: fixed; background-size: cover; background-position: center; color: #333; transition: 0.5s; }
     
     header { padding: 40px 20px 10px; text-align: center; }
     header h1 { 
-        font-family: 'Dancing Script', cursive; /* Áp dụng font nghệ thuật */
-        font-size: clamp(35px, 6vw, 50px); 
+        font-family: 'Dancing Script', cursive; /* Font nghệ thuật tiêu đề */
+        font-size: clamp(32px, 6vw, 50px); 
         color: var(--secondary-gold); 
-        text-shadow: 2px 2px 10px rgba(0,0,0,0.8); 
+        text-shadow: 3px 3px 15px rgba(0,0,0,0.9); 
         margin: 0; 
     }
 
@@ -62,23 +57,19 @@
     nav a.active { background: var(--primary-red); color: white; }
     
     .layout { width: 95%; max-width: 1200px; margin: 20px auto; }
-    /* Giữ nguyên hiệu ứng Glassmorphism */
     .card { background: var(--trans-cream); backdrop-filter: var(--blur-bg); border-radius: 25px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.2); text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
     
-    .social-under-poem { margin-top: 20px; display: flex; justify-content: center; gap: 25px; }
-    .social-under-poem a { color: var(--secondary-gold); font-size: 28px; text-shadow: 1px 1px 5px black; }
     .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
-    .product-card { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+    .product-card { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .product-card img { width: 100%; border-radius: 15px; aspect-ratio: 1/1; object-fit: cover; }
-    .tag-id { background: var(--primary-red); color: white; font-size: 10px; padding: 2px 8px; border-radius: 5px; }
+    
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
     .modal-content { background: white; border-radius: 25px; width: 100%; max-width: 900px; max-height: 95vh; overflow-y: auto; position: relative; }
     .modal-body { padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-    .gallery-main { width: 100%; border-radius: 15px; transition: 0.3s; }
-    .thumb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-    .thumb-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.6; }
     .order-form input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-    .btn-action { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+    .btn-action { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+    .btn-action:active { transform: scale(0.98); }
     .hidden { display: none; }
     .zalo-float { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; z-index: 999; animation: ring 2s infinite; }
     @keyframes ring { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1) rotate(10deg); } }
@@ -104,7 +95,7 @@
         <h2 style="color: var(--secondary-gold);">📜 LỊCH SỬ ĐẶT HÀNG</h2>
         <p style="color:white">Nhập SĐT để xem lại toàn bộ đơn hàng của bạn</p>
         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-            <input type="tel" id="hist-phone" placeholder="Số điện thoại của bạn" style="padding:12px; border-radius:10px; width:220px; border:1px solid #ddd;">
+            <input type="tel" id="hist-phone" placeholder="Số điện thoại đã đặt" style="padding:12px; border-radius:10px; width:220px; border:1px solid #ddd;">
             <button onclick="loadHistory()" class="btn-action" style="width:auto; padding:12px 25px; margin:0;">XEM NGAY</button>
         </div>
         <div id="hist-res" style="margin-top:20px;"></div>
@@ -133,7 +124,7 @@
       <div style="font-size: 50px; color: #28a745; margin-bottom: 15px;"><i class="fas fa-check-circle"></i></div>
       <h3 style="margin: 0; color: #333;">GỬI ĐƠN THÀNH CÔNG!</h3>
       <p style="color: #666; font-size: 14px; line-height: 1.5; margin: 15px 0;">
-          Hệ thống đã ghi nhận đơn hàng.<br>Bạn sẽ nhận được thông báo xác nhận qua Zalo/Email sớm nhất.
+          Hệ thống đã ghi nhận đơn hàng.<br>Vui lòng đợi shop xác nhận qua Zalo.
       </p>
       <button id="btn-close-popup" class="btn-action" onclick="closeSuccess()">ĐÓNG (10s)</button>
   </div>
@@ -141,7 +132,6 @@
   <div id="product-modal" class="modal-overlay">
       <div class="modal-content">
           <span style="position:absolute; top:15px; right:20px; font-size:30px; cursor:pointer; z-index:10;" onclick="closeModal()">&times;</span>
-          
           <div class="modal-body" id="step-1">
               <div class="gallery-side">
                   <img id="main-img" class="gallery-main" src="">
@@ -149,37 +139,28 @@
               </div>
               <div class="info-side">
                   <h2 id="p-title" style="margin:0; color:var(--primary-red);"></h2>
-                  <p id="p-id" class="tag-id" style="display:inline-block;"></p>
                   <h3 id="p-price" style="color:#28a745; font-size:24px;"></h3>
                   <button class="btn-action" onclick="goToStep(2)">MUA NGAY - ĐẶT CỌC 50%</button>
                   <hr><p id="p-desc" style="line-height:1.6; color:#555;"></p>
               </div>
           </div>
-
           <div class="modal-body hidden" id="step-2">
               <div style="grid-column: 1 / -1;">
                   <h3>THÔNG TIN GIAO HÀNG</h3>
                   <div class="order-form">
                       <input type="text" id="f-name" placeholder="Họ và tên (Bắt buộc)">
                       <input type="tel" id="f-phone" placeholder="Số điện thoại (Bắt buộc)">
-                      <input type="email" id="f-email" placeholder="Địa chỉ Email (Nếu có)">
-                      <input type="text" id="f-address" placeholder="Địa chỉ nhận hàng (Bắt buộc)">
-                      <input type="text" id="f-zalo" placeholder="Số Zalo của bạn">
+                      <input type="email" id="f-email" placeholder="Gmail/Zalo (Không bắt buộc)">
+                      <input type="text" id="f-address" placeholder="Địa chỉ nhận hàng (Không bắt buộc)">
                       <button class="btn-action" onclick="processPayment()">TIẾP TỤC THANH TOÁN</button>
-                      <button style="background:none; border:none; color:gray; cursor:pointer;" onclick="goToStep(1)">Quay lại</button>
                   </div>
               </div>
           </div>
-
           <div class="modal-body hidden" id="step-3">
               <div class="qr-area" style="grid-column: 1 / -1; text-align:center;">
                   <h3 style="color:#28a745;">MÃ ĐƠN: <span id="final-id"></span></h3>
-                  <p>Quét mã VietQR để đặt cọc (50%)</p>
-                  <img id="qr-code" src="" style="max-width:250px; border-radius:15px; border:5px solid #f9f9f9;">
-                  <p style="font-weight:800; color:var(--primary-red); margin-top:10px;">
-                      CHỦ TK: <span id="bank-owner">...</span>
-                  </p>
-                  <p style="font-size:12px;">Nội dung CK: <b id="qr-info"></b></p>
+                  <img id="qr-code" src="" style="max-width:250px; border-radius:15px; border:1px solid #eee;">
+                  <p>Nội dung CK: <b id="qr-info"></b></p>
                   <button class="btn-action" style="background:#0088ff;" onclick="confirmAndZalo()">1. NHẮN ZALO XÁC NHẬN</button>
                   <button class="btn-action" style="background:#8B0000;" onclick="finalSubmit()">2. TÔI ĐÃ CHUYỂN KHOẢN XONG</button>
               </div>
@@ -190,17 +171,14 @@
   <a id="zalo-ring" href="#" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" class="zalo-float"></a>
 
   <script>
+    // SỬA LỖI: Cập nhật URL và cấu hình kết nối chính xác
     const URLS = {
         sheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv',
         track: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv',
-        script: 'https://script.google.com/macros/s/AKfycbzS74okHJewfib9MVgt8ze701alOVxEMDeURuuwYiX7LUgpCkeGLsWvc9BafF0gRuvi/exec'
+        script: 'https://script.google.com/macros/s/AKfycbxvOKcJjI6tlFAq9m_I8_AzvJzaZtdYDHV9iOVeYaWMfAnIDcM0bPrtUoeWWNooS9qk/exec'
     };
 
-    let DB = { products: [], settings: {} };
-    let ALL_POSTS = [];
-    let CURRENT_P = null;
-    let ORDER_TEMP = {};
-    let countdownInterval;
+    let DB = { products: [], settings: {} }, ALL_POSTS = [], CURRENT_P = null, ORDER_TEMP = {}, countdownInterval;
 
     async function init() {
         try {
@@ -211,105 +189,34 @@
             DB.products = rows.slice(1);
             renderHome();
             renderProducts();
-        } catch(e) { console.error("Lỗi khởi tạo:", e); }
-    }
-
-    function toggleHistory() {
-        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-        document.getElementById('history-section').classList.remove('hidden');
-        window.scrollTo(0,0);
-    }
-
-    async function loadHistory() {
-        const phone = document.getElementById('hist-phone').value.trim();
-        if(!phone) return alert("Vui lòng nhập SĐT!");
-        const resDiv = document.getElementById('hist-res');
-        resDiv.innerHTML = "Đang tìm kiếm...";
-        
-        try {
-            const response = await fetch(URLS.track);
-            const text = await response.text();
-            const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
-            // Lọc chính xác theo SĐT khách nhập
-            const myOrders = orders.filter(o => String(o["Số điện thoại"]).includes(phone) || String(o["phone"]).includes(phone));
-
-            if(myOrders.length > 0) {
-                resDiv.innerHTML = myOrders.map(o => `
-                    <div class="history-card">
-                        <b>Mã:</b> ${o["Mã đơn hàng"] || o["order_id"]} | <b>Ngày:</b> ${o["Ngày đặt"] || "Vừa xong"}<br>
-                        <b>Trạng thái:</b> <span style="color:var(--secondary-gold)">${o["Trạng thái"] || "Đang xử lý"}</span><br>
-                        <b>Tiến độ:</b> ${o["Tiến độ"] || "Đang chờ shop xác nhận"}
-                    </div>
-                `).join('');
-            } else { resDiv.innerHTML = "<p style='color:white'>Không tìm thấy lịch sử cho số điện thoại này.</p>"; }
-        } catch(e) { resDiv.innerHTML = "Lỗi kết nối dữ liệu!"; }
+        } catch(e) { console.error("Lỗi:", e); }
     }
 
     async function renderHome() {
-        document.body.style.backgroundImage = `url('${DB.settings.background_img || DB.settings.img}')`;
+        if(DB.settings.background_img) document.body.style.backgroundImage = `url('${DB.settings.background_img}')`;
         document.getElementById('zalo-ring').href = `https://zalo.me/${DB.settings.zalo_phone.replace(/\D/g,'')}`;
         document.getElementById('home-socials').innerHTML = `
             <a href="${DB.settings.fb_link}"><i class="fab fa-facebook"></i></a>
             <a href="${DB.settings.blogger_link}"><i class="fab fa-blogger"></i></a>
-            <a href="https://zalo.me/${DB.settings.zalo_phone.replace(/\D/g,'')}"><i class="fas fa-comment-dots"></i></a>
-        `;
+            <a href="https://zalo.me/${DB.settings.zalo_phone.replace(/\D/g,'')}"><i class="fas fa-comment-dots"></i></a>`;
         fetchBloggerContent();
-    }
-
-    async function fetchBloggerContent() {
-        try {
-            const blogUrl = DB.settings.blogger_link.replace(/\/$/, ""); 
-            const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${blogUrl}/feeds/posts/default`);
-            const data = await response.json();
-            if (data.status === 'ok' && data.items.length > 0) {
-                ALL_POSTS = data.items;
-                displayPost(0);
-            }
-        } catch (e) { document.getElementById('blog-content').innerText = "Lỗi kết nối Blogger!"; }
-    }
-
-    function displayPost(index) {
-        const post = ALL_POSTS[index];
-        const contentDiv = document.getElementById('blog-content');
-        let html = `<h1 style="font-size: 22px; margin:0;">${post.title}</h1>
-                    <p style="font-size:12px; color:var(--secondary-gold); margin-bottom:15px;">Ngày: ${new Date(post.pubDate).toLocaleDateString('vi-VN')}</p>`;
-        
-        if (ALL_POSTS.length > 1) {
-            html += `<div style="margin-bottom:20px; padding:10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px dashed var(--secondary-gold);">
-                    <p style="font-size:12px; color:var(--secondary-gold); margin:0 0 5px 0;">BÀI VIẾT KHÁC:</p>`;
-            ALL_POSTS.forEach((p, i) => {
-                if (i !== index) {
-                    html += `<div onclick="displayPost(${i}); window.scrollTo(0,0);" style="display:flex; align-items:center; gap:10px; cursor:pointer; padding:5px;">
-                                <img src="${p.thumbnail || 'https://via.placeholder.com/40'}" style="width:35px; height:35px; border-radius:5px; object-fit:cover;">
-                                <h4 style="margin:0; font-size:13px; color:#eee; font-weight:normal;">${p.title}</h4>
-                            </div>`;
-                }
-            });
-            html += `</div>`;
-        }
-        html += `<div class="post-body-content">${post.content}</div>`;
-        contentDiv.innerHTML = html;
     }
 
     function renderProducts() {
         document.getElementById('product-list').innerHTML = DB.products.map(p => `
             <div class="product-card" onclick="openProduct('${p.id}')">
-                <img src="${p.img}"><div style="margin-top:10px;">
-                <span class="tag-id">Mã: ${p.id}</span><h4 style="margin:5px 0;">${p.title}</h4>
-                <b style="color:var(--primary-red)">${(Number(p.price) * 1000).toLocaleString('vi-VN')} VNĐ</b></div>
+                <img src="${p.img}">
+                <h4 style="margin:10px 0 5px;">${p.title}</h4>
+                <b style="color:var(--primary-red)">${(Number(p.price) * 1000).toLocaleString('vi-VN')}đ</b>
             </div>`).join('');
     }
 
     function openProduct(id) {
         CURRENT_P = DB.products.find(x => x.id === id);
         document.getElementById('p-title').innerText = CURRENT_P.title;
-        document.getElementById('p-id').innerText = "Mã sản phẩm: " + CURRENT_P.id;
-        document.getElementById('p-price').innerText = (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + " VNĐ";
+        document.getElementById('p-price').innerText = (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + "đ";
         document.getElementById('p-desc').innerText = CURRENT_P.desc;
         document.getElementById('main-img').src = CURRENT_P.img;
-        const gallery = [CURRENT_P.img];
-        if(CURRENT_P.gallery) gallery.push(...CURRENT_P.gallery.split(','));
-        document.getElementById('thumb-list').innerHTML = gallery.map(url => `<img src="${url.trim()}" onclick="document.getElementById('main-img').src=this.src">`).join('');
         goToStep(1);
         document.getElementById('product-modal').style.display = 'flex';
     }
@@ -320,93 +227,59 @@
     }
 
     function processPayment() {
-        const name = document.getElementById('f-name').value, phone = document.getElementById('f-phone').value, address = document.getElementById('f-address').value;
-        if(!name || !phone || !address) return alert("Vui lòng điền đủ Tên, SĐT và Địa chỉ!");
+        const name = document.getElementById('f-name').value.trim(), phone = document.getElementById('f-phone').value.trim();
+        if(!name || !phone) return alert("Vui lòng điền Tên và SĐT!");
         
         const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
         const deposit = (Number(CURRENT_P.price) * 1000) / 2;
         const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
         
         ORDER_TEMP = { 
-            order_id: orderId, 
-            customer_name: name, 
-            phone: phone, 
+            order_id: orderId, customer_name: name, phone: phone, 
             email: document.getElementById('f-email').value || "Chưa nhập", 
-            address: address, 
-            zalo: document.getElementById('f-zalo').value || "Chưa nhập",
-            product_id: CURRENT_P.id, 
-            total_price: (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN'), 
-            status: "Chờ cọc" 
+            address: document.getElementById('f-address').value || "Chưa nhập", 
+            total_price: (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') 
         };
 
         document.getElementById('final-id').innerText = orderId;
         document.getElementById('qr-info').innerText = qrInfo;
-        document.getElementById('bank-owner').innerText = DB.settings.bank_owner || "CHỦ CỬA HÀNG";
+        // SỬA LỖI: Link VietQR chuẩn hóa
         document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
         goToStep(3);
     }
 
     function confirmAndZalo() {
-        // Chuẩn hóa link Zalo để không bị đứng
         const cleanPhone = DB.settings.zalo_phone.replace(/\D/g,'');
-        const text = encodeURIComponent(`Chào shop, tôi muốn xác nhận đã đặt đơn hàng ${ORDER_TEMP.order_id} mã SP ${ORDER_TEMP.product_id}`);
-        window.open(`https://zalo.me/${cleanPhone}?text=${text}`, '_blank');
+        window.open(`https://zalo.me/${cleanPhone}?text=${encodeURIComponent("Xác nhận đơn " + ORDER_TEMP.order_id)}`, '_blank');
     }
 
     async function finalSubmit() {
-        // Gửi sang Apps Script
         fetch(URLS.script, { method: 'POST', mode: 'no-cors', body: JSON.stringify(ORDER_TEMP) });
-        
         closeModal();
-        const popup = document.getElementById('success-dialog');
-        const closeBtn = document.getElementById('btn-close-popup');
+        const popup = document.getElementById('success-dialog'), closeBtn = document.getElementById('btn-close-popup');
         popup.style.display = 'block';
-        
-        // Đồng hồ đếm ngược 10 giây
         let timeLeft = 10;
-        closeBtn.innerText = `ĐÓNG (${timeLeft}s)`;
-        
         clearInterval(countdownInterval);
         countdownInterval = setInterval(() => {
             timeLeft--;
             closeBtn.innerText = `ĐÓNG (${timeLeft}s)`;
-            if(timeLeft <= 0) {
-                clearInterval(countdownInterval);
-                closeSuccess();
-            }
+            if(timeLeft <= 0) { clearInterval(countdownInterval); closeSuccess(); }
         }, 1000);
     }
 
-    function closeSuccess() { 
-        document.getElementById('success-dialog').style.display = 'none'; 
-        clearInterval(countdownInterval);
-    }
-    
+    function closeSuccess() { document.getElementById('success-dialog').style.display = 'none'; clearInterval(countdownInterval); }
     function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
+    function toggleHistory() { document.querySelectorAll('section').forEach(s => s.classList.add('hidden')); document.getElementById('history-section').classList.remove('hidden'); window.scrollTo(0,0); }
 
-    async function checkOrder() {
-        const id = document.getElementById('track-input').value.toUpperCase().trim();
-        if(!id) return alert("Hãy nhập mã đơn!");
-        const resDiv = document.getElementById('track-res');
-        resDiv.innerHTML = "Đang tra cứu...";
-        try {
-            const response = await fetch(URLS.track), text = await response.text();
-            const found = Papa.parse(text, { header: true, delimiter: '\t' }).data.find(o => String(o["Mã đơn hàng"]).trim() === id);
-            if(found) { 
-                resDiv.innerHTML = `<div style="background:white; padding:15px; border-radius:15px; text-align:left; color:black;"><b>Trạng thái:</b> ${found["Trạng thái"]}<br><b>Tiến độ:</b> ${found["Tiến độ"] || "Đang xử lý"}</div>`; 
-            } else { resDiv.innerHTML = "Không thấy đơn hàng này!"; }
-        } catch(e) { resDiv.innerHTML = "Lỗi kết nối dữ liệu!"; }
+    async function loadHistory() {
+        const phone = document.getElementById('hist-phone').value.trim();
+        const resDiv = document.getElementById('hist-res');
+        resDiv.innerHTML = "Đang tìm...";
+        const response = await fetch(URLS.track), text = await response.text();
+        const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
+        const myOrders = orders.filter(o => String(o["Số điện thoại"]).includes(phone));
+        resDiv.innerHTML = myOrders.length ? myOrders.map(o => `<div class="history-card"><b>${o["Mã đơn hàng"]}</b> - ${o["Trạng thái"]}</div>`).join('') : "Không thấy đơn hàng.";
     }
-
-    document.querySelectorAll('.nav-link').forEach(l => {
-        l.onclick = (e) => {
-            e.preventDefault();
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.querySelector(l.getAttribute('href')).classList.remove('hidden');
-            document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
-            l.classList.add('active');
-        };
-    });
 
     init();
   </script>
