@@ -78,11 +78,39 @@
     }
     .modal-body { padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
     
-    .gallery-main { width: 100%; border-radius: 15px; cursor: zoom-in; transition: 0.3s; }
-    .thumb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-    .thumb-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.6; }
-    .thumb-grid img:hover, .thumb-grid img.active { opacity: 1; border: 2px solid var(--primary-red); }
+    /* Ảnh chính trong Modal */
+.gallery-main { 
+    width: 100%; 
+    border-radius: 15px; 
+    cursor: default; /* Đổi từ zoom-in thành default để khách không click vào nữa */
+    transition: 0.3s; 
+    user-select: none; /* Khóa chọn ảnh */
+    -webkit-user-drag: none; /* Khóa kéo ảnh */
+}
 
+/* Lưới ảnh nhỏ bên dưới */
+.thumb-grid { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 10px; 
+    margin-top: 10px; 
+}
+
+.thumb-grid img { 
+    width: 100%; 
+    aspect-ratio: 1/1; 
+    object-fit: cover; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    opacity: 0.6; 
+    user-select: none; /* Thêm vào đây để khách nhấn nhanh không bị bôi đen */
+    -webkit-user-drag: none;
+}
+
+.thumb-grid img:hover, .thumb-grid img.active { 
+    opacity: 1; 
+    border: 2px solid var(--primary-red); 
+}
     .order-form input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; }
     .btn-action { 
         background: #28a745; color: white; border: none; padding: 15px; width: 100%; 
@@ -144,7 +172,7 @@
           
           <div class="modal-body" id="step-1">
               <div class="gallery-side">
-                  <img id="main-img" class="gallery-main" src="" onclick="zoomImg(this.src)">
+                  <img id="main-img" class="gallery-main" src="">
                   <div id="thumb-list" class="thumb-grid"></div>
               </div>
               <div class="info-side">
@@ -334,7 +362,7 @@
 }
 
     function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
-    function zoomImg(url) { window.open(url, '_blank'); }
+    function zoomImg(url) { return false; }
 
     // Chuyển Tab
     document.querySelectorAll('.nav-link').forEach(l => {
