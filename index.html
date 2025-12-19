@@ -235,7 +235,7 @@
                 <div style="margin-top:10px;">
                     <span class="tag-id">Mã: ${p.id}</span>
                     <h4 style="margin:5px 0;">${p.title}</h4>
-                    <b style="color:var(--primary-red)">${Number(p.price).toLocaleString()}đ</b>
+                    <b style="color:var(--primary-red)">${(Number(p.price) * 1000).toLocaleString('vi-VN')} VNĐ</b>
                 </div>
             </div>
         `).join('');
@@ -245,7 +245,7 @@
         CURRENT_P = DB.products.find(x => x.id === id);
         document.getElementById('p-title').innerText = CURRENT_P.title;
         document.getElementById('p-id').innerText = "Mã sản phẩm: " + CURRENT_P.id;
-        document.getElementById('p-price').innerText = Number(CURRENT_P.price).toLocaleString() + " VNĐ";
+        document.getElementById('p-price').innerText = (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + " VNĐ";
         document.getElementById('p-desc').innerText = CURRENT_P.desc;
         document.getElementById('main-img').src = CURRENT_P.img;
 
@@ -309,26 +309,29 @@
     }
 
     async function checkOrder() {
-        const id = document.getElementById('track-input').value.toUpperCase();
-        const resDiv = document.getElementById('track-res');
-        resDiv.innerHTML = "Đang tra cứu...";
+    const id = document.getElementById('track-input').value.toUpperCase();
+    const resDiv = document.getElementById('track-res');
+    resDiv.innerHTML = "Đang tra cứu...";
 
-        const response = await fetch(URLS.track);
-        const text = await response.text();
-        const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
-        const found = orders.find(o => o.order_id === id);
+    const response = await fetch(URLS.track);
+    const text = await response.text();
+    // PapaParse sẽ biến "Trạng thái" thành key trong Object
+    const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
+    
+    // Tìm đơn theo cột "Mã đơn hàng" thay vì "order_id"
+    const found = orders.find(o => o["Mã đơn hàng"] === id);
 
-        if(found) {
-            resDiv.innerHTML = `
-                <div style="background:white; padding:15px; border-radius:15px; text-align:left; color:black;">
-                    <b>Trạng thái:</b> ${found.status}<br>
-                    <b>Tiến độ:</b> ${found.progress}<br>
-                    <b>Ghi chú:</b> ${found.note}
-                </div>`;
-        } else {
-            resDiv.innerHTML = "Không thấy đơn hàng này!";
-        }
+    if(found) {
+        resDiv.innerHTML = `
+            <div style="background:white; padding:15px; border-radius:15px; text-align:left; color:black;">
+                <b>Trạng thái:</b> ${found["Trạng thái"] || found["status"]}<br>
+                <b>Tiến độ:</b> ${found["Tiến độ"] || found["progress"]}<br>
+                <b>Ghi chú:</b> ${found["Ghi chú"] || found["note"]}
+            </div>`;
+    } else {
+        resDiv.innerHTML = "Không thấy đơn hàng này!";
     }
+}
 
     function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
     function zoomImg(url) { window.open(url, '_blank'); }
