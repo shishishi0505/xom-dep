@@ -321,29 +321,14 @@ async function renderHome() {
     fetchBloggerContent();
 } // Dấu đóng ngoặc kết thúc hàm renderHome
 
-// 3. Hàm lấy dữ liệu từ Blogger
-async function fetchBloggerContent() {
-    try {
-        const blogUrl = DB.settings.blogger_link.replace(/\/$/, ""); 
-        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${blogUrl}/feeds/posts/default`);
-        const data = await response.json();
 
-        if (data.status === 'ok' && data.items.length > 0) {
-            ALL_POSTS = data.items;
-            displayPost(0); // Hiện bài mới nhất ngay khi tải xong
-        } else {
-            document.getElementById('blog-content').innerText = "Chào mừng bạn đến với chúng tôi!";
-        }
-    } catch (error) {
-        document.getElementById('blog-content').innerText = "Lỗi tải bài viết!";
-    }
-}
 
-// 4. Hàm hiển thị nội dung bài viết cụ thể và danh sách bài cũ
+// 4. Hàm hiển thị nội dung bài viết và danh sách chọn bài
 function displayPost(index) {
     const post = ALL_POSTS[index];
     const contentDiv = document.getElementById('blog-content');
     
+    // Tạo nội dung bài viết đang xem
     let html = `
         <h1 style="font-size: 24px; margin-top:0;">${post.title}</h1>
         <p style="font-size:13px; color:var(--secondary-gold); margin-bottom:20px;">
@@ -352,14 +337,16 @@ function displayPost(index) {
         <div class="post-body-content">${post.content}</div>
     `;
 
+    // Hiển thị danh sách các bài viết khác để người dùng chọn
     if (ALL_POSTS.length > 1) {
         html += `
             <div class="old-posts-list">
                 <h3><i class="fas fa-list"></i> BÀI VIẾT KHÁC</h3>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
         `;
+        
         ALL_POSTS.forEach((p, i) => {
-            if (i !== index) {
+            if (i !== index) { // Chỉ hiện các bài khác với bài đang đọc
                 html += `
                     <div class="old-post-item" onclick="displayPost(${i}); window.scrollTo(0,0);">
                         <img src="${p.thumbnail || 'https://via.placeholder.com/60'}">
@@ -370,27 +357,26 @@ function displayPost(index) {
         });
         html += `</div></div>`;
     }
+    
+    // Cập nhật vào giao diện
     contentDiv.innerHTML = html;
 }
 
-    async function fetchBloggerContent() {
+// 3. Hàm lấy toàn bộ dữ liệu từ Blogger
+async function fetchBloggerContent() {
     try {
-        // Lấy link Blogger từ Google Sheets và xử lý chuẩn hóa
         const blogUrl = DB.settings.blogger_link.replace(/\/$/, ""); 
         
-        // Sử dụng rss2json để chuyển đổi nội dung từ Blogger sang JSON dễ đọc
+        // Gọi API lấy dữ liệu bài viết
         const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${blogUrl}/feeds/posts/default`);
         const data = await response.json();
 
         if (data.status === 'ok' && data.items.length > 0) {
-            const latestPost = data.items[0]; // Lấy bài viết mới nhất
-            document.getElementById('blog-content').innerHTML = `
-                <h1 style="font-size: 24px; margin-top:0;">${latestPost.title}</h1>
-                <p style="font-size:13px; color:var(--secondary-gold); margin-bottom:20px;">
-                   <i class="far fa-calendar-alt"></i> Ngày đăng: ${new Date(latestPost.pubDate).toLocaleDateString('vi-VN')}
-                </p>
-                <div class="post-body-content">${latestPost.content}</div>
-            `;
+            // LƯU Ý QUAN TRỌNG: Phải nạp tất cả bài vào biến ALL_POSTS
+            ALL_POSTS = data.items; 
+            
+            // Gọi hàm hiển thị bài đầu tiên (mới nhất)
+            displayPost(0); 
         } else {
             document.getElementById('blog-content').innerText = "Chào mừng bạn đến với trang văn hóa dân tộc Thái!";
         }
