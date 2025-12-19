@@ -16,6 +16,27 @@
       --trans-cream: rgba(255, 255, 255, 0.25);
       --blur-bg: blur(12px);
     }
+    /* Danh sách các bài viết cũ */
+.old-posts-list {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--secondary-gold);
+    text-align: left;
+}
+.old-post-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.old-post-item:hover { background: rgba(255,255,255,0.2); }
+.old-post-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin: 0; }
+.old-post-item h4 { margin: 0; font-size: 15px; color: white; }
     /* Khung chứa bài viết Blog chuyên nghiệp */
 .blog-post-full {
     text-align: left;
@@ -297,8 +318,55 @@
     `;
 
     // Gọi hàm lấy bài viết từ Blogger
-    fetchBloggerContent();
+    let ALL_POSTS = []; // Lưu trữ tất cả bài viết
+
+async function fetchBloggerContent() {
+    try {
+        const blogUrl = DB.settings.blogger_link.replace(/\/$/, ""); 
+        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${blogUrl}/feeds/posts/default`);
+        const data = await response.json();
+
+        if (data.status === 'ok' && data.items.length > 0) {
+            ALL_POSTS = data.items;
+            displayPost(0); // Mặc định hiện bài mới nhất
+        }
+    } catch (error) {
+        document.getElementById('blog-content').innerText = "Lỗi tải bài viết!";
+    }
 }
+
+function displayPost(index) {
+    const post = ALL_POSTS[index];
+    const contentDiv = document.getElementById('blog-content');
+    
+    // Phần nội dung bài đang đọc
+    let html = `
+        <h1 style="font-size: 24px; margin-top:0;">${post.title}</h1>
+        <p style="font-size:13px; color:var(--secondary-gold); margin-bottom:20px;">
+           <i class="far fa-calendar-alt"></i> Ngày đăng: ${new Date(post.pubDate).toLocaleDateString('vi-VN')}
+        </p>
+        <div class="post-body-content">${post.content}</div>
+    `;
+
+    // Phần danh sách các bài khác để chọn
+    if (ALL_POSTS.length > 1) {
+        html += `<div class="old-posts-list"><h3><i class="fas fa-list"></i> BÀI VIẾT KHÁC</h3>`;
+        ALL_POSTS.forEach((p, i) => {
+            if (i !== index) { // Không hiện lại bài đang đọc trong danh sách dưới
+                html += `
+                    <div class="old-post-item" onclick="displayPost(${i}); window.scrollTo(0,0);">
+                        <img src="${p.thumbnail || 'https://via.placeholder.com/60'}">
+                        <h4>${p.title}</h4>
+                    </div>
+                `;
+            }
+        });
+        html += `</div>`;
+    }
+
+    contentDiv.innerHTML = html;
+}
+
     async function fetchBloggerContent() {
     try {
         // Lấy link Blogger từ Google Sheets và xử lý chuẩn hóa
