@@ -9,33 +9,103 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
-    :root { --primary-red: #8B0000; --secondary-gold: #FFD700; --trans-white: rgba(255, 255, 255, 0.4); --trans-cream: rgba(255, 255, 255, 0.25); --blur-bg: blur(12px); }
-    body { font-family: 'Nunito', sans-serif; margin: 0; background-attachment: fixed; background-size: cover; background-position: center; color: #333; transition: 0.5s; }
-    header { padding: 40px 20px 10px; text-align: center; background: var(--primary-red); color: white; border-bottom: 3px solid var(--secondary-gold); }
-    nav { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 10px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: center; gap: 10px; }
+    :root {
+      --primary-red: #8B0000;
+      --secondary-gold: #FFD700;
+      --trans-white: rgba(255, 255, 255, 0.4); 
+      --trans-cream: rgba(255, 255, 255, 0.25);
+      --blur-bg: blur(12px);
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      margin: 0; background-attachment: fixed; background-size: cover; background-position: center;
+      color: #333; transition: 0.5s;
+    }
+
+    /* TRANG CHỦ & THÀNH PHẦN GIAO DIỆN */
+    header { padding: 40px 20px 10px; text-align: center; }
+    header h1 { font-size: clamp(28px, 5vw, 42px); color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); margin: 0; }
+
+    nav { 
+      background: var(--trans-white); backdrop-filter: var(--blur-bg);
+      padding: 10px; position: sticky; top: 0; z-index: 100;
+      display: flex; justify-content: center; gap: 10px;
+    }
     nav a { text-decoration: none; color: var(--primary-red); font-weight: 900; padding: 8px 15px; border-radius: 15px; }
     nav a.active { background: var(--primary-red); color: white; }
+
     .layout { width: 95%; max-width: 1200px; margin: 20px auto; }
-    .card { background: var(--trans-cream); backdrop-filter: var(--blur-bg); border-radius: 25px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.2); text-align: center; }
+    .card { 
+      background: var(--trans-cream); backdrop-filter: var(--blur-bg);
+      border-radius: 25px; padding: 25px; margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.2); text-align: center;
+    }
+
+    /* BOX THÔNG BÁO DƯỚI THƠ */
+    .announcement-box {
+        background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 15px; margin-top: 20px;
+        color: white; font-style: italic; border: 1px solid var(--secondary-gold);
+    }
+    .social-under-poem { margin-top: 20px; display: flex; justify-content: center; gap: 25px; }
+    .social-under-poem a { color: var(--secondary-gold); font-size: 28px; text-shadow: 1px 1px 5px black; }
+
+    /* PRODUCT GRID */
     .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
-    .product-card { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+    .product-card {
+        background: var(--trans-white); backdrop-filter: var(--blur-bg);
+        padding: 15px; border-radius: 20px; cursor: pointer; transition: 0.3s;
+    }
     .product-card:hover { transform: translateY(-5px); }
     .product-card img { width: 100%; border-radius: 15px; aspect-ratio: 1/1; object-fit: cover; }
     .tag-id { background: var(--primary-red); color: white; font-size: 10px; padding: 2px 8px; border-radius: 5px; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
-    .modal-content { background: white; border-radius: 25px; width: 100%; max-width: 900px; max-height: 95vh; overflow-y: auto; position: relative; }
+
+    /* ZALO FLOATING */
+    .zalo-float {
+        position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; z-index: 999;
+        animation: ring 2s infinite;
+    }
+    @keyframes ring { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1) rotate(10deg); } }
+
+    /* MODAL MỚI (RỘNG HƠN CHO PC) */
+    .modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+        display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px;
+    }
+    .modal-content {
+        background: white; border-radius: 25px; width: 100%; max-width: 900px; /* Rộng hơn cho PC */
+        max-height: 95vh; overflow-y: auto; position: relative; display: flex; flex-direction: column;
+    }
     .modal-body { padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-    .gallery-main { width: 100%; border-radius: 15px; cursor: zoom-in; }
+    
+    .gallery-main { width: 100%; border-radius: 15px; cursor: zoom-in; transition: 0.3s; }
     .thumb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-    .thumb-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; }
-    .btn-action { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+    .thumb-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.6; }
+    .thumb-grid img:hover, .thumb-grid img.active { opacity: 1; border: 2px solid var(--primary-red); }
+
+    .order-form input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; }
+    .btn-action { 
+        background: #28a745; color: white; border: none; padding: 15px; width: 100%; 
+        border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px;
+    }
+
+    /* MOBILE OPTIMIZATION */
+    @media (max-width: 768px) {
+        .modal-body { grid-template-columns: 1fr; padding: 15px; }
+        .order-header-mobile { order: -1; text-align: center; } /* Đưa nút mua/cọc lên đầu */
+        .modal-content { max-width: 100%; margin: 0; border-radius: 0; height: 100%; }
+    }
+
     .hidden { display: none; }
-    #track-res div { box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid var(--primary-red); }
+    .qr-area { text-align: center; padding: 20px; }
+    .qr-area img { max-width: 250px; border: 5px solid #f9f9f9; border-radius: 15px; }
   </style>
 </head>
 <body>
 
-  <header><h1>🌸 SẮC ĐẸP DÂN TỘC THÁI</h1></header>
+  <header>
+    <h1>SẮC ĐẸP DÂN TỘC THÁI</h1>
+  </header>
 
   <nav id="navbar">
     <a href="#home" class="nav-link active">TRANG CHỦ</a>
@@ -46,9 +116,13 @@
   <div class="layout">
     <section id="home" class="card">
         <h2 style="color: var(--secondary-gold);">🌸 GIỚI THIỆU</h2>
-        <blockquote id="poem-text">"Tự hào về bản sắc, gìn giữ nét duyên truyền thống,<br>mở lòng đón nhận tinh hoa hiện đại."</blockquote>
-        <div id="shop-announcement" class="announcement-box" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; margin-top: 10px;">Đang tải thông báo...</div>
-        <div class="social-under-poem" id="home-socials" style="margin-top: 20px; font-size: 24px; gap: 20px; display: flex; justify-content: center;"></div>
+        <blockquote id="poem-text">
+            "Tự hào về bản sắc, gìn giữ nét duyên truyền thống,<br>mở lòng đón nhận tinh hoa hiện đại."
+        </blockquote>
+        
+        <div id="shop-announcement" class="announcement-box">Đang tải thông báo...</div>
+
+        <div class="social-under-poem" id="home-socials"></div>
     </section>
 
     <section id="products" class="card hidden">
@@ -57,63 +131,69 @@
     </section>
 
     <section id="tracking" class="card hidden">
-        <h2 style="color: var(--primary-red);">🔍 TRA CỨU ĐƠN HÀNG</h2>
-        <p>Nhập mã đơn hàng của bạn để kiểm tra tiến độ</p>
-        <input type="text" id="track-input" placeholder="Nhập mã đơn (VD: SDT8012)" style="padding:15px; border-radius:12px; width:280px; border:1px solid #ddd; font-size: 16px;">
-        <button onclick="checkOrder()" class="btn-action" style="width:auto; padding:15px 40px; margin-left: 10px;">TÌM KIẾM</button>
-        <div id="track-res" style="margin-top:30px; max-width: 500px; margin-left: auto; margin-right: auto;"></div>
+        <h2>TRA CỨU ĐƠN HÀNG</h2>
+        <input type="text" id="track-input" placeholder="Nhập mã đơn (VD: SDT1234)" style="padding:12px; border-radius:10px; width:250px; border:1px solid #ddd;">
+        <button onclick="checkOrder()" class="btn-action" style="width:auto; padding:12px 30px;">TÌM KIẾM</button>
+        <div id="track-res" style="margin-top:20px;"></div>
     </section>
   </div>
 
   <div id="product-modal" class="modal-overlay">
       <div class="modal-content">
-          <span style="position:absolute; top:15px; right:20px; font-size:35px; cursor:pointer; z-index:10; color: #999;" onclick="closeModal()">&times;</span>
+          <span style="position:absolute; top:15px; right:20px; font-size:30px; cursor:pointer; z-index:10;" onclick="closeModal()">&times;</span>
           
           <div class="modal-body" id="step-1">
               <div class="gallery-side">
-                  <img id="main-img" class="gallery-main" src="" onerror="this.src='https://via.placeholder.com/500?text=Anh+dang+cap+nhat'">
+                  <img id="main-img" class="gallery-main" src="" onclick="zoomImg(this.src)">
                   <div id="thumb-list" class="thumb-grid"></div>
               </div>
-              <div class="info-side" style="text-align: left;">
-                  <h2 id="p-title" style="margin:0; color:var(--primary-red);"></h2>
-                  <p id="p-id" class="tag-id" style="display:inline-block; margin: 10px 0;"></p>
-                  <h3 id="p-price" style="color:#28a745; font-size:28px; margin: 5px 0;"></h3>
-                  <button class="btn-action" onclick="goToStep(2)">MUA NGAY - ĐẶT CỌC 50%</button>
-                  <hr style="opacity: 0.2; margin: 20px 0;">
-                  <p id="p-desc" style="line-height:1.6; color:#555; white-space: pre-line;"></p>
+              <div class="info-side">
+                  <div class="order-header-mobile">
+                      <h2 id="p-title" style="margin:0; color:var(--primary-red);"></h2>
+                      <p id="p-id" class="tag-id" style="display:inline-block;"></p>
+                      <h3 id="p-price" style="color:#28a745; font-size:24px;"></h3>
+                      <button class="btn-action" onclick="goToStep(2)">MUA NGAY - ĐẶT CỌC 50%</button>
+                  </div>
+                  <hr>
+                  <p id="p-desc" style="line-height:1.6; color:#555;"></p>
               </div>
           </div>
 
           <div class="modal-body hidden" id="step-2">
               <div style="grid-column: 1 / -1;">
-                  <h3>🛒 THÔNG TIN GIAO HÀNG</h3>
-                  <div class="order-form" style="max-width: 500px; margin: auto;">
-                      <input type="text" id="f-name" placeholder="Họ và tên người nhận" style="width:100%; padding:12px; margin:8px 0; border-radius:10px; border:1px solid #ddd;">
-                      <input type="tel" id="f-phone" placeholder="Số điện thoại liên hệ" style="width:100%; padding:12px; margin:8px 0; border-radius:10px; border:1px solid #ddd;">
-                      <input type="email" id="f-email" placeholder="Địa chỉ Email" style="width:100%; padding:12px; margin:8px 0; border-radius:10px; border:1px solid #ddd;">
-                      <input type="text" id="f-address" placeholder="Địa chỉ nhận hàng chi tiết" style="width:100%; padding:12px; margin:8px 0; border-radius:10px; border:1px solid #ddd;">
+                  <h3>THÔNG TIN GIAO HÀNG</h3>
+                  <div class="order-form">
+                      <input type="text" id="f-name" placeholder="Họ và tên (Bắt buộc)">
+                      <input type="tel" id="f-phone" placeholder="Số điện thoại (Bắt buộc)">
+                      <input type="email" id="f-email" placeholder="Địa chỉ Email (Nhận thông báo đơn hàng)">
+                      <input type="text" id="f-address" placeholder="Địa chỉ nhận hàng">
+                      <input type="text" id="f-zalo" placeholder="Số Zalo của bạn">
                       <button class="btn-action" onclick="processPayment()">TIẾP TỤC THANH TOÁN</button>
-                      <p onclick="goToStep(1)" style="cursor:pointer; color:#666; margin-top:15px;">⬅ Quay lại xem sản phẩm</p>
+                      <button style="background:none; border:none; color:gray; cursor:pointer;" onclick="goToStep(1)">Quay lại</button>
                   </div>
               </div>
           </div>
 
           <div class="modal-body hidden" id="step-3">
-              <div class="qr-area" style="grid-column: 1 / -1; text-align: center;">
-                  <h3 style="color:#28a745;">MÃ ĐƠN: <span id="final-id" style="color:var(--primary-red)"></span></h3>
-                  <p>Vui lòng quét mã VietQR để đặt cọc 50%</p>
-                  <img id="qr-code" src="" style="max-width: 250px; border: 5px solid #f8f8f8; border-radius: 15px;">
-                  <div style="background: #fff4e6; padding: 10px; border-radius: 10px; margin: 10px auto; max-width: 400px;">
-                    <p style="margin:0; font-size: 14px;">Nội dung CK: <b id="qr-info" style="color:#d9480f;"></b></p>
-                  </div>
-                  <button class="btn-action" style="background:#0088ff; margin-bottom: 10px;" onclick="confirmAndZalo()">1. NHẮN ZALO XÁC NHẬN</button>
+              <div class="qr-area" style="grid-column: 1 / -1;">
+                  <h3 style="color:#28a745;">MÃ ĐƠN: <span id="final-id"></span></h3>
+                  <p>Vui lòng quét mã VietQR để hoàn tất đặt cọc (50%)</p>
+                  <img id="qr-code" src="">
+                  <p style="font-size:12px;">Nội dung CK: <b id="qr-info"></b></p>
+                  
+                  <button class="btn-action" style="background:#0088ff;" onclick="confirmAndZalo()">1. NHẮN ZALO XÁC NHẬN</button>
                   <button class="btn-action" style="background:#8B0000;" onclick="finalSubmit()">2. TÔI ĐÃ CHUYỂN KHOẢN XONG</button>
               </div>
           </div>
       </div>
   </div>
 
+  <a id="zalo-ring" href="#" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" class="zalo-float">
+  </a>
+
   <script>
+    // URL Cấu hình
     const URLS = {
         sheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv',
         track: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv',
@@ -125,64 +205,57 @@
     let ORDER_TEMP = {};
 
     async function init() {
-        try {
-            const res = await fetch(URLS.sheet + '&cache=' + Math.random());
-            const text = await res.text();
-            const rows = Papa.parse(text, { header: true, delimiter: '\t' }).data;
-            DB.settings = rows[0];
-            DB.products = rows.slice(1).filter(p => p.id);
-            renderHome();
-            renderProducts();
-        } catch (e) { console.error("Lỗi init:", e); }
+        const res = await fetch(URLS.sheet);
+        const text = await res.text();
+        const rows = Papa.parse(text, { header: true, delimiter: '\t' }).data;
+        
+        DB.settings = rows[0];
+        DB.products = rows.slice(1);
+        renderHome();
+        renderProducts();
     }
 
     function renderHome() {
-        if(DB.settings.background_img) document.body.style.backgroundImage = `url('${DB.settings.background_img}')`;
-        document.getElementById('shop-announcement').innerText = DB.settings.shop_announcement || "Chào mừng bạn đến với shop!";
+        document.body.style.backgroundImage = `url('${DB.settings.background_img || DB.settings.img}')`;
+        document.getElementById('shop-announcement').innerText = DB.settings.shop_announcement;
+        document.getElementById('zalo-ring').href = `https://zalo.me/${DB.settings.zalo_phone}`;
+        
         document.getElementById('home-socials').innerHTML = `
-            <a href="${DB.settings.fb_link}" target="_blank" style="color:#1877F2"><i class="fab fa-facebook"></i></a>
-            <a href="https://zalo.me/${DB.settings.zalo_phone}" target="_blank" style="color:#0088ff"><i class="fas fa-comment-dots"></i></a>
+            <a href="${DB.settings.fb_link}"><i class="fab fa-facebook"></i></a>
+            <a href="${DB.settings.blogger_link}"><i class="fab fa-blogger"></i></a>
+            <a href="https://zalo.me/${DB.settings.zalo_phone}"><i class="fas fa-comment-dots"></i></a>
         `;
     }
 
     function renderProducts() {
         const list = document.getElementById('product-list');
-        list.innerHTML = DB.products.map(p => {
-            // Sửa lỗi hiển thị số tiền ngoài danh sách
-            const formattedPrice = Number(p.price.toString().replace(/[^0-9]/g, '')).toLocaleString('vi-VN');
-            return `
+        list.innerHTML = DB.products.map(p => `
             <div class="product-card" onclick="openProduct('${p.id}')">
-                <img src="${p.img}" onerror="this.src='https://via.placeholder.com/300?text=Hinh+Anh'">
+                <img src="${p.img}">
                 <div style="margin-top:10px;">
                     <span class="tag-id">Mã: ${p.id}</span>
-                    <h4 style="margin:5px 0; height:40px; overflow:hidden;">${p.title}</h4>
-                    <b style="color:var(--primary-red); font-size:18px;">${formattedPrice}đ</b>
+                    <h4 style="margin:5px 0;">${p.title}</h4>
+                    <b style="color:var(--primary-red)">${Number(p.price).toLocaleString()}đ</b>
                 </div>
-            </div>`;
-        }).join('');
+            </div>
+        `).join('');
     }
 
     function openProduct(id) {
         CURRENT_P = DB.products.find(x => x.id === id);
-        if(!CURRENT_P) return;
-        
         document.getElementById('p-title').innerText = CURRENT_P.title;
         document.getElementById('p-id').innerText = "Mã sản phẩm: " + CURRENT_P.id;
-        
-        // Sửa lỗi hiển thị số tiền trong Modal
-        const priceNum = Number(CURRENT_P.price.toString().replace(/[^0-9]/g, ''));
-        document.getElementById('p-price').innerText = priceNum.toLocaleString('vi-VN') + " VNĐ";
-        
+        document.getElementById('p-price').innerText = Number(CURRENT_P.price).toLocaleString() + " VNĐ";
         document.getElementById('p-desc').innerText = CURRENT_P.desc;
         document.getElementById('main-img').src = CURRENT_P.img;
 
-        // Xử lý Gallery ảnh
-        let galleryHtml = `<img src="${CURRENT_P.img}" onclick="document.getElementById('main-img').src=this.src" style="border:2px solid var(--primary-red)">`;
-        if(CURRENT_P.gallery) {
-            const extraImgs = CURRENT_P.gallery.split(',');
-            galleryHtml += extraImgs.map(url => `<img src="${url.trim()}" onclick="document.getElementById('main-img').src=this.src">`).join('');
-        }
-        document.getElementById('thumb-list').innerHTML = galleryHtml;
+        // Xử lý Gallery
+        const gallery = [CURRENT_P.img];
+        if(CURRENT_P.gallery) gallery.push(...CURRENT_P.gallery.split(','));
+        
+        document.getElementById('thumb-list').innerHTML = gallery.map(url => 
+            `<img src="${url.trim()}" onclick="document.getElementById('main-img').src=this.src">`
+        ).join('');
 
         goToStep(1);
         document.getElementById('product-modal').style.display = 'flex';
@@ -194,27 +267,21 @@
     }
 
     function processPayment() {
-        const name = document.getElementById('f-name').value.trim();
-        const phone = document.getElementById('f-phone').value.trim();
-        const email = document.getElementById('f-email').value.trim();
-        const addr = document.getElementById('f-address').value.trim();
+        const name = document.getElementById('f-name').value;
+        const phone = document.getElementById('f-phone').value;
+        const email = document.getElementById('f-email').value;
         
-        if(!name || !phone) return alert("Vui lòng nhập Tên và Số điện thoại!");
+        if(!name || !phone || !email) return alert("Vui lòng điền đầy đủ Tên, SĐT và Email để nhận thông báo!");
 
-        const orderId = "SDT" + Math.floor(1000 + Math.random() * 8999);
-        const priceNum = Number(CURRENT_P.price.toString().replace(/[^0-9]/g, ''));
-        const deposit = priceNum / 2;
-        const qrInfo = `${CURRENT_P.id} ${orderId} ${name.split(' ').pop()}`;
+        const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
+        const deposit = Number(CURRENT_P.price) / 2;
+        const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
         
-        // Cấu hình data gửi đi khớp với "Bộ não" Tiếng Việt
         ORDER_TEMP = {
-            order_id: orderId,
-            customer_name: name,
-            phone: phone, 
-            email: email, 
-            address: addr,
-            product_id: CURRENT_P.id,
-            total_price: priceNum
+            order_id: orderId, customer_name: name, phone: phone, 
+            email: email, address: document.getElementById('f-address').value,
+            product_id: CURRENT_P.id, total_price: CURRENT_P.price,
+            status: "Chờ xác nhận cọc", progress: "Đang chờ cọc 50%", note: "Khách vừa tạo đơn"
         };
 
         document.getElementById('final-id').innerText = orderId;
@@ -225,67 +292,47 @@
     }
 
     function confirmAndZalo() {
-        const msg = `Chào Shop, tôi vừa đặt đơn ${ORDER_TEMP.order_id} (${CURRENT_P.title}). Tôi gửi bill cọc ạ!`;
+        const msg = `Tôi vừa đặt đơn ${ORDER_TEMP.order_id} (${CURRENT_P.title}). Tôi sẽ gửi bill cọc ngay!`;
         window.open(`https://zalo.me/${DB.settings.zalo_phone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     async function finalSubmit() {
-        const btn = document.querySelector('button[onclick="finalSubmit()"]');
-        btn.innerText = "ĐANG GỬI..."; btn.disabled = true;
-        try {
-            await fetch(URLS.script, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(ORDER_TEMP)
-            });
-            alert("Lưu đơn thành công! Bạn hãy theo dõi trạng thái tại mục TRA CỨU.");
-            closeModal();
-        } catch (e) { alert("Lỗi gửi đơn, vui lòng chụp màn hình bill cọc gửi Zalo shop!"); }
-        btn.innerText = "2. TÔI ĐÃ CHUYỂN KHOẢN XONG"; btn.disabled = false;
+        // Gửi dữ liệu qua Apps Script
+        fetch(URLS.script, {
+            method: 'POST', mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ORDER_TEMP)
+        });
+
+        alert("Đơn hàng của bạn đã được gửi hệ thống và đang chờ xác nhận cọc. Chúng tôi sẽ thông báo qua Email/Zalo của bạn!");
+        closeModal();
     }
 
-    // --- LOGIC TRA CỨU KHỚP VỚI BỘ NÃO ---
     async function checkOrder() {
-        const id = document.getElementById('track-input').value.trim().toUpperCase();
+        const id = document.getElementById('track-input').value.toUpperCase();
         const resDiv = document.getElementById('track-res');
-        if(!id) return alert("Hãy nhập mã đơn hàng!");
-        
-        resDiv.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Đang tìm...";
+        resDiv.innerHTML = "Đang tra cứu...";
 
-        try {
-            const response = await fetch(URLS.track + '&cache=' + Math.random());
-            const text = await response.text();
-            // Đọc Tab Theo dõi đơn (TSV)
-            const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
-            
-            // Tìm khớp với cột "Mã đơn hàng" (B) trong ảnh image_72d694
-            const found = orders.find(o => 
-                (o["Mã đơn hàng"] && o["Mã đơn hàng"].trim().toUpperCase() === id) || 
-                (o["order_id"] && o["order_id"].trim().toUpperCase() === id)
-            );
+        const response = await fetch(URLS.track);
+        const text = await response.text();
+        const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
+        const found = orders.find(o => o.order_id === id);
 
-            if(found) {
-                // Lấy thông tin từ các cột Tiếng Việt trong Sheet của bạn
-                const status = found["Trạng thái"] || "Đang xử lý";
-                const progress = found["Tiến độ"] || "Đang chờ cọc";
-                const note = found["Ghi chú"] || "Khách vừa tạo đơn";
-                const customer = found["Tên khách hàng"] || "---";
-
-                resDiv.innerHTML = `
-                <div style="background:white; padding:20px; border-radius:15px; text-align:left; color:#333;">
-                    <p style="margin:5px 0;"><b>👤 Khách hàng:</b> ${customer}</p>
-                    <p style="margin:5px 0;"><b>🚩 Trạng thái:</b> <span style="color:var(--primary-red); font-weight:bold;">${status}</span></p>
-                    <p style="margin:5px 0;"><b>🚚 Tiến độ:</b> ${progress}</p>
-                    <p style="margin:10px 0 0 0; font-size:14px; color:#666; border-top:1px solid #eee; padding-top:10px;"><b>📝 Ghi chú:</b> ${note}</p>
+        if(found) {
+            resDiv.innerHTML = `
+                <div style="background:white; padding:15px; border-radius:15px; text-align:left; color:black;">
+                    <b>Trạng thái:</b> ${found.status}<br>
+                    <b>Tiến độ:</b> ${found.progress}<br>
+                    <b>Ghi chú:</b> ${found.note}
                 </div>`;
-            } else {
-                resDiv.innerHTML = "<b style='color:red;'>❌ Không thấy đơn hàng " + id + "</b><br><small>Lưu ý: Đơn mới tạo có thể mất 1-2 phút để cập nhật.</small>";
-            }
-        } catch (e) { resDiv.innerHTML = "⚠️ Lỗi kết nối dữ liệu!"; }
+        } else {
+            resDiv.innerHTML = "Không thấy đơn hàng này!";
+        }
     }
 
     function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
-    
+    function zoomImg(url) { window.open(url, '_blank'); }
+
     // Chuyển Tab
     document.querySelectorAll('.nav-link').forEach(l => {
         l.onclick = (e) => {
