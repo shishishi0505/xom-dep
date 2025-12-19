@@ -17,24 +17,29 @@
       --blur-bg: blur(12px);
     }
 
-    /* CSS NÂNG CẤP MỚI */
     .menu-toggle {
         position: fixed; top: 20px; right: 20px; z-index: 1001;
         background: var(--primary-red); color: white; width: 45px; height: 45px;
         border-radius: 10px; display: flex; align-items: center; justify-content: center;
         cursor: pointer; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
+    .menu-note {
+        position: fixed; top: 75px; right: 20px; z-index: 1000;
+        background: rgba(0,0,0,0.6); color: white; padding: 8px 12px;
+        border-radius: 10px; font-size: 13px; text-align: center;
+    }
     .success-popup {
         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
         background: white; padding: 30px; border-radius: 20px; text-align: center;
         z-index: 3000; box-shadow: 0 0 30px rgba(0,0,0,0.5); display: none; width: 90%; max-width: 400px;
     }
+    .countdown { font-size: 14px; color: #666; margin-top: 10px; }
+
     .history-card {
         background: rgba(255,255,255,0.1); border-radius: 15px; padding: 15px;
         margin-bottom: 10px; border-left: 5px solid var(--secondary-gold); text-align: left; color: white;
     }
 
-    /* GIỮ NGUYÊN CSS BLOG & LAYOUT CỦA BẠN */
     .blog-post-full { text-align: left; line-height: 1.8; color: #ffffff; font-size: 17px; padding: 30px; background: rgba(0, 0, 0, 0.4); border-radius: 25px; margin-top: 20px; border: 1px solid var(--secondary-gold); }
     .blog-post-full img { max-width: 100%; height: auto; border-radius: 15px; margin: 20px auto; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
     body { font-family: 'Nunito', sans-serif; margin: 0; background-attachment: fixed; background-size: cover; background-position: center; color: #333; transition: 0.5s; }
@@ -67,6 +72,7 @@
 <body>
 
   <div class="menu-toggle" onclick="toggleHistory()"><i class="fas fa-bars"></i></div>
+  <div class="menu-note">Tra lịch sử<br>đặt hàng</div>
 
   <header><h1>SẮC ĐẸP DÂN TỘC</h1></header>
 
@@ -79,9 +85,10 @@
   <div class="layout">
     <section id="history-section" class="card hidden">
         <h2 style="color: var(--secondary-gold);">📜 LỊCH SỬ ĐẶT HÀNG</h2>
-        <p style="color:white">Nhập SĐT để xem lại toàn bộ đơn hàng của bạn</p>
-        <input type="tel" id="hist-phone" placeholder="Số điện thoại đã đặt hàng" style="padding:12px; border-radius:10px; width:220px; border:1px solid #ddd;">
-        <button onclick="loadHistory()" class="btn-action" style="width:auto; padding:12px 25px;">XEM LỊCH SỬ</button>
+        <p style="color:white">Nhập SĐT và Tên để xem lại toàn bộ đơn hàng</p>
+        <input type="text" id="hist-name" placeholder="Họ và tên" style="padding:12px; border-radius:10px; width:220px; border:1px solid #ddd; margin-bottom:8px;">
+        <input type="tel" id="hist-phone" placeholder="Số điện thoại" style="padding:12px; border-radius:10px; width:220px; border:1px solid #ddd;">
+        <button onclick="loadHistory()" class="btn-action" style="width:auto; padding:12px 25px; margin-top:10px;">XEM LỊCH SỬ</button>
         <div id="hist-res" style="margin-top:20px;"></div>
     </section>
 
@@ -110,7 +117,8 @@
       <p style="color: #666; font-size: 14px; line-height: 1.5; margin: 15px 0;">
           Hệ thống đã ghi nhận đơn hàng.<br>Bạn sẽ nhận được thông báo xác nhận qua Zalo/Email sớm nhất.
       </p>
-      <button class="btn-action" onclick="closeSuccess()">ĐÓNG (10s)</button>
+      <button class="btn-action" onclick="closeSuccess()">ĐÓNG</button>
+      <div class="countdown">Tự động đóng sau <span id="countdown-timer">10</span>s</div>
   </div>
 
   <div id="product-modal" class="modal-overlay">
@@ -137,9 +145,9 @@
                   <div class="order-form">
                       <input type="text" id="f-name" placeholder="Họ và tên (Bắt buộc)">
                       <input type="tel" id="f-phone" placeholder="Số điện thoại (Bắt buộc)">
-                      <input type="email" id="f-email" placeholder="Địa chỉ Email">
-                      <input type="text" id="f-address" placeholder="Địa chỉ nhận hàng">
-                      <input type="text" id="f-zalo" placeholder="Số Zalo của bạn">
+                      <input type="email" id="f-email" placeholder="Địa chỉ Email (không bắt buộc)">
+                      <input type="text" id="f-address" placeholder="Địa chỉ nhận hàng (không bắt buộc)">
+                      <input type="text" id="f-zalo" placeholder="Số Zalo của bạn (không bắt buộc)">
                       <button class="btn-action" onclick="processPayment()">TIẾP TỤC THANH TOÁN</button>
                       <button style="background:none; border:none; color:gray; cursor:pointer;" onclick="goToStep(1)">Quay lại</button>
                   </div>
@@ -162,19 +170,20 @@
       </div>
   </div>
 
-  <a id="zalo-ring" href="#" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" class="zalo-float"></a>
+  <a id="zalo-ring" href="#" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" class="zalo-float" alt="Zalo"></a>
 
   <script>
     const URLS = {
         sheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv',
         track: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv',
-        script: 'https://script.google.com/macros/s/AKfycbzzm7g4xGcAlbYBX_65cd-FJEGhSgYCfS0MUdvAFLTlbbGr14UdZ54fgb_ki9uOsS21/exec'
+        script: 'https://script.google.com/macros/s/AKfycbxvOKcJjI6tlFAq9m_I8_AzvJzaZtdYDHV9iOVeYaWMfAnIDcM0bPrtUoeWWNooS9qk/exec'
     };
 
     let DB = { products: [], settings: {} };
     let ALL_POSTS = [];
     let CURRENT_P = null;
     let ORDER_TEMP = {};
+    let countdownInterval;
 
     async function init() {
         try {
@@ -195,15 +204,19 @@
     }
 
     async function loadHistory() {
+        const name = document.getElementById('hist-name').value.trim();
         const phone = document.getElementById('hist-phone').value.trim();
-        if(!phone) return alert("Vui lòng nhập SĐT!");
+        if(!name || !phone) return alert("Vui lòng nhập cả Tên và SĐT!");
         const resDiv = document.getElementById('hist-res');
         resDiv.innerHTML = "Đang tìm kiếm...";
         
         const response = await fetch(URLS.track);
         const text = await response.text();
         const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
-        const myOrders = orders.filter(o => o["SĐT"] === phone || o["phone"] === phone);
+        const myOrders = orders.filter(o => 
+            (o["SĐT"] === phone || o["phone"] === phone || o["Số điện thoại"] === phone) &&
+            (o["Tên khách hàng"] || o["customer_name"] || "").toLowerCase().includes(name.toLowerCase())
+        );
 
         if(myOrders.length > 0) {
             resDiv.innerHTML = myOrders.map(o => `
@@ -213,19 +226,25 @@
                     <b>Tiến độ:</b> ${o["Tiến độ"] || "..."}
                 </div>
             `).join('');
-        } else { resDiv.innerHTML = "<p style='color:white'>Không tìm thấy đơn hàng nào.</p>"; }
+        } else { resDiv.innerHTML = "<p style='color:white'>Không tìm thấy đơn hàng nào với thông tin này.</p>"; }
     }
 
     async function renderHome() {
         document.body.style.backgroundImage = `url('${DB.settings.background_img || DB.settings.img}')`;
-        document.getElementById('zalo-ring').href = `https://zalo.me/${DB.settings.zalo_phone}`;
+        
+        // Chuẩn hóa link Zalo
+        const cleanZalo = DB.settings.zalo_phone.replace(/[^\d]/g, '');
+        document.getElementById('zalo-ring').href = `https://zalo.me/${cleanZalo}`;
+
         document.getElementById('home-socials').innerHTML = `
             <a href="${DB.settings.fb_link}"><i class="fab fa-facebook"></i></a>
             <a href="${DB.settings.blogger_link}"><i class="fab fa-blogger"></i></a>
-            <a href="https://zalo.me/${DB.settings.zalo_phone}"><i class="fas fa-comment-dots"></i></a>
+            <a href="https://zalo.me/${cleanZalo}"><i class="fas fa-comment-dots"></i></a>
         `;
         fetchBloggerContent();
     }
+
+    // Các hàm còn lại giữ nguyên (fetchBloggerContent, displayPost, renderProducts, openProduct, goToStep, checkOrder, closeModal, closeSuccess...)
 
     async function fetchBloggerContent() {
         try {
@@ -291,13 +310,30 @@
     }
 
     function processPayment() {
-        const name = document.getElementById('f-name').value, phone = document.getElementById('f-phone').value;
-        if(!name || !phone) return alert("Vui lòng điền Tên và SĐT!");
+        const name = document.getElementById('f-name').value.trim();
+        const phone = document.getElementById('f-phone').value.trim();
+        if(!name || !phone) return alert("Vui lòng điền Họ tên và SĐT!");
+
         const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
-        const deposit = (Number(CURRENT_P.price) * 1000) / 2;
+        const totalPrice = (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + " VNĐ";
+        const deposit = Number(CURRENT_P.price) * 500;
+
+        const email = document.getElementById('f-email').value.trim() || "Không có";
+        const address = document.getElementById('f-address').value.trim() || "Chưa nhập";
+        const zalo = document.getElementById('f-zalo').value.trim() || email;
+
         const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
-        
-        ORDER_TEMP = { order_id: orderId, customer_name: name, phone: phone, email: document.getElementById('f-email').value, address: document.getElementById('f-address').value, product_id: CURRENT_P.id, total_price: CURRENT_P.price, status: "Chờ cọc", progress: "Khách vừa tạo đơn" };
+
+        ORDER_TEMP = {
+            "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
+            "Mã đơn hàng": orderId,
+            "Tên khách hàng": name,
+            "Số điện thoại": "'" + phone,  // thêm dấu nháy để giữ số 0
+            "Gmail/Zalo": email === "Không có" && zalo !== "Không có" ? zalo : email,
+            "Địa chỉ": address,
+            "Tổng tiền": totalPrice,
+            "Trạng thái": "Chờ cọc"
+        };
 
         document.getElementById('final-id').innerText = orderId;
         document.getElementById('qr-info').innerText = qrInfo;
@@ -307,28 +343,55 @@
     }
 
     function confirmAndZalo() {
-        window.open(`https://zalo.me/${DB.settings.zalo_phone}?text=${encodeURIComponent("Tôi vừa đặt đơn " + ORDER_TEMP.order_id)}`, '_blank');
+        const cleanZalo = DB.settings.zalo_phone.replace(/[^\d]/g, '');
+        const text = encodeURIComponent("Tôi vừa đặt đơn " + ORDER_TEMP["Mã đơn hàng"] + " - " + ORDER_TEMP["Tên khách hàng"]);
+        window.open(`https://zalo.me/${cleanZalo}?text=${text}`, '_blank');
     }
 
     async function finalSubmit() {
-        fetch(URLS.script, { method: 'POST', mode: 'no-cors', body: JSON.stringify(ORDER_TEMP) });
+        fetch(URLS.script, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify(ORDER_TEMP) 
+        });
         closeModal();
         const popup = document.getElementById('success-dialog');
         popup.style.display = 'block';
-        setTimeout(() => closeSuccess(), 10000);
+
+        let seconds = 10;
+        document.getElementById('countdown-timer').innerText = seconds;
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
+            seconds--;
+            document.getElementById('countdown-timer').innerText = seconds;
+            if(seconds <= 0) closeSuccess();
+        }, 1000);
     }
 
-    function closeSuccess() { document.getElementById('success-dialog').style.display = 'none'; }
+    function closeSuccess() { 
+        clearInterval(countdownInterval);
+        document.getElementById('success-dialog').style.display = 'none'; 
+    }
+
     function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
 
     async function checkOrder() {
-        const id = document.getElementById('track-input').value.toUpperCase();
+        const id = document.getElementById('track-input').value.toUpperCase().trim();
+        if(!id) return alert("Vui lòng nhập mã đơn!");
         const resDiv = document.getElementById('track-res');
         resDiv.innerHTML = "Đang tra cứu...";
-        const response = await fetch(URLS.track), text = await response.text();
-        const found = Papa.parse(text, { header: true, delimiter: '\t' }).data.find(o => o["Mã đơn hàng"] === id);
-        if(found) { resDiv.innerHTML = `<div style="background:white; padding:15px; border-radius:15px; text-align:left; color:black;"><b>Trạng thái:</b> ${found["Trạng thái"]}<br><b>Tiến độ:</b> ${found["Tiến độ"]}</div>`; } 
-        else { resDiv.innerHTML = "Không thấy đơn hàng này!"; }
+        const response = await fetch(URLS.track);
+        const text = await response.text();
+        const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
+        const found = orders.find(o => (o["Mã đơn hàng"] || o["order_id"]) === id);
+        if(found) { 
+            resDiv.innerHTML = `<div style="background:white; padding:15px; border-radius:15px; text-align:left; color:black;">
+                <b>Trạng thái:</b> ${found["Trạng thái"] || "Đang xử lý"}<br>
+                <b>Tiến độ:</b> ${found["Tiến độ"] || "Chưa có thông tin"}
+            </div>`; 
+        } else { 
+            resDiv.innerHTML = "<p style='color:red'>Không tìm thấy đơn hàng này!</p>"; 
+        }
     }
 
     document.querySelectorAll('.nav-link').forEach(l => {
