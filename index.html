@@ -182,7 +182,7 @@
     const URLS = {
         sheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv',
         track: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv',
-        script: 'https://script.google.com/macros/s/AKfycbzzm7g4xGcAlbYBX_65cd-FJEGhSgYCfS0MUdvAFLTlbbGr14UdZ54fgb_ki9uOsS21/exec'
+        script: 'https://script.google.com/macros/s/AKfycbzLAjGhO7oWlnfI0T4Dkr5_WHf1DN70qdZCKOCcO4keuUXdcNTsn4zyioj3Dx82yOvu/exec'
     };
 
     let DB = { products: [], settings: {} };
@@ -245,49 +245,73 @@
     }
 
     function processPayment() {
-        const name = document.getElementById('f-name').value;
-        let phone = document.getElementById('f-phone').value;
-        if(!name || !phone) return alert("Vui lòng điền Tên và SĐT!");
-        
-        // Fix mất số 0 bằng cách thêm nháy đơn
-        if(!phone.startsWith("'")) phone = "'" + phone; 
+    const name = document.getElementById('f-name').value.trim();
+    let phone = document.getElementById('f-phone').value.trim();
+    
+    // Ràng buộc bắt buộc 2 thông tin quan trọng nhất
+    if(!name || !phone) return alert("Vui lòng điền Tên và SĐT để tạo đơn!");
+    
+    // Đảm bảo số điện thoại được lưu dạng văn bản để không mất số 0
+    const phoneFormatted = phone.startsWith("'") ? phone : "'" + phone;
 
-        const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
-        const deposit = (Number(CURRENT_P.price) * 1000) / 2;
-        const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
-        
-        ORDER_TEMP = { 
-            "Ngày đặt": new Date().toLocaleString('vi-VN'),
-            "Mã đơn hàng": orderId,
-            "Tên khách hàng": name,
-            "Số điện thoại": phone,
-            "Gmail/Zalo": document.getElementById('f-email').value,
-            "Địa chỉ": document.getElementById('f-address').value,
-            "Tổng tiền": CURRENT_P.price,
-            "Trạng thái": "Chưa xác nhận"
-        };
+    const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
+    const deposit = (Number(CURRENT_P.price) * 1000) / 2;
+    const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
+    
+    // Lấy thông tin bổ sung, nếu trống thì ghi "Không có" để Sheet không bị lệch cột
+    const extraContact = document.getElementById('f-email').value.trim() || "Không có";
+    const address = document.getElementById('f-address').value.trim() || "Chưa cung cấp";
 
-        document.getElementById('final-id').innerText = orderId;
-        document.getElementById('qr-info').innerText = qrInfo;
-        document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
-        goToStep(3);
-    }
+    // Cấu trúc dữ liệu gửi đi khớp hoàn toàn với yêu cầu của bạn
+    ORDER_TEMP = { 
+        "Ngày đặt": new Date().toLocaleString('vi-VN'),
+        "Mã đơn hàng": orderId,
+        "Tên khách hàng": name,
+        "Số điện thoại": phoneFormatted,
+        "Gmail/Zalo": extraContact,
+        "Địa chỉ": address,
+        "Tổng tiền": CURRENT_P.price + "k",
+        "Trạng thái": "Chưa xác nhận"
+    };
 
+    // Cập nhật giao diện bước 3
+    document.getElementById('final-id').innerText = orderId;
+    document.getElementById('qr-info').innerText = qrInfo;
+    document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
+    goToStep(3);
+}
     async function finalSubmit() {
-        fetch(URLS.script, { method: 'POST', mode: 'no-cors', body: JSON.stringify(ORDER_TEMP) });
-        closeModal();
-        const popup = document.getElementById('success-dialog');
-        const btn = document.getElementById('close-btn-timer');
-        popup.style.display = 'block';
-        let timeLeft = 10;
-        btn.innerText = `ĐÓNG (${timeLeft}s)`;
-        clearInterval(countdownInterval);
-        countdownInterval = setInterval(() => {
-            timeLeft--;
-            btn.innerText = `ĐÓNG (${timeLeft}s)`;
-            if(timeLeft <= 0) { closeSuccess(); clearInterval(countdownInterval); }
-        }, 1000);
+    // Gửi dữ liệu bằng phương thức POST với chuỗi JSON
+    try {
+        fetch(URLS.script, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify(ORDER_TEMP) 
+        });
+    } catch (e) {
+        console.error("Lỗi gửi dữ liệu:", e);
     }
+
+    closeModal();
+    
+    // Hiển thị Popup thành công và đếm ngược 10s
+    const popup = document.getElementById('success-dialog');
+    const btn = document.getElementById('close-btn-timer');
+    popup.style.display = 'block';
+    
+    let timeLeft = 10;
+    btn.innerText = `ĐÓNG (${timeLeft}s)`;
+    
+    clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (btn) btn.innerText = `ĐÓNG (${timeLeft}s)`;
+        if(timeLeft <= 0) {
+            closeSuccess();
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
+}
 
     async function renderHome() {
         document.body.style.backgroundImage = `url('${DB.settings.background_img || DB.settings.img}')`;
