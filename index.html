@@ -211,6 +211,8 @@
     let CURRENT_P = null;
     let ORDER_TEMP = {};
     let countdownInterval;
+    let activityTimer; // Khai báo biến để quản lý thời gian 20 phút
+
 
     async function init() {
         try {
@@ -223,6 +225,27 @@
             renderProducts();
         } catch(e) { console.error("Lỗi khởi tạo:", e); }
     }
+    function resetTimer() {
+    // Nếu biến activityTimer đã có giá trị, xóa nó đi để tính lại từ đầu
+    if (activityTimer) clearTimeout(activityTimer);
+    
+    activityTimer = setTimeout(() => {
+        // Kiểm tra nếu đang đăng nhập thì mới đuổi khách ra
+        const userKey = localStorage.getItem('cart_user_key');
+        if (userKey) {
+            confirmLogout();
+            showToast("Hết phiên", "Bạn đã treo máy quá 20 phút");
+        }
+    }, 1200000); // 20 phút
+}
+
+// Chỉ gắn vào 3 sự kiện chính để web mượt hơn
+window.addEventListener('click', resetTimer);
+window.addEventListener('scroll', resetTimer);
+window.addEventListener('keypress', resetTimer);
+
+// Gọi lần đầu khi vừa mở web
+resetTimer();
 
     function toggleHistory() {
         document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
@@ -349,21 +372,22 @@
     }
 
     function processPayment() {
-        const name = document.getElementById('f-name').value.trim();
-        const phone = document.getElementById('f-phone').value.trim();
-        if(!name || !phone) return alert("Vui lòng điền Họ tên và SĐT!");
+    const name = document.getElementById('f-name').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    if(!name || !phone) return alert("Vui lòng điền Họ tên và SĐT!");
 
-        const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
-        const totalPrice = (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + " VNĐ";
-        const deposit = Number(CURRENT_P.price) * 500;
+    const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
+    const totalPrice = (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + " VNĐ";
+    const deposit = Number(CURRENT_P.price) * 500;
 
-        const email = document.getElementById('f-email').value.trim() || "Không có";
-        const address = document.getElementById('f-address').value.trim() || "Chưa nhập";
-        const zalo = document.getElementById('f-zalo').value.trim() || email;
+    const email = document.getElementById('f-email').value.trim() || "Không có";
+    const address = document.getElementById('f-address').value.trim() || "Chưa nhập";
+    const zalo = document.getElementById('f-zalo').value.trim() || email;
 
-        const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
+    const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
 
-        ORDER_TEMP = {
+    // PHẢI CÓ DẤU BẰNG (=) Ở ĐÂY ĐỂ TRÁNH TREO MÁY
+    ORDER_TEMP = {
         "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
         "Mã đơn hàng": orderId,
         "Tên khách hàng": name,
@@ -375,13 +399,14 @@
         "Trạng thái": "Chờ cọc"
     };
 
-        document.getElementById('final-id').innerText = orderId;
-        document.getElementById('qr-info').innerText = qrInfo;
-        document.getElementById('bank-owner').innerText = "TONG ANH NAM";
-        document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
-        goToStep(3);
-    }
+    document.getElementById('final-id').innerText = orderId;
+    document.getElementById('qr-info').innerText = qrInfo;
+    document.getElementById('bank-owner').innerText = "TONG ANH NAM";
+    document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
     
+    // Chuyển bước mượt mà
+    setTimeout(() => { goToStep(3); }, 100); 
+}
     function maskPhone(phone) {
     let clean = phone.replace(/'/g, '').replace(/\s/g, '').replace(/-/g, '');
     if (clean.length >= 8) {
