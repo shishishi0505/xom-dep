@@ -273,7 +273,7 @@
         ALL_POSTS.forEach((p, i) => {
             if (i !== index) {
                 html += `<div onclick="displayPost(${i}); window.scrollTo(0,0);" style="cursor:pointer; padding:5px; color:#eee;">
-                            <h4 style="margin:0; font-size:14px; font-weight:normal;">• ${p.title}</h4>
+                            <h4 style="margin:0; font-size:14px; font-weight:normal;">.${p.title}</h4>
                         </div>`;
             }
         });
