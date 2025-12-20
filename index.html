@@ -496,12 +496,22 @@ function openCart() {
 function saveCartUser() {
     const name = document.getElementById('cart-name').value.trim();
     const phone = document.getElementById('cart-phone').value.trim();
-    if (!name || !phone) return alert("Vui lòng nhập đầy đủ Họ tên và Số điện thoại!");
+    const address = document.getElementById('cart-address').value.trim();
+    
+    if (!name || !phone || !address) {
+        alert("Vui lòng nhập đầy đủ Họ tên, Số điện thoại và Địa chỉ nhận hàng!");
+        return;
+    }
+    
     const userKey = `cart_${name.replace(/\s/g,'_')}_${phone}`;
     localStorage.setItem('cart_user_key', userKey);
     localStorage.setItem(userKey, localStorage.getItem(userKey) || '[]');
-    alert("Đã lưu thông tin!");
-    openCart();
+    
+    // Lưu thêm địa chỉ vào một key riêng để dùng khi thanh toán
+    localStorage.setItem(`${userKey}_address`, address);
+    
+    alert("Đã lưu thông tin thành công!");
+    openCart(); // Mở giỏ ngay
 }
 
 function showToast(message = "Đã thêm vào giỏ hàng!") {
@@ -668,7 +678,7 @@ function buyCart() {
         "Tên khách hàng": name,
         "Số điện thoại": "'" + phone,
         "Gmail/Zalo": "Từ giỏ hàng",
-        "Địa chỉ": "Chưa nhập (liên hệ Zalo)",
+        "Địa chỉ": localStorage.getItem(`${userKey}_address`) || "Chưa nhập (liên hệ Zalo)",
         "Tổng tiền": totalPrice.toLocaleString('vi-VN') + " VNĐ",
         "Trạng thái": "Chờ cọc",
         "Ghi chú": "Giỏ hàng: " + selected.join(', ')
@@ -691,6 +701,15 @@ function closeCartModal() {
 // Gán sự kiện nút giỏ hàng
 document.getElementById('cart-button').addEventListener('click', openCart);
     init();
+    // Tự động đăng xuất khi reload trang (xóa giỏ hàng và trạng thái đăng nhập)
+window.addEventListener('load', () => {
+    const userKey = localStorage.getItem('cart_user_key');
+    if (userKey) {
+        localStorage.removeItem(userKey); // Xóa dữ liệu giỏ hàng
+        localStorage.removeItem('cart_user_key'); // Xóa trạng thái đăng nhập
+        // Không cần alert, im lặng xóa là được
+    }
+});
     // Tự động đăng nhập lại nếu đã từng nhập tên + SĐT trước đó
 window.addEventListener('load', () => {
     const userKey = localStorage.getItem('cart_user_key');
@@ -720,11 +739,17 @@ window.addEventListener('load', () => {
         <span style="position:absolute; top:15px; right:20px; font-size:30px; cursor:pointer; color:#333;" onclick="closeCartModal()">&times;</span>
         
         <div id="cart-login">
-            <h3 style="color:var(--primary-red); margin-bottom:10px;">XÁC NHẬN THÔNG TIN</h3>
-            <p style="color:#666; margin-bottom:20px;">Vui lòng nhập để lưu giỏ hàng riêng cho bạn</p>
-            <input type="text" id="cart-name" placeholder="Họ và tên *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
-            <input type="tel" id="cart-phone" placeholder="Số điện thoại *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
-            <button class="btn-action" onclick="saveCartUser()" style="width:100%; max-width:350px; padding:15px; margin-top:15px;">XÁC NHẬN & XEM GIỎ HÀNG</button>
+    <h3 style="color: var(--primary-red);">XÁC NHẬN THÔNG TIN ĐỂ XEM GIỎ HÀNG</h3>
+    <p style="color:#666; margin-bottom:20px;">Vui lòng nhập đầy đủ để chúng tôi giao hàng chính xác</p>
+    
+    <input type="text" id="cart-name" placeholder="Họ và tên *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+    
+    <input type="tel" id="cart-phone" placeholder="Số điện thoại *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+    
+    <input type="text" id="cart-address" placeholder="Địa chỉ nhận hàng (số nhà, thôn bản, xã, huyện, tỉnh) *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+    
+    <button class="btn-action" onclick="saveCartUser()" style="width:100%; max-width:350px; padding:15px; margin-top:15px;">XÁC NHẬN & XEM GIỎ HÀNG</button>
+</div>
           <!-- Modal xác nhận đăng xuất -->
 <div id="logout-confirm" class="hidden" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.6); text-align: center; z-index: 9999; width: 90%; max-width: 400px;">
     <h3 style="color: var(--primary-red); margin-bottom: 15px;">XÁC NHẬN ĐĂNG XUẤT</h3>
@@ -739,12 +764,10 @@ window.addEventListener('load', () => {
         </div>
 
         <div id="cart-main" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;">
-    <div class="cart-tabs">
-        <div class="cart-tab active" onclick="switchCartTab(1)">Giỏ hàng của bạn</div>
-        <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
-    </div>
-    <button id="logout-btn" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 14px;">
+            <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+    <div class="cart-tab active" onclick="switchCartTab(1)" style="background: var(--primary-red); color: white;">Giỏ hàng của bạn</div>
+    <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
+    <button id="logout-btn" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
         Đăng xuất
     </button>
 </div>
