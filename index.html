@@ -482,7 +482,13 @@ function openCart() {
     } else {
         document.getElementById('cart-login').classList.add('hidden');
         document.getElementById('cart-main').classList.remove('hidden');
-        switchCartTab(1);
+        switchCartTab(1); // Mặc định mở tab Giỏ hàng
+
+        // Cập nhật thông tin người dùng hiện tại
+        const parts = userKey.split('_');
+        const name = parts.slice(1, -1).join('_').replace(/_/g, ' ');
+        const phone = parts[parts.length - 1];
+        document.getElementById('current-user-info').innerHTML = `${name}<br>${phone}`;
     }
     document.getElementById('cart-modal').style.display = 'flex';
 }
@@ -498,21 +504,58 @@ function saveCartUser() {
     openCart();
 }
 
+function showToast(message = "Đã thêm vào giỏ hàng!") {
+    const toast = document.getElementById('toast-notification');
+    document.getElementById('toast-message').innerText = message;
+    toast.style.display = 'block';
+    toast.style.opacity = '1';
+    toast.style.transition = 'opacity 0.5s';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 500);
+    }, 2000);
+}
+
 function addToCart(id) {
     const userKey = localStorage.getItem('cart_user_key');
     if (!userKey) {
-        alert("Vui lòng mở Giỏ hàng và nhập thông tin trước khi thêm sản phẩm!");
-        openCart();
+        alert("Bạn cần đăng nhập (nhập tên và số điện thoại) trước khi thêm sản phẩm vào giỏ!");
+        openCart(); // Tự động mở modal để buộc nhập thông tin
         return;
     }
     let cart = JSON.parse(localStorage.getItem(userKey) || '[]');
-    if (!cart.includes(id)) {
+    if (cart.includes(id)) {
+        showToast("Sản phẩm đã có trong giỏ!");
+    } else {
         cart.push(id);
         localStorage.setItem(userKey, JSON.stringify(cart));
-        alert("Đã thêm sản phẩm vào giỏ!");
-    } else {
-        alert("Sản phẩm đã có trong giỏ!");
+        showToast("Đã thêm vào giỏ hàng!");
     }
+    // Nếu đang mở modal giỏ thì cập nhật lại danh sách
+    if (document.getElementById('cart-modal').style.display === 'flex') {
+        renderCartItems();
+    }
+}
+
+// Đăng xuất
+document.getElementById('logout-btn').addEventListener('click', () => {
+    document.getElementById('logout-confirm').classList.remove('hidden');
+});
+
+function cancelLogout() {
+    document.getElementById('logout-confirm').classList.add('hidden');
+}
+
+function confirmLogout() {
+    const userKey = localStorage.getItem('cart_user_key');
+    if (userKey) {
+        localStorage.removeItem(userKey); // Xóa giỏ hàng
+    }
+    localStorage.removeItem('cart_user_key');
+    alert("Đã đăng xuất thành công! Giỏ hàng đã được xóa.");
+    document.getElementById('logout-confirm').classList.add('hidden');
+    closeCartModal();
+    location.reload();
 }
 
 function switchCartTab(tab) {
@@ -642,6 +685,28 @@ function closeCartModal() {
 // Gán sự kiện nút giỏ hàng
 document.getElementById('cart-button').addEventListener('click', openCart);
     init();
+    // Tự động đăng nhập lại nếu đã từng nhập tên + SĐT trước đó
+window.addEventListener('load', () => {
+    const userKey = localStorage.getItem('cart_user_key');
+    if (userKey) {
+        // Tự động ẩn phần login khi reload trang
+        const loginDiv = document.getElementById('cart-login');
+        const mainDiv = document.getElementById('cart-main');
+        if (loginDiv && mainDiv) {
+            loginDiv.classList.add('hidden');
+            mainDiv.classList.remove('hidden');
+        }
+
+        // Hiển thị thông tin người dùng trong modal xác nhận đăng xuất (nếu mở giỏ)
+        const parts = userKey.split('_');
+        const name = parts.slice(1, -1).join('_').replace(/_/g, ' ');
+        const phone = parts[parts.length - 1];
+        const userInfoEl = document.getElementById('current-user-info');
+        if (userInfoEl) {
+            userInfoEl.innerHTML = `${name}<br>${phone}`;
+        }
+    }
+});
   </script>
   <!-- ================== MODAL GIỎ HÀNG ================== -->
 <div id="cart-modal" class="modal-overlay">
@@ -657,10 +722,15 @@ document.getElementById('cart-button').addEventListener('click', openCart);
         </div>
 
         <div id="cart-main" class="hidden">
-            <div class="cart-tabs">
-                <div class="cart-tab active" onclick="switchCartTab(1)">Giỏ hàng của bạn</div>
-                <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
-            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;">
+    <div class="cart-tabs">
+        <div class="cart-tab active" onclick="switchCartTab(1)">Giỏ hàng của bạn</div>
+        <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
+    </div>
+    <button id="logout-btn" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 14px;">
+        Đăng xuất
+    </button>
+</div>
 
             <div id="cart-items" class="cart-section active"></div>
             <div id="full-products" class="cart-section"></div>
@@ -668,6 +738,14 @@ document.getElementById('cart-button').addEventListener('click', openCart);
     </div>
 </div>
 <!-- ================== HẾT MODAL GIỎ HÀNG ================== -->
+  <!-- Toast thông báo đẹp giữa màn hình -->
+<div id="toast-notification" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+    background: rgba(40, 167, 69, 0.95); color: white; padding: 25px 40px; border-radius: 20px; 
+    font-size: 18px; font-weight: bold; z-index: 9999; display: none; text-align: center; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); min-width: 300px;">
+    <i class="fas fa-check-circle" style="font-size: 50px; color: white; margin-bottom: 15px; display: block;"></i>
+    <span id="toast-message">Đã thêm vào giỏ hàng!</span>
+</div>
 </body>
 </html>
 </body>
