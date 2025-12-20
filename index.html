@@ -264,31 +264,27 @@
     function displayPost(index) {
     const post = ALL_POSTS[index];
     const contentDiv = document.getElementById('blog-content');
-    let html = `<h1 style="font-size: 22px; margin:0;">${post.title}</h1>
-                <p style="font-size:12px; color:var(--secondary-gold); margin-bottom:15px;">Ngày: ${new Date(post.pubDate).toLocaleDateString('vi-VN')}</p>`;
+    let html = '<h1 style="font-size: 22px; margin:0;">' + post.title + '</h1>';
+    html += '<p style="font-size:12px; color:var(--secondary-gold); margin-bottom:15px;">Ngày: ' + new Date(post.pubDate).toLocaleDateString('vi-VN') + '</p>';
     
     if (ALL_POSTS.length > 1) {
-        html += `<div style="margin-bottom:20px; padding:10px; background:rgba(255,255,255,0.05); border-radius:15px;">
-                <p style="font-size:12px; color:var(--secondary-gold); margin:0 0 5px 0;">BÀI VIẾT KHÁC:</p>`;
+        html += '<div style="margin-bottom:20px; padding:10px; background:rgba(255,255,255,0.05); border-radius:15px;">';
+        html += '<p style="font-size:12px; color:var(--secondary-gold); margin:0 0 5px 0;">BÀI VIẾT KHÁC:</p>';
+        
         ALL_POSTS.forEach((p, i) => {
             if (i !== index) {
-                html += `<div onclick="displayPost(${i}); window.scrollTo(0,0);" style="cursor:pointer; padding:5px; color:#eee;">
-                            <h4 style="margin:0; font-size:14px; font-weight:normal;">.${p.title}</h4>
-                        </div>`;
+                html += '<div onclick="displayPost(' + i + '); window.scrollTo(0,0);" style="cursor:pointer; padding:5px; color:#eee;">';
+                html += '<h4 style="margin:0; font-size:14px; font-weight:normal;">- ' + p.title + '</h4>';
+                html += '</div>';
             }
         });
-        html += `</div>`;
+        
+        html += '</div>';
     }
-    html += `<div class="post-body-content">${post.content}</div>`;
+    
+    html += '<div class="post-body-content">' + post.content + '</div>';
     contentDiv.innerHTML = html;
 }
-            });
-            html += `</div>`;
-        }
-        html += `<div class="post-body-content">${post.content}</div>`;
-        contentDiv.innerHTML = html;
-    }
-
     function renderProducts() {
         document.getElementById('product-list').innerHTML = DB.products.map(p => `
             <div class="product-card" onclick="openProduct('${p.id}')">
