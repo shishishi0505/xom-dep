@@ -363,18 +363,17 @@
 
         const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
 
-         {
-            "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
-            "Mã đơn hàng": orderId,
-            "Tên khách hàng": name,
-          "Mã sản phẩm": CURRENT_P.id,
-            "Số điện thoại": "'" + phone,  // thêm dấu nháy để giữ số 0
-            "Gmail/Zalo": email === "Không có" && zalo !== "Không có" ? zalo : email,
-            "Địa chỉ": address,
-            "Tổng tiền": totalPrice,
-            "Trạng thái": "Chờ cọc"
-        
-        };
+        ORDER_TEMP = {
+        "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
+        "Mã đơn hàng": orderId,
+        "Tên khách hàng": name,
+        "mã sản phẩm": CURRENT_P.id, 
+        "Số điện thoại": "'" + phone,
+        "Gmail/Zalo": (email === "Không có" && zalo !== "Không có") ? zalo : email,
+        "Địa chỉ": address,
+        "Tổng tiền": totalPrice,
+        "Trạng thái": "Chờ cọc"
+    };
 
         document.getElementById('final-id').innerText = orderId;
         document.getElementById('qr-info').innerText = qrInfo;
