@@ -363,7 +363,7 @@
 
         const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
 
-        ORDER_TEMP = {
+         {
             "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
             "Mã đơn hàng": orderId,
             "Tên khách hàng": name,
@@ -714,15 +714,40 @@ function closeCartModal() {
 // Gán sự kiện nút giỏ hàng
 document.getElementById('cart-button').addEventListener('click', openCart);
     // --- LOGIC 20 PHÚT VÀ SỬA THÔNG TIN ---
-let activityTimeout;
+// Biến lưu thời gian hoạt động cuối cùng
+let lastActivity = Date.now();
 
 function updateActivity() {
-    // Reset bộ đếm 20 phút
-    clearTimeout(activityTimeout);
-    activityTimeout = setTimeout(() => {
-        confirmLogout(); // Tự động đăng xuất
-        showToast("Hết phiên làm việc", "Hệ thống tự động đăng xuất sau 20p");
-    }, 1200000); // 20 phút = 1.200.000 ms
+    lastActivity = Date.now();
+}
+
+// Kiểm tra đăng xuất sau 20 phút không hoạt động
+setInterval(() => {
+    const userKey = localStorage.getItem('cart_user_key');
+    if (userKey) {
+        // 20 phút = 1200000 miligiây
+        if (Date.now() - lastActivity > 1200000) {
+            confirmLogout();
+            showToast("Hết phiên làm việc", "Hệ thống tự động đăng xuất để bảo mật");
+        }
+    }
+}, 30000); // Cứ 30 giây kiểm tra 1 lần
+
+// Lắng nghe hành động người dùng
+['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, updateActivity);
+});
+
+// Hàm sửa thông tin
+function editProfile() {
+    document.getElementById('cart-main').classList.add('hidden');
+    document.getElementById('cart-login').classList.remove('hidden');
+    // Điền sẵn thông tin cũ vào ô nhập
+    const userKey = localStorage.getItem('cart_user_key');
+    const parts = userKey.split('_');
+    document.getElementById('cart-name').value = parts.slice(1, -1).join(' ').replace(/_/g, ' ');
+    document.getElementById('cart-phone').value = parts[parts.length - 1];
+    document.getElementById('cart-address').value = localStorage.getItem(`${userKey}_address`) || "";
 }
 
 // Lắng nghe hành động người dùng để reset thời gian
@@ -775,59 +800,48 @@ window.addEventListener('load', () => {
     }
 });
   </script>
-  <!-- ================== MODAL GIỎ HÀNG ================== -->
-<div id="cart-modal" class="modal-overlay">
+  <div id="cart-modal" class="modal-overlay">
     <div class="cart-content">
-        <span style="position:absolute; top:15px; right:20px; font-size:30px; cursor:pointer; color:#333;" onclick="closeCartModal()">&times;</span>
+        <span style="position:absolute; top:15px; right:20px; font-size:30px; cursor:pointer; color:#333; z-index: 10;" onclick="closeCartModal()">&times;</span>
         
         <div id="cart-login">
-    <h3 style="color: var(--primary-red);">XÁC NHẬN THÔNG TIN ĐỂ XEM GIỎ HÀNG</h3>
-    <p style="color:#666; margin-bottom:20px;">Vui lòng nhập đầy đủ để chúng tôi giao hàng chính xác</p>
-    
-    <input type="text" id="cart-name" placeholder="Họ và tên *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
-    
-    <input type="tel" id="cart-phone" placeholder="Số điện thoại *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
-    
-    <input type="text" id="cart-address" placeholder="Địa chỉ nhận hàng (số nhà, thôn bản, xã, huyện, tỉnh) *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
-    
-    <button class="btn-action" onclick="saveCartUser()" style="width:100%; max-width:350px; padding:15px; margin-top:15px;">XÁC NHẬN & XEM GIỎ HÀNG</button>
-</div>
-          <!-- Modal xác nhận đăng xuất -->
-<div id="logout-confirm" class="hidden" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.6); text-align: center; z-index: 9999; width: 90%; max-width: 400px;">
-    <h3 style="color: var(--primary-red); margin-bottom: 15px;">XÁC NHẬN ĐĂNG XUẤT</h3>
-    <p>Bạn đang đăng nhập với:</p>
-    <div id="current-user-info" style="font-weight: bold; font-size: 18px; color: var(--primary-red); margin: 20px 0;"></div>
-    <p>Bạn có chắc muốn đăng xuất không?<br><small>Giỏ hàng sẽ bị xóa hoàn toàn</small></p>
-    <div style="margin-top: 25px;">
-        <button style="background: #dc3545; color: white; border: none; padding: 12px 30px; border-radius: 12px; margin: 0 10px; cursor: pointer;" onclick="confirmLogout()">Xác nhận</button>
-        <button style="background: #6c757d; color: white; border: none; padding: 12px 30px; border-radius: 12px; margin: 0 10px; cursor: pointer;" onclick="cancelLogout()">Hủy</button>
-    </div>
-</div>
+            <h3 style="color: var(--primary-red);">XÁC NHẬN THÔNG TIN</h3>
+            <p style="color:#666; margin-bottom:20px;">Vui lòng nhập đầy đủ để vào giỏ hàng</p>
+            <input type="text" id="cart-name" placeholder="Họ và tên *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+            <input type="tel" id="cart-phone" placeholder="Số điện thoại *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+            <input type="text" id="cart-address" placeholder="Địa chỉ nhận hàng *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+            <button class="btn-action" onclick="saveCartUser()" style="width:100%; max-width:350px;">XÁC NHẬN & VÀO GIỎ</button>
         </div>
 
-        <div id="cart-main" class="hidden" style="position: relative; padding-top: 20px;">
-    <div onclick="editProfile()" style="position: absolute; top: 10px; left: 10px; cursor: pointer; color: #8B0000; font-weight: bold; font-size: 14px; background: #eee; padding: 5px 10px; border-radius: 8px;">
-        <i class="fas fa-edit"></i> Sửa thông tin
-    </div>
+        <div id="cart-main" class="hidden" style="position: relative; padding-top: 10px;">
+            <div onclick="editProfile()" style="position: absolute; top: -5px; left: -5px; cursor: pointer; color: white; background: var(--primary-red); padding: 5px 12px; border-radius: 8px; font-size: 13px; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                <i class="fas fa-edit"></i> Sửa thông tin
+            </div>
 
-    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-        <div class="cart-tab active" onclick="switchCartTab(1)" style="background: var(--primary-red); color: white;">Giỏ hàng của bạn</div>
-        <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
-        <button id="logout-btn" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
-            Đăng xuất
-        </button>
-    </div>
-
-    <div id="cart-items" class="cart-section active"></div>
-    <div id="full-products" class="cart-section"></div>
-</div>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; margin-top: 25px; flex-wrap: wrap;">
+                <div class="cart-tab active" id="tab-1-btn" onclick="switchCartTab(1)">Giỏ hàng của bạn</div>
+                <div class="cart-tab" id="tab-2-btn" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
+                <button onclick="document.getElementById('logout-confirm').classList.remove('hidden')" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
+                    Đăng xuất
+                </button>
+            </div>
 
             <div id="cart-items" class="cart-section active"></div>
             <div id="full-products" class="cart-section"></div>
         </div>
     </div>
 </div>
-<!-- ================== HẾT MODAL GIỎ HÀNG ================== -->
+
+<div id="logout-confirm" class="hidden" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.7); text-align: center; z-index: 9999; width: 90%; max-width: 400px;">
+    <h3 style="color: var(--primary-red); margin-bottom: 15px;">XÁC NHẬN ĐĂNG XUẤT</h3>
+    <p>Bạn đang đăng nhập với:</p>
+    <div id="current-user-info" style="font-weight: bold; font-size: 18px; color: var(--primary-red); margin: 15px 0;"></div>
+    <p style="font-size: 14px; color: #666;">Bạn có chắc muốn đăng xuất không?<br><b>Lưu ý:</b> Giỏ hàng sẽ bị xóa hoàn toàn.</p>
+    <div style="margin-top: 25px; display: flex; justify-content: center; gap: 15px;">
+        <button style="background: #dc3545; color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1;" onclick="confirmLogout()">Xác nhận</button>
+        <button style="background: #6c757d; color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1;" onclick="cancelLogout()">Hủy</button>
+    </div>
+</div>
   <!-- Toast thông báo đẹp giữa màn hình -->
 <div id="toast-notification" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
     background: rgba(40, 167, 69, 0.95); color: white; padding: 25px 40px; border-radius: 20px; 
