@@ -203,7 +203,7 @@
     const URLS = {
         sheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv',
         track: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv',
-        script: 'https://script.google.com/macros/s/AKfycbz7c6JAerG60J6-VyfiUqvFAVsEmAyw6oXx3OaiXSaLlXxbBvbhVMBOedOjqTy--uKr/exec'
+        script: 'https://script.google.com/macros/s/AKfycbw3E_jD_oEeVALBcLDThDY1JGrHogtv86pLnECBnLP1fq0zqPw5vVSK0SrhiutPZKNY/exec'
     };
 
     let DB = { products: [], settings: {} };
@@ -367,11 +367,13 @@
             "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
             "Mã đơn hàng": orderId,
             "Tên khách hàng": name,
+          "Mã sản phẩm": CURRENT_P.id,
             "Số điện thoại": "'" + phone,  // thêm dấu nháy để giữ số 0
             "Gmail/Zalo": email === "Không có" && zalo !== "Không có" ? zalo : email,
             "Địa chỉ": address,
             "Tổng tiền": totalPrice,
             "Trạng thái": "Chờ cọc"
+        
         };
 
         document.getElementById('final-id').innerText = orderId;
@@ -498,20 +500,30 @@ function saveCartUser() {
     const phone = document.getElementById('cart-phone').value.trim();
     const address = document.getElementById('cart-address').value.trim();
     
-    if (!name || !phone || !address) {
-        alert("Vui lòng nhập đầy đủ Họ tên, Số điện thoại và Địa chỉ nhận hàng!");
+    if (!name || !phone) {
+        showToast("Lỗi!", "Vui lòng nhập Tên và Số điện thoại!");
         return;
     }
-    
+
     const userKey = `cart_${name.replace(/\s/g,'_')}_${phone}`;
+    const savedAddress = localStorage.getItem(`${userKey}_address`);
+
+    // Kiểm tra nếu là người mới hoàn toàn (chưa có địa chỉ lưu trên máy)
+    if (!savedAddress && !address) {
+        showToast("Người dùng mới!", "Vui lòng đăng ký địa chỉ để nhận hàng.");
+        // Hiện ô địa chỉ cho khách nhập
+        document.getElementById('cart-address').focus();
+        return;
+    }
+
+    // Nếu khách nhập địa chỉ mới thì lưu đè vào
+    if (address) {
+        localStorage.setItem(`${userKey}_address`, address);
+    }
+    
     localStorage.setItem('cart_user_key', userKey);
-    localStorage.setItem(userKey, localStorage.getItem(userKey) || '[]');
-    
-    // Lưu thêm địa chỉ vào một key riêng để dùng khi thanh toán
-    localStorage.setItem(`${userKey}_address`, address);
-    
-    alert("Đã lưu thông tin thành công!");
-    openCart(); // Mở giỏ ngay
+    showToast("Thành công!", "Chào mừng " + name);
+    openCart();
 }
 
 function showToast(message = "Đã thêm vào giỏ hàng!") {
@@ -675,6 +687,7 @@ function buyCart() {
     ORDER_TEMP = {
         "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
         "Mã đơn hàng": orderId,
+      "Mã sản phẩm": selected.join(', '),
         "Tên khách hàng": name,
         "Số điện thoại": "'" + phone,
         "Gmail/Zalo": "Từ giỏ hàng",
@@ -700,16 +713,45 @@ function closeCartModal() {
 
 // Gán sự kiện nút giỏ hàng
 document.getElementById('cart-button').addEventListener('click', openCart);
-    init();
-    // Tự động đăng xuất khi reload trang (xóa giỏ hàng và trạng thái đăng nhập)
-window.addEventListener('load', () => {
-    const userKey = localStorage.getItem('cart_user_key');
-    if (userKey) {
-        localStorage.removeItem(userKey); // Xóa dữ liệu giỏ hàng
-        localStorage.removeItem('cart_user_key'); // Xóa trạng thái đăng nhập
-        // Không cần alert, im lặng xóa là được
-    }
+    // --- LOGIC 20 PHÚT VÀ SỬA THÔNG TIN ---
+let activityTimeout;
+
+function updateActivity() {
+    // Reset bộ đếm 20 phút
+    clearTimeout(activityTimeout);
+    activityTimeout = setTimeout(() => {
+        confirmLogout(); // Tự động đăng xuất
+        showToast("Hết phiên làm việc", "Hệ thống tự động đăng xuất sau 20p");
+    }, 1200000); // 20 phút = 1.200.000 ms
+}
+
+// Lắng nghe hành động người dùng để reset thời gian
+['mousemove', 'scroll', 'keydown', 'click'].forEach(event => {
+    window.addEventListener(event, updateActivity);
 });
+
+// Hàm để hiện lại form sửa thông tin
+function editProfile() {
+    const userKey = localStorage.getItem('cart_user_key');
+    if (!userKey) return;
+    
+    // Lấy thông tin cũ từ máy
+    const profile = JSON.parse(localStorage.getItem(userKey + "_profile") || "{}");
+    
+    // Hiện lại form nhập liệu
+    document.getElementById('cart-login').classList.remove('hidden');
+    document.getElementById('cart-main').classList.add('hidden');
+    
+    // Điền sẵn thông tin cũ vào các ô để khách sửa
+    document.getElementById('cart-name').value = profile.name || "";
+    document.getElementById('cart-phone').value = profile.phone || "";
+    document.getElementById('cart-address').value = profile.address || "";
+    
+    showToast("Chế độ sửa", "Bạn có thể cập nhật lại thông tin");
+}
+// --- HẾT LOGIC ---
+    init();
+    
     // Tự động đăng nhập lại nếu đã từng nhập tên + SĐT trước đó
 window.addEventListener('load', () => {
     const userKey = localStorage.getItem('cart_user_key');
@@ -763,13 +805,21 @@ window.addEventListener('load', () => {
 </div>
         </div>
 
-        <div id="cart-main" class="hidden">
-            <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-    <div class="cart-tab active" onclick="switchCartTab(1)" style="background: var(--primary-red); color: white;">Giỏ hàng của bạn</div>
-    <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
-    <button id="logout-btn" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
-        Đăng xuất
-    </button>
+        <div id="cart-main" class="hidden" style="position: relative; padding-top: 20px;">
+    <div onclick="editProfile()" style="position: absolute; top: 10px; left: 10px; cursor: pointer; color: #8B0000; font-weight: bold; font-size: 14px; background: #eee; padding: 5px 10px; border-radius: 8px;">
+        <i class="fas fa-edit"></i> Sửa thông tin
+    </div>
+
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+        <div class="cart-tab active" onclick="switchCartTab(1)" style="background: var(--primary-red); color: white;">Giỏ hàng của bạn</div>
+        <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
+        <button id="logout-btn" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
+            Đăng xuất
+        </button>
+    </div>
+
+    <div id="cart-items" class="cart-section active"></div>
+    <div id="full-products" class="cart-section"></div>
 </div>
 
             <div id="cart-items" class="cart-section active"></div>
