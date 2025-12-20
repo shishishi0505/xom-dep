@@ -205,6 +205,7 @@
         document.getElementById('history-section').classList.remove('hidden');
         window.scrollTo(0,0);
     }
+    
 
     async function loadHistory() {
         const name = document.getElementById('hist-name').value.trim();
@@ -345,6 +346,16 @@
         document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
         goToStep(3);
     }
+    
+    function maskPhone(phone) {
+    let clean = phone.replace(/'/g, '').replace(/\s/g, '').replace(/-/g, '');
+    if (clean.length >= 8) {
+        return clean.substring(0, 2) + "xxx" + clean.substring(clean.length - 4);
+    } else if (clean.length >= 4) {
+        return "xxx" + clean.substring(clean.length - 4);
+    }
+    return clean; // Nếu quá ngắn thì giữ nguyên
+}
 
     function confirmAndZalo() {
         const cleanZalo = DB.settings.zalo_phone.replace(/[^\d]/g, '');
@@ -371,6 +382,7 @@
             if(seconds <= 0) closeSuccess();
         }, 1000);
     }
+    
 
     function closeSuccess() { 
         clearInterval(countdownInterval);
@@ -378,6 +390,7 @@
     }
 
     function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
+    
 
    async function checkOrder() {
     const id = document.getElementById('track-input').value.toUpperCase().trim();
@@ -394,7 +407,7 @@
                 <b>Ngày đặt:</b> ${found["Ngày đặt"] || "Không có"}<br>
                 <b>Mã đơn hàng:</b> ${found["Mã đơn hàng"] || found["order_id"] || "Không có"}<br>
                 <b>Tên khách hàng:</b> ${found["Tên khách hàng"] || "Không có"}<br>
-                <b>Số điện thoại:</b> ${found["Số điện thoại"] || "Không có"}<br>
+                <b>Số điện thoại:</b> ${maskPhone(found["Số điện thoại"] || "Không có")}<br>
                 <b>Gmail/Zalo:</b> ${found["Gmail/Zalo"] || "Không có"}<br>
                 <b>Địa chỉ:</b> ${found["Địa chỉ"] || "Không có"}<br>
                 <b>Tổng tiền:</b> ${found["Tổng tiền"] || "Không có"}<br>
@@ -409,7 +422,6 @@
         resDiv.innerHTML = "<p style='color:red'>Lỗi kết nối, vui lòng thử lại!</p>";
     }
 }
-
     document.querySelectorAll('.nav-link').forEach(l => {
     l.onclick = (e) => {
         e.preventDefault();
