@@ -426,81 +426,40 @@ resetTimer();
         window.open(`https://zalo.me/${cleanZalo}?text=${text}`, '_blank');
     }
 
-    async function finalSubmit() {
-    // 1. Kiểm tra xem có dữ liệu đơn hàng không
+   async function finalSubmit() {
+    // 1. Kiểm tra dữ liệu
     if (!ORDER_TEMP || Object.keys(ORDER_TEMP).length === 0) {
-        showToast("Lỗi!", "Không tìm thấy thông tin đơn hàng");
+        showToast("Lỗi!", "Không có thông tin đơn hàng");
         return;
     }
 
-    // 2. Gửi dữ liệu lên Google Sheets
-    // Lưu ý: "Mã sản phẩm" phải viết Hoa chữ M để khớp với Sheets của bạn
+    // 2. Gửi đi (Dùng "Mã sản phẩm" viết hoa cho khớp Sheet)
     fetch(URLS.script, { 
         method: 'POST', 
         mode: 'no-cors', 
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ORDER_TEMP) 
     });
 
-    // 3. Logic lưu lịch sử mua để đổi nút thành "MUA LẠI"
+    // 3. ĐÓNG BẢNG QR (Lệnh quan trọng bạn thiếu)
+    closeModal(); 
+
+    // 4. LƯU ĐỂ ĐỔI NÚT THÀNH "MUA LẠI"
     const userKey = localStorage.getItem('cart_user_key');
     if (userKey && ORDER_TEMP["Mã sản phẩm"]) {
         let orderedIds = JSON.parse(localStorage.getItem(userKey + "_ordered_ids") || '[]');
-        // Chuyển mã sản phẩm thành chuỗi và tách ra nếu có nhiều mã (từ giỏ hàng)
         const currentIds = ORDER_TEMP["Mã sản phẩm"].toString().split(', ');
-        // Gộp mã mới vào danh sách cũ, xóa bỏ trùng lặp
         orderedIds = [...new Set([...orderedIds, ...currentIds])];
         localStorage.setItem(userKey + "_ordered_ids", JSON.stringify(orderedIds));
     }
 
-    // 4. ĐÓNG BẢNG THANH TOÁN (Lệnh này sẽ tắt cái bảng QR đi)
-    if (typeof closeModal === "function") {
-        closeModal(); 
-    } else {
-        document.getElementById('product-modal').style.display = 'none';
-    }
-
-    // 5. HIỆN BẢNG THÀNH CÔNG VÀ THÔNG BÁO TÍCH XANH
-    const popup = document.getElementById('success-dialog');
-    if (popup) popup.style.display = 'block';
-    
-    // Gọi thông báo tích xanh to giữa màn hình
-    showToast("ĐẶT HÀNG THÀNH CÔNG", "Cảm ơn bạn đã ủng hộ bản làng!");
-
-    // 6. Chạy bộ đếm ngược 10 giây
-    let seconds = 10;
-    const timerElem = document.getElementById('countdown-timer');
-    if (timerElem) timerElem.innerText = seconds;
-    
-    clearInterval(countdownInterval);
-    countdownInterval = setInterval(() => {
-        seconds--;
-        if (timerElem) timerElem.innerText = seconds;
-        if (seconds <= 0) {
-            clearInterval(countdownInterval);
-            if (typeof closeSuccess === "function") closeSuccess();
-            else if (popup) popup.style.display = 'none';
-        }
-    }, 1000);
-
-    // 7. Vẽ lại giỏ hàng để nút "MUA NGAY" đổi thành "MUA LẠI" màu xanh lá ngay lập tức
-    if (typeof renderCartItems === "function") renderCartItems();
-}
-    // === ĐÂY LÀ CHỖ THÊM closeModal ===
-    closeModal(); // Lệnh này sẽ đóng cái bảng QR/Thanh toán lại
-    // =================================
-
-    // 4. Hiển thị thông báo thành công (Có tích xanh to giữa màn hình)
+    // 5. HIỆN THÔNG BÁO TÍCH XANH GIỮA MÀN HÌNH
     const popup = document.getElementById('success-dialog');
     if(popup) popup.style.display = 'block';
-    
-    showToast("ĐẶT HÀNG THÀNH CÔNG", "Cảm ơn bạn đã ủng hộ bản làng!");
+    showToast("ĐẶT HÀNG THÀNH CÔNG", "Cảm ơn bạn đã ủng hộ!");
 
-    // 5. Đếm ngược 10 giây tự đóng bảng thành công
+    // 6. Đếm ngược 10 giây tự đóng
     let seconds = 10;
     const timerElem = document.getElementById('countdown-timer');
-    if(timerElem) timerElem.innerText = seconds;
-    
     clearInterval(countdownInterval);
     countdownInterval = setInterval(() => {
         seconds--;
@@ -508,26 +467,8 @@ resetTimer();
         if(seconds <= 0) closeSuccess();
     }, 1000);
 
-    // Cập nhật lại giỏ hàng để nút "Mua ngay" đổi thành "Mua lại" ngay lập tức
+    // Cập nhật lại giỏ hàng để thấy nút "Mua lại" ngay
     if(typeof renderCartItems === "function") renderCartItems();
-}
-    // 4. Hiển thị thông báo thành công tích xanh
-    closeModal();
-    const popup = document.getElementById('success-dialog');
-    popup.style.display = 'block';
-    showToast("Đặt hàng thành công", "Cảm ơn bạn đã tin tưởng bản làng!");
-
-    // 5. Đếm ngược tự đóng
-    let seconds = 10;
-    document.getElementById('countdown-timer').innerText = seconds;
-    clearInterval(countdownInterval);
-    countdownInterval = setInterval(() => {
-        seconds--;
-        if (document.getElementById('countdown-timer')) {
-            document.getElementById('countdown-timer').innerText = seconds;
-        }
-        if(seconds <= 0) closeSuccess();
-    }, 1000);
 }
     
 
