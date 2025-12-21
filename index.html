@@ -425,25 +425,23 @@ resetTimer();
         const text = encodeURIComponent("Tôi vừa đặt đơn " + ORDER_TEMP["Mã đơn hàng"] + " - " + ORDER_TEMP["Tên khách hàng"]);
         window.open(`https://zalo.me/${cleanZalo}?text=${text}`, '_blank');
     }
-
-   async function finalSubmit() {
-    // 1. Kiểm tra dữ liệu
+async function finalSubmit() {
     if (!ORDER_TEMP || Object.keys(ORDER_TEMP).length === 0) {
         showToast("Lỗi!", "Không có thông tin đơn hàng");
         return;
     }
 
-    // 2. Gửi đi (Dùng "Mã sản phẩm" viết hoa cho khớp Sheet)
+    // 1. Gửi dữ liệu lên Sheets (Dùng đúng "Mã sản phẩm" viết hoa)
     fetch(URLS.script, { 
         method: 'POST', 
         mode: 'no-cors', 
         body: JSON.stringify(ORDER_TEMP) 
     });
 
-    // 3. ĐÓNG BẢNG QR (Lệnh quan trọng bạn thiếu)
+    // 2. Đóng bảng QR/Thanh toán ngay lập tức
     closeModal(); 
 
-    // 4. LƯU ĐỂ ĐỔI NÚT THÀNH "MUA LẠI"
+    // 3. Lưu ID để đổi nút thành "MUA LẠI"
     const userKey = localStorage.getItem('cart_user_key');
     if (userKey && ORDER_TEMP["Mã sản phẩm"]) {
         let orderedIds = JSON.parse(localStorage.getItem(userKey + "_ordered_ids") || '[]');
@@ -452,12 +450,12 @@ resetTimer();
         localStorage.setItem(userKey + "_ordered_ids", JSON.stringify(orderedIds));
     }
 
-    // 5. HIỆN THÔNG BÁO TÍCH XANH GIỮA MÀN HÌNH
+    // 4. Hiện bảng thành công và thông báo tích xanh to
     const popup = document.getElementById('success-dialog');
     if(popup) popup.style.display = 'block';
     showToast("ĐẶT HÀNG THÀNH CÔNG", "Cảm ơn bạn đã ủng hộ!");
 
-    // 6. Đếm ngược 10 giây tự đóng
+    // 5. Đếm ngược 10 giây tự đóng
     let seconds = 10;
     const timerElem = document.getElementById('countdown-timer');
     clearInterval(countdownInterval);
@@ -467,11 +465,9 @@ resetTimer();
         if(seconds <= 0) closeSuccess();
     }, 1000);
 
-    // Cập nhật lại giỏ hàng để thấy nút "Mua lại" ngay
-    if(typeof renderCartItems === "function") renderCartItems();
+    // 6. Vẽ lại giỏ hàng để cập nhật trạng thái nút
+    renderCartItems();
 }
-    
-
     function closeSuccess() { 
         clearInterval(countdownInterval);
         document.getElementById('success-dialog').style.display = 'none'; 
@@ -583,13 +579,17 @@ function showToast(title, message) {
     toast.style.background = "rgba(40, 167, 69, 0.95)";
     toast.innerHTML = `
         <div style="text-align:center;">
-            <i class="fas fa-check-circle" style="font-size:60px; display:block; margin-bottom:10px;"></i>
-            <b style="font-size:20px;">${title}</b><br>
-            <span>${message}</span>
+            <i class="fas fa-check-circle" style="font-size:70px; color:white; display:block; margin-bottom:15px;"></i>
+            <b style="font-size:22px; display:block; color:white;">${title}</b>
+            <span style="font-size:15px; color:white; opacity:0.9;">${message}</span>
         </div>
     `;
     toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+    toast.style.opacity = '1';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 500);
+    }, 2500);
 }
 
 function addToCart(id) {
@@ -655,46 +655,41 @@ function switchCartTab(tab) {
 function renderCartItems() {
     const userKey = localStorage.getItem('cart_user_key');
     const cart = JSON.parse(localStorage.getItem(userKey) || '[]');
-    
-    // Lấy danh sách những món đã mua để đổi tên nút
     const orderedIds = JSON.parse(localStorage.getItem(userKey + "_ordered_ids") || '[]');
-    
     let html = '';
     let total = 0;
 
     if (cart.length === 0) {
-        html = '<p style="text-align:center; padding:50px;">Giỏ hàng của bạn đang trống</p>';
+        html = '<p style="text-align:center; padding:50px;">Giỏ hàng trống</p>';
     } else {
         cart.forEach(id => {
             const p = DB.products.find(x => x.id === id);
             if (p) {
-                // Kiểm tra xem ID này đã nằm trong danh sách "đã mua" chưa
-                const isOrdered = orderedIds.includes(id);
+                const isOrdered = orderedIds.includes(id); // Kiểm tra xem đã mua chưa
                 total += Number(p.price) * 1000;
-                
                 html += `
-                <div class="cart-item" style="display: flex; flex-direction: column; background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+                <div class="cart-item" style="display: flex; flex-direction: column; background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #eee;">
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <input type="checkbox" checked data-id="${id}" onchange="updateCartTotal()" style="width:20px; height:20px;">
-                        <img src="${p.img}" style="width:70px; height:70px; border-radius:10px; object-fit:cover;">
+                        <img src="${p.img}" style="width:60px; height:60px; border-radius:10px; object-fit:cover;">
                         <div style="flex:1;">
                             <h4 style="margin:0;">${p.title}</h4>
-                            <b style="color:var(--primary-red)">${(Number(p.price)*1000).toLocaleString()} VNĐ</b>
+                            <b style="color:red;">${(Number(p.price)*1000).toLocaleString()} VNĐ</b>
                         </div>
                     </div>
-                    
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button onclick="buyOne('${id}')" style="flex: 2; background: ${isOrdered ? '#28a745' : 'var(--primary-red)'}; color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold;">
-                            <i class="fas ${isOrdered ? 'fa-redo' : 'fa-shopping-cart'}"></i> ${isOrdered ? 'MUA LẠI' : 'MUA NGAY'}
+                        <button onclick="buyOne('${id}')" style="flex: 2; background: ${isOrdered ? '#28a745' : '#8B0000'}; color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">
+                             <i class="fas ${isOrdered ? 'fa-redo' : 'fa-shopping-cart'}"></i> ${isOrdered ? 'MUA LẠI' : 'MUA NGAY'}
                         </button>
-                        <button onclick="removeFromCart('${id}')" style="flex: 1; background: #f0f0f0; color: #666; border: none; padding: 10px; border-radius: 10px; font-weight: bold;">
-                            XÓA
-                        </button>
+                        <button onclick="removeFromCart('${id}')" style="flex: 1; background: #eee; color: #333; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">XÓA</button>
                     </div>
                 </div>`;
             }
         });
     }
+    // (Phần html tổng tiền giữ nguyên đoạn cuối của bạn)
+    document.getElementById('cart-items').innerHTML = html;
+}
     
     // Phần tổng tiền bên dưới
     html += `
