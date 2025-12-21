@@ -200,7 +200,7 @@
     const URLS = {
         sheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv',
         track: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv',
-        script: 'https://script.google.com/macros/s/AKfycbw3E_jD_oEeVALBcLDThDY1JGrHogtv86pLnECBnLP1fq0zqPw5vVSK0SrhiutPZKNY/exec'
+        script: 'https://script.google.com/macros/s/AKfycbxCd0gUQhJmbCl0jJ5RvxY3cohmnEqQZZa8yGGV7hNob7dR5EtuOsnTdIEHKZKhtzWH/exec'
     };
 
     let DB = { products: [], settings: {} };
@@ -359,7 +359,7 @@
             "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
             "Mã đơn hàng": orderId,
             "Tên khách hàng": name,
-            "mã sản phẩm": CURRENT_P.id, 
+            "Mã sản phẩm": CURRENT_P.id, 
             "Số điện thoại": "'" + phone,
             "Gmail/Zalo": (email === "Không có" && zalo !== "Không có") ? zalo : email,
             "Địa chỉ": address,
@@ -521,7 +521,7 @@
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => { toast.style.display = 'none'; }, 500);
-        }, 2000);
+        }, 400);
     }
 
     function addToCart(id) {
@@ -595,6 +595,7 @@
                             <b style="color:var(--primary-red)">${(Number(p.price)*1000).toLocaleString('vi-VN')} VNĐ</b>
                         </div>
                         <button onclick="removeFromCart('${id}')" style="background:#ccc; border:none; padding:8px; border-radius:8px;">Xóa</button>
+                        <button onclick="openProduct('${id}')" style="background:#28a745; color:white; border:none; padding:8px; border-radius:8px; margin-top:5px;">Mua lại</button>
                     </div>`;
                 }
             });
@@ -765,7 +766,7 @@
             <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; margin-top: 25px; flex-wrap: wrap;">
                 <div class="cart-tab active" onclick="switchCartTab(1)">Giỏ hàng của bạn</div>
                 <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
-                <button style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
+                <button onclick="document.getElementById('logout-confirm').classList.remove('hidden')" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
                     Đăng xuất
                 </button>
             </div>
