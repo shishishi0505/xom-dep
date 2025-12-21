@@ -53,7 +53,10 @@
     .product-card { background: var(--trans-white); backdrop-filter: var(--blur-bg); padding: 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
     .product-card img { width: 100%; border-radius: 15px; aspect-ratio: 1/1; object-fit: cover; }
     .tag-id { background: var(--primary-red); color: white; font-size: 10px; padding: 2px 8px; border-radius: 5px; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
+    
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2005; padding: 10px; }
+    #cart-modal { z-index: 2000; } 
+
     .modal-content { background: white; border-radius: 25px; width: 100%; max-width: 900px; max-height: 95vh; overflow-y: auto; position: relative; }
     .modal-body { padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
     .gallery-main { width: 100%; border-radius: 15px; transition: 0.3s; }
@@ -69,7 +72,7 @@
         background: white; color: black; padding: 20px; border-radius: 15px; text-align: left; line-height: 1.8;
     }
     .order-detail b { color: var(--primary-red); }
-    #cart-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
+    
     .cart-content { background: white; border-radius: 25px; width: 100%; max-width: 900px; max-height: 95vh; overflow-y: auto; position: relative; padding: 20px; }
     .cart-tab { padding: 10px 20px; background: #eee; border-radius: 15px; cursor: pointer; font-weight: bold; }
     .cart-tab.active { background: var(--primary-red); color: white; }
@@ -159,7 +162,7 @@
                   <p id="p-id" class="tag-id" style="display:inline-block;"></p>
                   <h3 id="p-price" style="color:#28a745; font-size:24px;"></h3>
                   <button class="btn-action" onclick="goToStep(2)">MUA NGAY - ĐẶT CỌC 50%</button>
-                  <button type="button" onclick="addToCart(CURRENT_P.id); showToast('Đã thêm vào giỏ hàng!')" 
+                  <button type="button" onclick="addToCart(CURRENT_P.id, CURRENT_P.img)" 
                           style="background:#ffa500; color:white; border:none; padding:15px; width:100%; border-radius:12px; margin-top:10px; font-weight:bold;">
                       Thêm vào giỏ hàng
                   </button>
@@ -172,7 +175,7 @@
                   <h3>THÔNG TIN GIAO HÀNG</h3>
                   <div class="order-form">
                       <input type="text" id="f-name" placeholder="Họ và tên (Bắt buộc)">
-                      <input type="tel" id="f-phone" placeholder="Số điện thoại (Bắt buộc)">
+                      <input type="tel" id="f-phone" placeholder="Số điện thoại (Bắt buộc, 10 số)">
                       <input type="email" id="f-email" placeholder="Địa chỉ Email (không bắt buộc)">
                       <input type="text" id="f-address" placeholder="Địa chỉ nhận hàng (không bắt buộc)">
                       <input type="text" id="f-zalo" placeholder="Số Zalo của bạn (không bắt buộc)">
@@ -212,6 +215,7 @@
     let CURRENT_P = null;
     let ORDER_TEMP = {};
     let countdownInterval;
+    let IS_FROM_CART = false; 
 
     async function init() {
         try {
@@ -317,7 +321,7 @@
                     <p style="color:var(--primary-red); font-weight:bold; font-size:18px;">
                         ${(Number(p.price) * 1000).toLocaleString('vi-VN')} VNĐ
                     </p>
-                    <button type="button" onclick="event.stopPropagation(); addToCart('${p.id}')" 
+                    <button type="button" onclick="event.stopPropagation(); addToCart('${p.id}', '${p.img}')" 
                             style="background:#ffa500; color:white; border:none; padding:10px; width:100%; border-radius:12px; margin-top:8px; cursor:pointer;">
                         Thêm vào giỏ
                     </button>
@@ -326,7 +330,15 @@
         `).join('');
     }
 
-    function openProduct(id, directToPayment = false) {
+    function isValidPhone(phone) {
+        return /^\d{10}$/.test(phone);
+    }
+
+    function isValidName(name) {
+        return name.trim().split(/\s+/).length >= 2;
+    }
+
+    function openProduct(id, mode = 'normal') {
         CURRENT_P = DB.products.find(x => x.id === id);
         document.getElementById('p-title').innerText = CURRENT_P.title;
         document.getElementById('p-id').innerText = "Mã sản phẩm: " + CURRENT_P.id;
@@ -336,11 +348,28 @@
         const gallery = [CURRENT_P.img];
         if(CURRENT_P.gallery) gallery.push(...CURRENT_P.gallery.split(','));
         document.getElementById('thumb-list').innerHTML = gallery.map(url => `<img src="${url.trim()}" onclick="document.getElementById('main-img').src=this.src">`).join('');
+        
         document.getElementById('product-modal').style.display = 'flex';
-        if (directToPayment) {
+
+        if (mode === 'buyAgain') {
+            IS_FROM_CART = true;
+            document.getElementById('cart-modal').style.display = 'none';
+
             goToStep(2);
             autofillForm();
+            
+            const name = document.getElementById('f-name').value;
+            const phone = document.getElementById('f-phone').value;
+            
+            if (name && phone && isValidName(name) && isValidPhone(phone)) {
+                 processPayment();
+            }
+        } else if (mode === 'direct') { 
+             IS_FROM_CART = false;
+             goToStep(2);
+             autofillForm();
         } else {
+            IS_FROM_CART = false;
             goToStep(1);
         }
     }
@@ -355,7 +384,6 @@
             document.getElementById('f-name').value = name;
             document.getElementById('f-phone').value = phone;
             document.getElementById('f-address').value = address;
-            // Nếu có email hoặc zalo từ local, có thể thêm
         }
     }
 
@@ -370,7 +398,16 @@
     function processPayment() {
         const name = document.getElementById('f-name').value.trim();
         const phone = document.getElementById('f-phone').value.trim();
-        if(!name || !phone) return alert("Vui lòng điền Họ tên và SĐT!");
+        
+        if (!name || !phone) {
+            return alert("Vui lòng điền Họ tên và SĐT!");
+        }
+        if (!isValidName(name)) {
+            return alert("Tên phải bao gồm cả Họ và Tên (ít nhất 2 từ)!");
+        }
+        if (!isValidPhone(phone)) {
+            return alert("Số điện thoại phải đúng 10 chữ số!");
+        }
 
         const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
         const deposit = Number(CURRENT_P.price) * 500;
@@ -398,7 +435,7 @@
         document.getElementById('bank-owner').innerText = "TONG ANH NAM";
         document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
         
-        setTimeout(() => { goToStep(3); }, 100); 
+        goToStep(3); 
     }
 
     function maskPhone(phone) {
@@ -419,21 +456,21 @@
 
     async function finalSubmit() {
         try {
+            console.log("Sending ORDER_TEMP:", ORDER_TEMP);
+            // Sửa lại method gửi: dùng mode 'no-cors' và content-type 'text/plain' để tránh lỗi CORS và đảm bảo data đi
             const response = await fetch(URLS.script, { 
                 method: 'POST', 
+                mode: 'no-cors', 
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'text/plain' 
                 },
                 body: JSON.stringify(ORDER_TEMP) 
             });
-            if (response.ok) {
-                console.log('Đã gửi dữ liệu thành công');
-            } else {
-                console.error('Lỗi gửi dữ liệu:', response.status);
-            }
+            console.log('Đã gửi dữ liệu (no-cors mode)');
         } catch (error) {
             console.error('Lỗi:', error);
         }
+        
         closeModal();
         const popup = document.getElementById('success-dialog');
         popup.style.display = 'block';
@@ -453,7 +490,13 @@
         document.getElementById('success-dialog').style.display = 'none'; 
     }
 
-    function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
+    function closeModal() { 
+        document.getElementById('product-modal').style.display = 'none';
+        if (IS_FROM_CART) {
+            document.getElementById('cart-modal').style.display = 'flex';
+            IS_FROM_CART = false; 
+        }
+    }
 
     async function checkOrder() {
         const id = document.getElementById('track-input').value.toUpperCase().trim();
@@ -532,6 +575,16 @@
             return;
         }
 
+        if (!isValidName(name)) {
+            showToast("Tên phải bao gồm cả Họ và Tên (ít nhất 2 từ)!");
+            return;
+        }
+
+        if (!isValidPhone(phone)) {
+            showToast("Số điện thoại phải đúng 10 chữ số!");
+            return;
+        }
+
         const userKey = `cart_${name.replace(/\s/g,'_')}_${phone}`;
         const savedAddress = localStorage.getItem(`${userKey}_address`);
 
@@ -550,18 +603,27 @@
         openCart();
     }
 
-    function showToast(message = "Đã thêm vào giỏ hàng!") {
+    function showToast(message = "Đã thêm vào giỏ hàng!", imageUrl = null) {
         const toast = document.getElementById('toast-notification');
         document.getElementById('toast-message').innerText = message;
+        
+        const toastImg = document.getElementById('toast-img');
+        if (imageUrl) {
+            toastImg.src = imageUrl;
+            toastImg.style.display = 'block';
+        } else {
+            toastImg.style.display = 'none';
+        }
+
         toast.style.display = 'block';
         toast.style.opacity = '1';
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => { toast.style.display = 'none'; }, 500);
-        }, 400);
+        }, 1500); 
     }
 
-    function addToCart(id) {
+    function addToCart(id, imgUrl) {
         const userKey = localStorage.getItem('cart_user_key');
         if (!userKey) {
             alert("Bạn cần đăng nhập (nhập tên và số điện thoại) trước khi thêm sản phẩm vào giỏ!");
@@ -570,11 +632,11 @@
         }
         let cart = JSON.parse(localStorage.getItem(userKey) || '[]');
         if (cart.includes(id)) {
-            showToast("Sản phẩm đã có trong giỏ!");
+            showToast("Sản phẩm đã có trong giỏ!", imgUrl);
         } else {
             cart.push(id);
             localStorage.setItem(userKey, JSON.stringify(cart));
-            showToast("Đã thêm vào giỏ hàng!");
+            showToast("Đã thêm vào giỏ hàng!", imgUrl);
         }
         if (document.getElementById('cart-modal').style.display === 'flex') {
             renderCartItems();
@@ -595,7 +657,7 @@
         alert("Đã đăng xuất thành công! Giỏ hàng đã được xóa.");
         document.getElementById('logout-confirm').classList.add('hidden');
         closeCartModal();
-        // Đã xóa location.reload() theo yêu cầu
+        location.reload();
     }
 
     function switchCartTab(tab) {
@@ -633,7 +695,7 @@
                         </div>
                         <div class="cart-item-actions">
                             <button class="remove-btn" onclick="removeFromCart('${id}')">Xóa</button>
-                            <button class="buy-again-btn" onclick="openProduct('${id}', true)">Mua lại</button>
+                            <button class="buy-again-btn" onclick="openProduct('${id}', 'buyAgain')">Mua lại</button>
                         </div>
                     </div>`;
                 }
@@ -690,6 +752,11 @@
         const name = parts.slice(1, -1).join('_').replace(/_/g, ' ');
         const phone = parts[parts.length - 1];
 
+        // Validation lại lần nữa để chắc chắn
+        if (!isValidName(name) || !isValidPhone(phone)) {
+            return alert("Thông tin tài khoản không hợp lệ. Vui lòng cập nhật lại Tên và SĐT (10 số).");
+        }
+
         let totalPrice = 0;
         selected.forEach(id => {
             const p = DB.products.find(x => x.id === id);
@@ -699,7 +766,8 @@
         const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
         const qrInfo = `${selected.join(',')} ${orderId} ${name.replace(/\s/g,'')}`;
 
-        let orderTemp = {
+        // Cập nhật vào biến toàn cục ORDER_TEMP thay vì tạo biến cục bộ
+        ORDER_TEMP = {
             "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
             "Mã đơn hàng": orderId,
             "Mã sản phẩm": selected.join(', '),
@@ -712,23 +780,8 @@
             "Ghi chú": "Giỏ hàng: " + selected.join(', ')
         };
 
-        try {
-            const response = await fetch(URLS.script, { 
-                method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(orderTemp) 
-            });
-            if (response.ok) {
-                console.log('Đã gửi dữ liệu giỏ hàng thành công');
-            } else {
-                console.error('Lỗi gửi dữ liệu giỏ hàng:', response.status);
-            }
-        } catch (error) {
-            console.error('Lỗi:', error);
-        }
-
+        // HIỂN THỊ QR (Step 3) - KHÔNG GỬI FETCH Ở ĐÂY
+        // Việc gửi fetch sẽ do hàm finalSubmit() đảm nhận khi người dùng ấn nút ở Step 3
         document.getElementById('final-id').innerText = orderId;
         document.getElementById('qr-info').innerText = qrInfo;
         document.getElementById('bank-owner').innerText = "TONG ANH NAM";
@@ -809,7 +862,7 @@
             <h3 style="color: var(--primary-red);">XÁC NHẬN THÔNG TIN</h3>
             <p style="color:#666; margin-bottom:20px;">Vui lòng nhập đầy đủ để vào giỏ hàng</p>
             <input type="text" id="cart-name" placeholder="Họ và tên *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
-            <input type="tel" id="cart-phone" placeholder="Số điện thoại *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+            <input type="tel" id="cart-phone" placeholder="Số điện thoại (10 số) *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
             <input type="text" id="cart-address" placeholder="Địa chỉ nhận hàng *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
             <button class="btn-action" onclick="saveCartUser()" style="width:100%; max-width:350px;">XÁC NHẬN & VÀO GIỎ</button>
         </div>
@@ -848,6 +901,7 @@
       background: rgba(40, 167, 69, 0.95); color: white; padding: 25px 40px; border-radius: 20px; 
       font-size: 18px; font-weight: bold; z-index: 9999; display: none; text-align: center; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.3); min-width: 300px;">
+      <img id="toast-img" src="" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px; margin: 0 auto 15px auto; display: none; border: 2px solid white;">
       <i class="fas fa-check-circle" style="font-size: 50px; color: white; margin-bottom: 15px; display: block;"></i>
       <span id="toast-message">Đã thêm vào giỏ hàng!</span>
   </div>
