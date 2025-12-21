@@ -83,32 +83,472 @@
     #cart-login input { width: 100%; max-width: 350px; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; }
     .full-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 10px; }
     .cart-item-actions { display: flex; flex-direction: column; gap: 5px; margin-left: 10px; }
-    .cart-item-actions button { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; width: 100px; }
+    .cart-item-actions button { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
     .cart-item-actions .remove-btn { background: #ccc; color: #333; }
     .cart-item-actions .buy-again-btn { background: #28a745; color: white; }
-
-    /* Toast thống nhất kiểu thành công */
-    #toast-notification {
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-        background: rgba(40, 167, 69, 0.95); color: white; padding: 25px 40px; border-radius: 20px; 
-        font-size: 18px; font-weight: bold; z-index: 9999; display: none; text-align: center; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3); min-width: 300px;
-    }
-    #toast-notification i { font-size: 50px; color: white; margin-bottom: 15px; display: block; }
   </style>
 </head>
 <body>
 
-  <!-- Các phần HTML giữ nguyên như trước (header, nav, layout, modal, cart-modal, toast, v.v.) -->
-  <!-- Chỉ thay đổi một số phần nhỏ, mình giữ nguyên cấu trúc để tránh dài dòng -->
+  <div class="menu-toggle" onclick="toggleHistory()"><i class="fas fa-bars"></i></div>
+  <div class="menu-note">Tra lịch sử<br>đặt hàng</div>
 
-  <div id="toast-notification">
-      <i class="fas fa-check-circle"></i>
-      <span id="toast-message">Đã thêm vào giỏ hàng!</span>
+  <header><h1>SẮC ĐẸP DÂN TỘC</h1></header>
+
+  <nav id="navbar">
+    <a href="#home" class="nav-link active">TRANG CHỦ</a>
+    <a href="#products" class="nav-link">SẢN PHẨM</a>
+    <a href="#tracking" class="nav-link">TRA CỨU</a>
+  </nav>
+
+  <div class="layout">
+    <section id="history-section" class="card hidden">
+        <h2 style="color: var(--secondary-gold);">📜 LỊCH SỬ ĐẶT HÀNG</h2>
+        <p style="color:white">Nhập SĐT và Tên để xem lại toàn bộ đơn hàng</p>
+        <input type="text" id="hist-name" placeholder="Họ và tên" style="padding:12px; border-radius:10px; width:220px; border:1px solid #ddd; margin-bottom:8px;">
+        <input type="tel" id="hist-phone" placeholder="Số điện thoại" style="padding:12px; border-radius:10px; width:220px; border:1px solid #ddd;">
+        <button onclick="loadHistory()" class="btn-action" style="width:auto; padding:12px 25px; margin-top:10px;">XEM LỊCH SỬ</button>
+        <div id="hist-res" style="margin-top:20px;"></div>
+    </section>
+
+    <section id="home" class="card">
+        <h2 style="color: var(--secondary-gold);">🌸 CHUYỆN BẢN LÀNG</h2>
+        <div id="blog-content" class="blog-post-full">Đang kết nối tới bản làng...</div>
+        <div class="social-under-poem" id="home-socials"></div>
+    </section>
+
+    <section id="products" class="card hidden">
+        <h2>SẢN PHẨM MỚI NHẤT</h2>
+        <div style="text-align: right; margin-bottom: 15px;">
+          <button id="cart-button" style="background: var(--primary-red); color: white; border: none; padding: 12px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
+              Giỏ hàng <i class="fas fa-shopping-cart"></i>
+          </button>
+        </div>
+        <div class="product-grid" id="product-list"></div>
+    </section>
+
+    <section id="tracking" class="card hidden">
+        <h2>TRA CỨU ĐƠN HÀNG</h2>
+        <input type="text" id="track-input" placeholder="Nhập mã đơn (VD: SDT1234)" style="padding:12px; border-radius:10px; width:250px; border:1px solid #ddd;">
+        <button onclick="checkOrder()" class="btn-action" style="width:auto; padding:12px 30px;">TÌM KIẾM</button>
+        <div id="track-res" style="margin-top:20px;"></div>
+    </section>
   </div>
 
+  <div id="success-dialog" class="success-popup">
+      <div style="font-size: 50px; color: #28a745; margin-bottom: 15px;"><i class="fas fa-check-circle"></i></div>
+      <h3 style="margin: 0; color: #333;">GỬI ĐƠN THÀNH CÔNG!</h3>
+      <p style="color: #666; font-size: 14px; line-height: 1.5; margin: 15px 0;">
+          Hệ thống đã ghi nhận đơn hàng.<br>Bạn sẽ nhận được thông báo xác nhận qua Zalo/Email sớm nhất.
+      </p>
+      <button class="btn-action" onclick="closeSuccess()">ĐÓNG</button>
+      <div class="countdown">Tự động đóng sau <span id="countdown-timer">10</span>s</div>
+  </div>
+
+  <div id="product-modal" class="modal-overlay">
+      <div class="modal-content">
+          <span style="position:absolute; top:15px; right:20px; font-size:30px; cursor:pointer; z-index:10;" onclick="closeModal()">&times;</span>
+          
+          <div class="modal-body" id="step-1">
+              <div class="gallery-side">
+                  <img id="main-img" class="gallery-main" src="">
+                  <div id="thumb-list" class="thumb-grid"></div>
+              </div>
+              <div class="info-side">
+                  <h2 id="p-title" style="margin:0; color:var(--primary-red);"></h2>
+                  <p id="p-id" class="tag-id" style="display:inline-block;"></p>
+                  <h3 id="p-price" style="color:#28a745; font-size:24px;"></h3>
+                  <button class="btn-action" onclick="goToStep(2)">MUA NGAY - ĐẶT CỌC 50%</button>
+                  <button type="button" onclick="addToCart(CURRENT_P.id); showToast('Đã thêm vào giỏ hàng!')" 
+                          style="background:#ffa500; color:white; border:none; padding:15px; width:100%; border-radius:12px; margin-top:10px; font-weight:bold;">
+                      Thêm vào giỏ hàng
+                  </button>
+                  <hr><p id="p-desc" style="line-height:1.6; color:#555;"></p>
+              </div>
+          </div>
+
+          <div class="modal-body hidden" id="step-2">
+              <div style="grid-column: 1 / -1;">
+                  <h3>THÔNG TIN GIAO HÀNG</h3>
+                  <div class="order-form">
+                      <input type="text" id="f-name" placeholder="Họ và tên (Bắt buộc)">
+                      <input type="tel" id="f-phone" placeholder="Số điện thoại (Bắt buộc)">
+                      <input type="email" id="f-email" placeholder="Địa chỉ Email (không bắt buộc)">
+                      <input type="text" id="f-address" placeholder="Địa chỉ nhận hàng (không bắt buộc)">
+                      <input type="text" id="f-zalo" placeholder="Số Zalo của bạn (không bắt buộc)">
+                      <button class="btn-action" onclick="processPayment()">TIẾP TỤC THANH TOÁN</button>
+                      <button style="background:none; border:none; color:gray; cursor:pointer;" onclick="goToStep(1)">Quay lại</button>
+                  </div>
+              </div>
+          </div>
+
+          <div class="modal-body hidden" id="step-3">
+              <div class="qr-area" style="grid-column: 1 / -1; text-align:center;">
+                  <h3 style="color:#28a745;">MÃ ĐƠN: <span id="final-id"></span></h3>
+                  <p>Quét mã VietQR để đặt cọc (50%)</p>
+                  <img id="qr-code" src="" style="max-width:250px; border-radius:15px; border:5px solid #f9f9f9;">
+                  <p style="font-weight:800; color:var(--primary-red); margin-top:10px;">
+                      CHỦ TK: <span id="bank-owner">...</span>
+                  </p>
+                  <p style="font-size:12px;">Nội dung CK: <b id="qr-info"></b></p>
+                  <button class="btn-action" style="background:#0088ff;" onclick="confirmAndZalo()">1. NHẮN ZALO XÁC NHẬN</button>
+                  <button class="btn-action" style="background:#8B0000;" onclick="finalSubmit()">2. TÔI ĐÃ CHUYỂN KHOẢN XONG</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <a id="zalo-ring" href="#" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" class="zalo-float" alt="Zalo"></a>
+
   <script>
-    // ... (phần init, render, v.v. giữ nguyên)
+    const URLS = {
+        sheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv',
+        track: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv',
+        script: 'https://script.google.com/macros/s/AKfycbw3E_jD_oEeVALBcLDThDY1JGrHogtv86pLnECBnLP1fq0zqPw5vVSK0SrhiutPZKNY/exec'
+    };
+
+    let DB = { products: [], settings: {} };
+    let ALL_POSTS = [];
+    let CURRENT_P = null;
+    let ORDER_TEMP = {};
+    let countdownInterval;
+
+    async function init() {
+        try {
+            const res = await fetch(URLS.sheet);
+            const text = await res.text();
+            const rows = Papa.parse(text, { header: true, delimiter: '\t' }).data;
+            DB.settings = rows[0];
+            DB.products = rows.slice(1);
+            renderHome();
+            renderProducts();
+        } catch(e) { console.error("Lỗi khởi tạo:", e); }
+    }
+
+    function toggleHistory() {
+        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+        document.getElementById('history-section').classList.remove('hidden');
+        window.scrollTo(0,0);
+    }
+
+    async function loadHistory() {
+        const name = document.getElementById('hist-name').value.trim();
+        const phone = document.getElementById('hist-phone').value.trim();
+        if(!name || !phone) return alert("Vui lòng nhập cả Tên và SĐT!");
+        const resDiv = document.getElementById('hist-res');
+        resDiv.innerHTML = "Đang tìm kiếm...";
+        
+        const response = await fetch(URLS.track);
+        const text = await response.text();
+        const orders = Papa.parse(text, { header: true, delimiter: '\t' }).data;
+        const myOrders = orders.filter(o => 
+            (o["SĐT"] === phone || o["phone"] === phone || o["Số điện thoại"] === phone) &&
+            (o["Tên khách hàng"] || o["customer_name"] || "").toLowerCase().includes(name.toLowerCase())
+        );
+
+        if(myOrders.length > 0) {
+            resDiv.innerHTML = myOrders.map(o => `
+                <div class="history-card">
+                    <b>Mã:</b> ${o["Mã đơn hàng"] || o["order_id"]} | <b>Ngày:</b> ${o["Ngày đặt"] || "N/A"}<br>
+                    <b>Trạng thái:</b> <span style="color:var(--secondary-gold)">${o["Trạng thái"] || "Đang xử lý"}</span><br>
+                    <b>Tiến độ:</b> ${o["Tiến độ"] || "..."}
+                </div>
+            `).join('');
+        } else { resDiv.innerHTML = "<p style='color:white'>Không tìm thấy đơn hàng nào với thông tin này.</p>"; }
+    }
+
+    async function renderHome() {
+        document.body.style.backgroundImage = `url('${DB.settings.background_img || DB.settings.img}')`;
+        
+        const cleanZalo = DB.settings.zalo_phone.replace(/[^\d]/g, '');
+        document.getElementById('zalo-ring').href = `https://zalo.me/${cleanZalo}`;
+
+        document.getElementById('home-socials').innerHTML = `
+            <a href="${DB.settings.fb_link}"><i class="fab fa-facebook"></i></a>
+            <a href="${DB.settings.blogger_link}"><i class="fab fa-blogger"></i></a>
+            <a href="https://zalo.me/${cleanZalo}"><i class="fas fa-comment-dots"></i></a>
+        `;
+        fetchBloggerContent();
+    }
+
+    async function fetchBloggerContent() {
+        try {
+            const blogUrl = DB.settings.blogger_link.replace(/\/$/, ""); 
+            const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${blogUrl}/feeds/posts/default`);
+            const data = await response.json();
+            if (data.status === 'ok' && data.items.length > 0) {
+                ALL_POSTS = data.items;
+                displayPost(0);
+            }
+        } catch (e) { document.getElementById('blog-content').innerText = "Lỗi kết nối Blogger!"; }
+    }
+
+    function displayPost(index) {
+        const post = ALL_POSTS[index];
+        const contentDiv = document.getElementById('blog-content');
+        let html = '<h1 style="font-size: 22px; margin:0;">' + post.title + '</h1>';
+        html += '<p style="font-size:12px; color:var(--secondary-gold); margin-bottom:15px;">Ngày: ' + new Date(post.pubDate).toLocaleDateString('vi-VN') + '</p>';
+        
+        if (ALL_POSTS.length > 1) {
+            html += '<div style="margin-bottom:20px; padding:10px; background:rgba(255,255,255,0.05); border-radius:15px;">';
+            html += '<p style="font-size:12px; color:var(--secondary-gold); margin:0 0 5px 0;">BÀI VIẾT KHÁC:</p>';
+            ALL_POSTS.forEach((p, i) => {
+                if (i !== index) {
+                    html += '<div onclick="displayPost(' + i + '); window.scrollTo(0,0);" style="cursor:pointer; padding:5px; color:#eee;">';
+                    html += '<h4 style="margin:0; font-size:14px; font-weight:normal;">- ' + p.title + '</h4>';
+                    html += '</div>';
+                }
+            });
+            html += '</div>';
+        }
+        
+        html += '<div class="post-body-content">' + post.content + '</div>';
+        contentDiv.innerHTML = html;
+    }
+
+    function renderProducts() {
+        const grid = document.getElementById('product-list');
+        grid.innerHTML = DB.products.map(p => `
+            <div class="product-card" onclick="openProduct('${p.id}')">
+                <img src="${p.img}">
+                <div style="padding:10px;">
+                    <span class="tag-id">Mã: ${p.id}</span>
+                    <h4 style="margin:8px 0;">${p.title}</h4>
+                    <p style="color:var(--primary-red); font-weight:bold; font-size:18px;">
+                        ${(Number(p.price) * 1000).toLocaleString('vi-VN')} VNĐ
+                    </p>
+                    <button type="button" onclick="event.stopPropagation(); addToCart('${p.id}')" 
+                            style="background:#ffa500; color:white; border:none; padding:10px; width:100%; border-radius:12px; margin-top:8px; cursor:pointer;">
+                        Thêm vào giỏ
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openProduct(id, directToPayment = false) {
+        CURRENT_P = DB.products.find(x => x.id === id);
+        document.getElementById('p-title').innerText = CURRENT_P.title;
+        document.getElementById('p-id').innerText = "Mã sản phẩm: " + CURRENT_P.id;
+        document.getElementById('p-price').innerText = (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + " VNĐ";
+        document.getElementById('p-desc').innerText = CURRENT_P.desc;
+        document.getElementById('main-img').src = CURRENT_P.img;
+        const gallery = [CURRENT_P.img];
+        if(CURRENT_P.gallery) gallery.push(...CURRENT_P.gallery.split(','));
+        document.getElementById('thumb-list').innerHTML = gallery.map(url => `<img src="${url.trim()}" onclick="document.getElementById('main-img').src=this.src">`).join('');
+        document.getElementById('product-modal').style.display = 'flex';
+        if (directToPayment) {
+            goToStep(2);
+            autofillForm();
+        } else {
+            goToStep(1);
+        }
+    }
+
+    function autofillForm() {
+        const userKey = localStorage.getItem('cart_user_key');
+        if (userKey) {
+            const parts = userKey.split('_');
+            const name = parts.slice(1, -1).join('_').replace(/_/g, ' ');
+            const phone = parts[parts.length - 1];
+            const address = localStorage.getItem(`${userKey}_address`) || "";
+            document.getElementById('f-name').value = name;
+            document.getElementById('f-phone').value = phone;
+            document.getElementById('f-address').value = address;
+            // Nếu có email hoặc zalo từ local, có thể thêm
+        }
+    }
+
+    function goToStep(s) {
+        [1,2,3].forEach(i => document.getElementById('step-'+i).classList.add('hidden'));
+        document.getElementById('step-'+s).classList.remove('hidden');
+        if (s === 2) {
+            autofillForm();
+        }
+    }
+
+    function processPayment() {
+        const name = document.getElementById('f-name').value.trim();
+        const phone = document.getElementById('f-phone').value.trim();
+        if(!name || !phone) return alert("Vui lòng điền Họ tên và SĐT!");
+
+        const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
+        const deposit = Number(CURRENT_P.price) * 500;
+
+        const email = document.getElementById('f-email').value.trim() || "Không có";
+        const address = document.getElementById('f-address').value.trim() || "Chưa nhập";
+        const zalo = document.getElementById('f-zalo').value.trim() || email;
+
+        const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
+
+        ORDER_TEMP = {
+            "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
+            "Mã đơn hàng": orderId,
+            "Tên khách hàng": name,
+            "Mã sản phẩm": CURRENT_P.id, 
+            "Số điện thoại": "'" + phone,
+            "Gmail/Zalo": (email === "Không có" && zalo !== "Không có") ? zalo : email,
+            "Địa chỉ": address,
+            "Tổng tiền": (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + " VNĐ",
+            "Trạng thái": "Chờ cọc"
+        };
+
+        document.getElementById('final-id').innerText = orderId;
+        document.getElementById('qr-info').innerText = qrInfo;
+        document.getElementById('bank-owner').innerText = "TONG ANH NAM";
+        document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
+        
+        setTimeout(() => { goToStep(3); }, 100); 
+    }
+
+    function maskPhone(phone) {
+        let clean = phone.replace(/'/g, '').replace(/\s/g, '').replace(/-/g, '');
+        if (clean.length >= 8) {
+            return clean.substring(0, 2) + "xxx" + clean.substring(clean.length - 4);
+        } else if (clean.length >= 4) {
+            return "xxx" + clean.substring(clean.length - 4);
+        }
+        return clean;
+    }
+
+    function confirmAndZalo() {
+        const cleanZalo = DB.settings.zalo_phone.replace(/[^\d]/g, '');
+        const text = encodeURIComponent("Tôi vừa đặt đơn " + ORDER_TEMP["Mã đơn hàng"] + " - " + ORDER_TEMP["Tên khách hàng"]);
+        window.open(`https://zalo.me/${cleanZalo}?text=${text}`, '_blank');
+    }
+
+    async function finalSubmit() {
+        try {
+            const response = await fetch(URLS.script, { 
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(ORDER_TEMP) 
+            });
+            if (response.ok) {
+                console.log('Đã gửi dữ liệu thành công');
+            } else {
+                console.error('Lỗi gửi dữ liệu:', response.status);
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+        }
+        closeModal();
+        const popup = document.getElementById('success-dialog');
+        popup.style.display = 'block';
+
+        let seconds = 10;
+        document.getElementById('countdown-timer').innerText = seconds;
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
+            seconds--;
+            document.getElementById('countdown-timer').innerText = seconds;
+            if(seconds <= 0) closeSuccess();
+        }, 1000);
+    }
+
+    function closeSuccess() { 
+        clearInterval(countdownInterval);
+        document.getElementById('success-dialog').style.display = 'none'; 
+    }
+
+    function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
+
+    async function checkOrder() {
+        const id = document.getElementById('track-input').value.toUpperCase().trim();
+        if(!id) return alert("Vui lòng nhập mã đơn!");
+        const resDiv = document.getElementById('track-res');
+        resDiv.innerHTML = "Đang tra cứu...";
+        try {
+            const response = await fetch(URLS.track);
+            const text = await response.text();
+            const orders = Papa.parse(text, { header: true, delimiter: '\t', skipEmptyLines: true }).data;
+            const found = orders.find(o => (o["Mã đơn hàng"] || o["order_id"] || "").toUpperCase() === id);
+            if(found) { 
+                resDiv.innerHTML = `<div class="order-detail">
+                    <b>Ngày đặt:</b> ${found["Ngày đặt"] || "Không có"}<br>
+                    <b>Mã đơn hàng:</b> ${found["Mã đơn hàng"] || found["order_id"] || "Không có"}<br>
+                    <b>Tên khách hàng:</b> ${found["Tên khách hàng"] || "Không có"}<br>
+                    <b>Số điện thoại:</b> ${maskPhone(found["Số điện thoại"] || "Không có")}<br>
+                    <b>Gmail/Zalo:</b> ${found["Gmail/Zalo"] || "Không có"}<br>
+                    <b>Địa chỉ:</b> ${found["Địa chỉ"] || "Không có"}<br>
+                    <b>Tổng tiền:</b> ${found["Tổng tiền"] || "Không có"}<br>
+                    <b>Trạng thái:</b> ${found["Trạng thái"] || "Đang xử lý"}<br>
+                    <b>Tiến độ:</b> ${found["Tiến độ"] || "Chưa có thông tin"}<br>
+                    <b>Ghi chú:</b> ${found["Ghi chú"] || "Không có"}
+                </div>`; 
+            } else { 
+                resDiv.innerHTML = "<p style='color:red'>Không tìm thấy đơn hàng này!</p>"; 
+            }
+        } catch(e) {
+            resDiv.innerHTML = "<p style='color:red'>Lỗi kết nối, vui lòng thử lại!</p>";
+        }
+    }
+
+    document.querySelectorAll('.nav-link').forEach(l => {
+        l.onclick = (e) => {
+            e.preventDefault();
+            document.querySelectorAll('section.card').forEach(s => s.classList.add('hidden'));
+            const target = document.querySelector(l.getAttribute('href'));
+            target.classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+            l.classList.add('active');
+
+            document.getElementById('track-input').value = '';
+            document.getElementById('hist-name').value = '';
+            document.getElementById('hist-phone').value = '';
+            document.getElementById('track-res').innerHTML = '';
+            document.getElementById('hist-res').innerHTML = '';
+        };
+    });
+
+    // ================== GIỎ HÀNG ==================
+    function openCart() {
+        const userKey = localStorage.getItem('cart_user_key');
+        if (!userKey) {
+            document.getElementById('cart-login').classList.remove('hidden');
+            document.getElementById('cart-main').classList.add('hidden');
+        } else {
+            document.getElementById('cart-login').classList.add('hidden');
+            document.getElementById('cart-main').classList.remove('hidden');
+            switchCartTab(1);
+
+            const parts = userKey.split('_');
+            const name = parts.slice(1, -1).join('_').replace(/_/g, ' ');
+            const phone = parts[parts.length - 1];
+            document.getElementById('current-user-info').innerHTML = `${name}<br>${phone}`;
+        }
+        document.getElementById('cart-modal').style.display = 'flex';
+    }
+
+    function saveCartUser() {
+        const name = document.getElementById('cart-name').value.trim();
+        const phone = document.getElementById('cart-phone').value.trim();
+        const address = document.getElementById('cart-address').value.trim();
+        
+        if (!name || !phone) {
+            showToast("Lỗi! Vui lòng nhập Tên và Số điện thoại!");
+            return;
+        }
+
+        const userKey = `cart_${name.replace(/\s/g,'_')}_${phone}`;
+        const savedAddress = localStorage.getItem(`${userKey}_address`);
+
+        if (!savedAddress && !address) {
+            showToast("Người dùng mới! Vui lòng nhập địa chỉ nhận hàng.");
+            document.getElementById('cart-address').focus();
+            return;
+        }
+
+        if (address) {
+            localStorage.setItem(`${userKey}_address`, address);
+        }
+        
+        localStorage.setItem('cart_user_key', userKey);
+        showToast("Thành công! Chào mừng " + name);
+        openCart();
+    }
 
     function showToast(message = "Đã thêm vào giỏ hàng!") {
         const toast = document.getElementById('toast-notification');
@@ -118,132 +558,298 @@
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => { toast.style.display = 'none'; }, 500);
-        }, 400); // 0.4 giây hiện
+        }, 400);
     }
 
-    // Validate tên và số điện thoại
-    function validateUserInput(name, phone) {
-        const cleanPhone = phone.replace(/\D/g, '');
-        if (cleanPhone.length !== 10) {
-            showToast("Số điện thoại phải đúng 10 chữ số!");
-            return false;
-        }
-        if (!name.trim() || name.trim().split(/\s+/).length < 2) {
-            showToast("Vui lòng nhập đầy đủ Họ và Tên!");
-            return false;
-        }
-        return true;
-    }
-
-    function saveCartUser() {
-        const name = document.getElementById('cart-name').value.trim();
-        const phone = document.getElementById('cart-phone').value.trim();
-        const address = document.getElementById('cart-address').value.trim();
-        
-        if (!validateUserInput(name, phone)) return;
-
-        const userKey = `cart_${name.replace(/\s/g,'_')}_${phone}`;
-        if (address) {
-            localStorage.setItem(`${userKey}_address`, address);
-        }
-        
-        localStorage.setItem('cart_user_key', userKey);
-        showToast("Đăng nhập thành công! Chào " + name.split(' ').pop());
-        openCart();
-    }
-
-    // Mua lại từ giỏ hàng: bỏ qua form, đi thẳng đến bước thanh toán QR
-    function buyAgainDirect(id) {
+    function addToCart(id) {
         const userKey = localStorage.getItem('cart_user_key');
         if (!userKey) {
-            showToast("Vui lòng đăng nhập lại!");
+            alert("Bạn cần đăng nhập (nhập tên và số điện thoại) trước khi thêm sản phẩm vào giỏ!");
             openCart();
             return;
         }
+        let cart = JSON.parse(localStorage.getItem(userKey) || '[]');
+        if (cart.includes(id)) {
+            showToast("Sản phẩm đã có trong giỏ!");
+        } else {
+            cart.push(id);
+            localStorage.setItem(userKey, JSON.stringify(cart));
+            showToast("Đã thêm vào giỏ hàng!");
+        }
+        if (document.getElementById('cart-modal').style.display === 'flex') {
+            renderCartItems();
+        }
+    }
 
+    function cancelLogout() {
+        document.getElementById('logout-confirm').classList.add('hidden');
+    }
+
+    function confirmLogout() {
+        const userKey = localStorage.getItem('cart_user_key');
+        if (userKey) {
+            localStorage.removeItem(userKey);
+            localStorage.removeItem(`${userKey}_address`);
+        }
+        localStorage.removeItem('cart_user_key');
+        alert("Đã đăng xuất thành công! Giỏ hàng đã được xóa.");
+        document.getElementById('logout-confirm').classList.add('hidden');
+        closeCartModal();
+        // Đã xóa location.reload() theo yêu cầu
+    }
+
+    function switchCartTab(tab) {
+        document.querySelectorAll('.cart-tab').forEach((t, i) => {
+            t.classList.toggle('active', i === tab-1);
+        });
+        document.querySelectorAll('.cart-section').forEach((s, i) => {
+            s.classList.toggle('active', i === tab-1);
+        });
+
+        if (tab === 1) renderCartItems();
+        if (tab === 2) renderFullProducts();
+    }
+
+    function renderCartItems() {
+        const userKey = localStorage.getItem('cart_user_key');
+        const cart = JSON.parse(localStorage.getItem(userKey) || '[]');
+        let html = '';
+        let total = 0;
+
+        if (cart.length === 0) {
+            html = '<p style="text-align:center; padding:50px;">Giỏ hàng trống</p>';
+        } else {
+            cart.forEach(id => {
+                const p = DB.products.find(x => x.id === id);
+                if (p) {
+                    total += Number(p.price) * 1000;
+                    html += `
+                    <div class="cart-item">
+                        <input type="checkbox" checked data-id="${id}" onchange="updateCartTotal()">
+                        <img src="${p.img}">
+                        <div style="flex:1;">
+                            <h4>${p.title} <small>(${id})</small></h4>
+                            <b style="color:var(--primary-red)">${(Number(p.price)*1000).toLocaleString('vi-VN')} VNĐ</b>
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="remove-btn" onclick="removeFromCart('${id}')">Xóa</button>
+                            <button class="buy-again-btn" onclick="openProduct('${id}', true)">Mua lại</button>
+                        </div>
+                    </div>`;
+                }
+            });
+        }
+
+        html += `<div class="cart-total">
+            Tổng tiền: <span id="cart-total-price">${total.toLocaleString('vi-VN')} VNĐ</span><br>
+            Cọc 50%: <span id="cart-deposit">${(total/2).toLocaleString('vi-VN')} VNĐ</span><br><br>
+            <button class="btn-action" onclick="buyCart()" style="width:100%; padding:15px;">MUA NGAY (Chọn sản phẩm)</button>
+        </div>`;
+        document.getElementById('cart-items').innerHTML = html;
+        updateCartTotal();
+    }
+
+    function removeFromCart(id) {
+        const userKey = localStorage.getItem('cart_user_key');
+        let cart = JSON.parse(localStorage.getItem(userKey) || '[]');
+        cart = cart.filter(x => x !== id);
+        localStorage.setItem(userKey, JSON.stringify(cart));
+        renderCartItems();
+    }
+
+    function updateCartTotal() {
+        let total = 0;
+        document.querySelectorAll('#cart-items input:checked').forEach(cb => {
+            const p = DB.products.find(x => x.id === cb.dataset.id);
+            if (p) total += Number(p.price) * 1000;
+        });
+        document.getElementById('cart-total-price').innerText = total.toLocaleString('vi-VN') + ' VNĐ';
+        document.getElementById('cart-deposit').innerText = (total/2).toLocaleString('vi-VN') + ' VNĐ';
+    }
+
+    function renderFullProducts() {
+        document.getElementById('full-products').innerHTML = `
+            <div class="full-product-grid">
+                ${DB.products.map(p => `
+                    <div class="product-card" onclick="openProduct('${p.id}'); closeCartModal();">
+                        <img src="${p.img}">
+                        <h4 style="font-size:14px; margin:5px 0;">${p.title}</h4>
+                        <b>${(Number(p.price)*1000).toLocaleString('vi-VN')} VNĐ</b>
+                    </div>
+                `).join('')}
+            </div>`;
+    }
+
+    async function buyCart() {
+        const selected = Array.from(document.querySelectorAll('#cart-items input:checked'))
+                            .map(cb => cb.dataset.id);
+        if (selected.length === 0) return alert("Vui lòng chọn ít nhất 1 sản phẩm!");
+
+        const userKey = localStorage.getItem('cart_user_key');
         const parts = userKey.split('_');
         const name = parts.slice(1, -1).join('_').replace(/_/g, ' ');
         const phone = parts[parts.length - 1];
-        const address = localStorage.getItem(`${userKey}_address`) || "Chưa nhập (liên hệ Zalo)";
 
-        CURRENT_P = DB.products.find(x => x.id === id);
-        if (!CURRENT_P) return;
-
+        let totalPrice = 0;
+        selected.forEach(id => {
+            const p = DB.products.find(x => x.id === id);
+            if (p) totalPrice += Number(p.price) * 1000;
+        });
+        const deposit = totalPrice / 2;
         const orderId = "SDT" + Math.floor(1000 + Math.random() * 9000);
-        const deposit = Number(CURRENT_P.price) * 500;
-        const qrInfo = `${CURRENT_P.id} ${orderId} ${name.replace(/\s/g,'')}`;
+        const qrInfo = `${selected.join(',')} ${orderId} ${name.replace(/\s/g,'')}`;
 
-        const orderTemp = {
+        let orderTemp = {
             "Ngày đặt": new Date().toLocaleDateString('vi-VN'),
             "Mã đơn hàng": orderId,
-            "Mã sản phẩm": CURRENT_P.id,
+            "Mã sản phẩm": selected.join(', '),
             "Tên khách hàng": name,
             "Số điện thoại": "'" + phone,
             "Gmail/Zalo": "Từ giỏ hàng",
-            "Địa chỉ": address,
-            "Tổng tiền": (Number(CURRENT_P.price) * 1000).toLocaleString('vi-VN') + " VNĐ",
+            "Địa chỉ": localStorage.getItem(`${userKey}_address`) || "Chưa nhập (liên hệ Zalo)",
+            "Tổng tiền": totalPrice.toLocaleString('vi-VN') + " VNĐ",
             "Trạng thái": "Chờ cọc",
-            "Ghi chú": "Mua lại từ giỏ hàng"
+            "Ghi chú": "Giỏ hàng: " + selected.join(', ')
         };
+
+        try {
+            const response = await fetch(URLS.script, { 
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderTemp) 
+            });
+            if (response.ok) {
+                console.log('Đã gửi dữ liệu giỏ hàng thành công');
+            } else {
+                console.error('Lỗi gửi dữ liệu giỏ hàng:', response.status);
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+        }
 
         document.getElementById('final-id').innerText = orderId;
         document.getElementById('qr-info').innerText = qrInfo;
         document.getElementById('bank-owner').innerText = "TONG ANH NAM";
         document.getElementById('qr-code').src = `https://img.vietqr.io/image/${DB.settings.bank_id}-${DB.settings.bank_account}-compact.png?amount=${deposit}&addInfo=${encodeURIComponent(qrInfo)}`;
 
+        closeCartModal();
         document.getElementById('product-modal').style.display = 'flex';
         goToStep(3);
-
-        // Gửi dữ liệu vào sheet "Giỏ hàng"
-        fetch(URLS.script, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderTemp) 
-        });
     }
 
-    function renderCartItems() {
-        // ... giữ nguyên phần trước
-
-        html += `
-        <div class="cart-item">
-            <input type="checkbox" checked data-id="${id}" onchange="updateCartTotal()">
-            <img src="${p.img}">
-            <div style="flex:1;">
-                <h4>${p.title} <small>(${id})</small></h4>
-                <b style="color:var(--primary-red)">${(Number(p.price)*1000).toLocaleString('vi-VN')} VNĐ</b>
-            </div>
-            <div class="cart-item-actions">
-                <button class="remove-btn" onclick="removeFromCart('${id}')">Xóa</button>
-                <button class="buy-again-btn" onclick="buyAgainDirect('${id}')">Mua lại</button>
-            </div>
-        </div>`;
-        
-        // ... phần còn lại
-    }
-
-    // Đóng modal sản phẩm không ảnh hưởng đến giỏ hàng
-    function closeModal() {
-        document.getElementById('product-modal').style.display = 'none';
-        // Không đóng cart-modal ở đây
-    }
-
-    // Khi đóng cart-modal thì mới thực sự thoát giỏ hàng
     function closeCartModal() {
         document.getElementById('cart-modal').style.display = 'none';
     }
 
-    // confirmLogout cũng thêm thông báo toast kiểu thành công
-    function confirmLogout() {
-        // ... giữ nguyên xóa localStorage
-        showToast("Đã đăng xuất thành công! Giỏ hàng đã được xóa.");
-        document.getElementById('logout-confirm').classList.add('hidden');
-        closeCartModal();
+    // Logic tự động đăng xuất sau 20 phút không hoạt động
+    let lastActivity = Date.now();
+    function updateActivity() {
+        lastActivity = Date.now();
+    }
+    setInterval(() => {
+        const userKey = localStorage.getItem('cart_user_key');
+        if (userKey && Date.now() - lastActivity > 1200000) {
+            confirmLogout();
+            showToast("Hết phiên làm việc - Hệ thống tự động đăng xuất để bảo mật");
+        }
+    }, 30000);
+
+    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click', 'keydown'].forEach(evt => {
+        window.addEventListener(evt, updateActivity);
+    });
+
+    // Sửa thông tin người dùng
+    function editProfile() {
+        const userKey = localStorage.getItem('cart_user_key');
+        if (!userKey) return;
+
+        const parts = userKey.split('_');
+        document.getElementById('cart-name').value = parts.slice(1, -1).join('_').replace(/_/g, ' ');
+        document.getElementById('cart-phone').value = parts[parts.length - 1];
+        document.getElementById('cart-address').value = localStorage.getItem(`${userKey}_address`) || "";
+
+        document.getElementById('cart-main').classList.add('hidden');
+        document.getElementById('cart-login').classList.remove('hidden');
+        showToast("Chế độ sửa thông tin");
     }
 
-    // ... phần còn lại giữ nguyên
+    document.getElementById('cart-button').addEventListener('click', openCart);
+
+    // Tự động đăng nhập lại khi load trang
+    window.addEventListener('load', () => {
+        const userKey = localStorage.getItem('cart_user_key');
+        if (userKey) {
+            const loginDiv = document.getElementById('cart-login');
+            const mainDiv = document.getElementById('cart-main');
+            if (loginDiv && mainDiv) {
+                loginDiv.classList.add('hidden');
+                mainDiv.classList.remove('hidden');
+            }
+
+            const parts = userKey.split('_');
+            const name = parts.slice(1, -1).join('_').replace(/_/g, ' ');
+            const phone = parts[parts.length - 1];
+            const userInfoEl = document.getElementById('current-user-info');
+            if (userInfoEl) {
+                userInfoEl.innerHTML = `${name}<br>${phone}`;
+            }
+        }
+    });
+
+    init();
   </script>
 
-  <!-- Phần HTML cart-modal và toast giữ nguyên như trước -->
+  <div id="cart-modal" class="modal-overlay">
+    <div class="cart-content">
+        <span style="position:absolute; top:15px; right:20px; font-size:30px; cursor:pointer; color:#333; z-index: 10;" onclick="closeCartModal()">&times;</span>
+        
+        <div id="cart-login">
+            <h3 style="color: var(--primary-red);">XÁC NHẬN THÔNG TIN</h3>
+            <p style="color:#666; margin-bottom:20px;">Vui lòng nhập đầy đủ để vào giỏ hàng</p>
+            <input type="text" id="cart-name" placeholder="Họ và tên *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+            <input type="tel" id="cart-phone" placeholder="Số điện thoại *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+            <input type="text" id="cart-address" placeholder="Địa chỉ nhận hàng *" style="width:100%; max-width:350px; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ddd;">
+            <button class="btn-action" onclick="saveCartUser()" style="width:100%; max-width:350px;">XÁC NHẬN & VÀO GIỎ</button>
+        </div>
+
+        <div id="cart-main" class="hidden" style="position: relative; padding-top: 10px;">
+            <div onclick="editProfile()" style="position: absolute; top: -5px; left: -5px; cursor: pointer; color: white; background: var(--primary-red); padding: 5px 12px; border-radius: 8px; font-size: 13px; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                <i class="fas fa-edit"></i> Sửa thông tin
+            </div>
+
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; margin-top: 25px; flex-wrap: wrap;">
+                <div class="cart-tab active" onclick="switchCartTab(1)">Giỏ hàng của bạn</div>
+                <div class="cart-tab" onclick="switchCartTab(2)">Danh sách sản phẩm</div>
+                <button onclick="document.getElementById('logout-confirm').classList.remove('hidden')" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">
+                    Đăng xuất
+                </button>
+            </div>
+
+            <div id="cart-items" class="cart-section active"></div>
+            <div id="full-products" class="cart-section"></div>
+        </div>
+    </div>
+  </div>
+
+  <div id="logout-confirm" class="hidden" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.7); text-align: center; z-index: 9999; width: 90%; max-width: 400px;">
+      <h3 style="color: var(--primary-red); margin-bottom: 15px;">XÁC NHẬN ĐĂNG XUẤT</h3>
+      <p>Bạn đang đăng nhập với:</p>
+      <div id="current-user-info" style="font-weight: bold; font-size: 18px; color: var(--primary-red); margin: 15px 0;"></div>
+      <p style="font-size: 14px; color: #666;">Bạn có chắc muốn đăng xuất không?<br><b>Lưu ý:</b> Giỏ hàng sẽ bị xóa hoàn toàn.</p>
+      <div style="margin-top: 25px; display: flex; justify-content: center; gap: 15px;">
+          <button style="background: #dc3545; color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1;" onclick="confirmLogout()">Xác nhận</button>
+          <button style="background: #6c757d; color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1;" onclick="cancelLogout()">Hủy</button>
+      </div>
+  </div>
+
+  <div id="toast-notification" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+      background: rgba(40, 167, 69, 0.95); color: white; padding: 25px 40px; border-radius: 20px; 
+      font-size: 18px; font-weight: bold; z-index: 9999; display: none; text-align: center; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3); min-width: 300px;">
+      <i class="fas fa-check-circle" style="font-size: 50px; color: white; margin-bottom: 15px; display: block;"></i>
+      <span id="toast-message">Đã thêm vào giỏ hàng!</span>
+  </div>
 </body>
 </html>
