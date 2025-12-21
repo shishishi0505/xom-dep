@@ -82,6 +82,10 @@
     #cart-login { text-align: center; padding: 20px; }
     #cart-login input { width: 100%; max-width: 350px; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; }
     .full-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 10px; }
+    .cart-item-actions { display: flex; flex-direction: column; gap: 5px; margin-left: 10px; }
+    .cart-item-actions button { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+    .cart-item-actions .remove-btn { background: #ccc; color: #333; }
+    .cart-item-actions .buy-again-btn { background: #28a745; color: white; }
   </style>
 </head>
 <body>
@@ -155,7 +159,7 @@
                   <p id="p-id" class="tag-id" style="display:inline-block;"></p>
                   <h3 id="p-price" style="color:#28a745; font-size:24px;"></h3>
                   <button class="btn-action" onclick="goToStep(2)">MUA NGAY - ĐẶT CỌC 50%</button>
-                  <button type="button" onclick="addToCart(CURRENT_P.id); alert('Đã thêm vào giỏ hàng!')" 
+                  <button type="button" onclick="addToCart(CURRENT_P.id); showToast('Đã thêm vào giỏ hàng!')" 
                           style="background:#ffa500; color:white; border:none; padding:15px; width:100%; border-radius:12px; margin-top:10px; font-weight:bold;">
                       Thêm vào giỏ hàng
                   </button>
@@ -200,7 +204,7 @@
     const URLS = {
         sheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0FQlaE-0xia0mxdQJiX0QL1QDqqYSu1MketjyqBT1tQcNdUUlW50H0gyH5c7DLrcYuN3aSvOXVYpI/pub?output=tsv',
         track: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gk_A5DJadG6T99oSR5jQ-sN_XGI7UOVMuWK6aDvSTQUggUY10QzcWjYsW-RpiMuhSqsLr1x4pW_y/pub?output=tsv',
-        script: 'https://script.google.com/macros/s/AKfycbxCd0gUQhJmbCl0jJ5RvxY3cohmnEqQZZa8yGGV7hNob7dR5EtuOsnTdIEHKZKhtzWH/exec'
+        script: 'https://script.google.com/macros/s/AKfycbyRpbgZWAoukAhN39m5s1-goYyIHEGirvn-IBIhItKgnkBcLyIwkAe5WsEiW2XZ0i8T/exec'
     };
 
     let DB = { products: [], settings: {} };
@@ -322,7 +326,7 @@
         `).join('');
     }
 
-    function openProduct(id) {
+    function openProduct(id, directToPayment = false) {
         CURRENT_P = DB.products.find(x => x.id === id);
         document.getElementById('p-title').innerText = CURRENT_P.title;
         document.getElementById('p-id').innerText = "Mã sản phẩm: " + CURRENT_P.id;
@@ -332,13 +336,35 @@
         const gallery = [CURRENT_P.img];
         if(CURRENT_P.gallery) gallery.push(...CURRENT_P.gallery.split(','));
         document.getElementById('thumb-list').innerHTML = gallery.map(url => `<img src="${url.trim()}" onclick="document.getElementById('main-img').src=this.src">`).join('');
-        goToStep(1);
         document.getElementById('product-modal').style.display = 'flex';
+        if (directToPayment) {
+            goToStep(2);
+            autofillForm();
+        } else {
+            goToStep(1);
+        }
+    }
+
+    function autofillForm() {
+        const userKey = localStorage.getItem('cart_user_key');
+        if (userKey) {
+            const parts = userKey.split('_');
+            const name = parts.slice(1, -1).join('_').replace(/_/g, ' ');
+            const phone = parts[parts.length - 1];
+            const address = localStorage.getItem(`${userKey}_address`) || "";
+            document.getElementById('f-name').value = name;
+            document.getElementById('f-phone').value = phone;
+            document.getElementById('f-address').value = address;
+            // Nếu có email hoặc zalo từ local, có thể thêm
+        }
     }
 
     function goToStep(s) {
         [1,2,3].forEach(i => document.getElementById('step-'+i).classList.add('hidden'));
         document.getElementById('step-'+s).classList.remove('hidden');
+        if (s === 2) {
+            autofillForm();
+        }
     }
 
     function processPayment() {
@@ -392,11 +418,22 @@
     }
 
     async function finalSubmit() {
-        fetch(URLS.script, { 
-            method: 'POST', 
-            mode: 'no-cors', 
-            body: JSON.stringify(ORDER_TEMP) 
-        });
+        try {
+            const response = await fetch(URLS.script, { 
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(ORDER_TEMP) 
+            });
+            if (response.ok) {
+                console.log('Đã gửi dữ liệu thành công');
+            } else {
+                console.error('Lỗi gửi dữ liệu:', response.status);
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+        }
         closeModal();
         const popup = document.getElementById('success-dialog');
         popup.style.display = 'block';
@@ -594,8 +631,10 @@
                             <h4>${p.title} <small>(${id})</small></h4>
                             <b style="color:var(--primary-red)">${(Number(p.price)*1000).toLocaleString('vi-VN')} VNĐ</b>
                         </div>
-                        <button onclick="removeFromCart('${id}')" style="background:#ccc; border:none; padding:8px; border-radius:8px;">Xóa</button>
-                        <button onclick="openProduct('${id}')" style="background:#28a745; color:white; border:none; padding:8px; border-radius:8px; margin-top:5px;">Mua lại</button>
+                        <div class="cart-item-actions">
+                            <button class="remove-btn" onclick="removeFromCart('${id}')">Xóa</button>
+                            <button class="buy-again-btn" onclick="openProduct('${id}', true)">Mua lại</button>
+                        </div>
                     </div>`;
                 }
             });
@@ -641,7 +680,7 @@
             </div>`;
     }
 
-    function buyCart() {
+    async function buyCart() {
         const selected = Array.from(document.querySelectorAll('#cart-items input:checked'))
                             .map(cb => cb.dataset.id);
         if (selected.length === 0) return alert("Vui lòng chọn ít nhất 1 sản phẩm!");
@@ -672,6 +711,23 @@
             "Trạng thái": "Chờ cọc",
             "Ghi chú": "Giỏ hàng: " + selected.join(', ')
         };
+
+        try {
+            const response = await fetch(URLS.script, { 
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderTemp) 
+            });
+            if (response.ok) {
+                console.log('Đã gửi dữ liệu giỏ hàng thành công');
+            } else {
+                console.error('Lỗi gửi dữ liệu giỏ hàng:', response.status);
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+        }
 
         document.getElementById('final-id').innerText = orderId;
         document.getElementById('qr-info').innerText = qrInfo;
