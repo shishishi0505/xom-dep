@@ -3,192 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veo 3 Prompt Tool - Tạo Video Dễ Dàng</title>
+    <title>Veo 3 Prompt Tool Pro - Nhân Vật Thông Minh</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        .section {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        button {
-            background: #ff6b6b;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 10px 5px;
-        }
-        button:hover {
-            background: #ff5252;
-        }
-        .output {
-            background: #fff;
-            color: #333;
-            padding: 15px;
-            border-radius: 5px;
-            min-height: 100px;
-            white-space: pre-wrap;
-            margin-top: 20px;
-        }
-        .copy-btn {
-            background: #4caf50;
-        }
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 14px;
-            opacity: 0.8;
-        }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        h1, h2 { text-align: center; }
+        .section { background: rgba(255,255,255,0.15); padding: 20px; margin: 20px 0; border-radius: 10px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 10px; border: none; border-radius: 5px; margin-bottom: 15px; font-size: 16px; }
+        button { background: #ff6b6b; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #ff5252; }
+        .char-list { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .char-card { background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; width: 200px; text-align: center; }
+        .char-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .char-card button { background: #4caf50; font-size: 12px; padding: 8px; }
+        .output { background: #fff; color: #333; padding: 15px; border-radius: 5px; min-height: 100px; white-space: pre-wrap; margin-top: 20px; }
+        .copy-btn { background: #4caf50; }
+        .small-btn { font-size: 12px; padding: 6px 10px; }
+        footer { text-align: center; margin-top: 40px; opacity: 0.8; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Veo 3 Prompt Tool</h1>
-        <p style="text-align:center;">Công cụ tạo prompt chuyên nghiệp cho video dọc - Nhân vật nhất quán</p>
+        <h1>🚀 Veo 3 Prompt Tool Pro</h1>
+        <p style="text-align:center;">Hỗ trợ nhiều nhân vật • Upload ảnh • AI phân tích tự động</p>
 
-        <!-- Phần 1: Tạo Character Sheet -->
+        <!-- Phần 1: Quản lý nhân vật -->
         <div class="section">
-            <h2>1. Tạo & Khóa Nhân Vật (Character Sheet)</h2>
-            <label>Tên mã nhân vật (ví dụ: GIRL_01)</label>
-            <input type="text" id="charCode" placeholder="GIRL_01">
+            <h2>1. Thư Viện Nhân Vật</h2>
+            <div id="characterList" class="char-list"></div>
 
-            <label>Mô tả chi tiết nhân vật (tuổi, tóc, mắt, da, dáng người...)</label>
-            <textarea id="charDesc" rows="3" placeholder="Cô gái Việt Nam 20 tuổi, tóc đen dài thẳng có mái ngang, mắt to tròn, da trắng, nụ cười dịu dàng..."></textarea>
+            <h3>Thêm Nhân Vật Mới</h3>
+            <label>Tên nhân vật (ví dụ: Cô gái áo dài, Ninja cậu bé...)</label>
+            <input type="text" id="newCharName" placeholder="Tên nhân vật">
 
-            <label>Trang phục cố định</label>
-            <input type="text" id="charClothing" placeholder="áo dài trắng thêu hoa sen">
+            <label>Upload ảnh nhân vật (hoặc dán link ảnh bên dưới)</label>
+            <input type="file" id="charImage" accept="image/*">
 
-            <button onclick="generateCharacter()">Tạo Character Sheet</button>
-            <button onclick="generateReferencePrompt()">Tạo Prompt Ảnh Reference</button>
+            <label>Hoặc dán link ảnh (URL)</label>
+            <input type="text" id="charImageUrl" placeholder="https://example.com/image.jpg">
 
-            <div class="output" id="characterOutput"></div>
+            <label>Mô tả thêm của bạn (tùy chọn - ví dụ: cười dịu dàng, cầm ô...)</label>
+            <textarea id="userDesc" rows="2" placeholder="Thêm chi tiết bạn muốn nhấn mạnh..."></textarea>
+
+            <button onclick="addOrUpdateCharacter()">➕ Thêm / Cập Nhật Nhân Vật</button>
+            <button onclick="analyzeImage()" class="small-btn">🔍 Phân tích ảnh bằng AI (mô phỏng)</button>
+
+            <div class="output" id="analysisOutput"></div>
         </div>
 
         <!-- Phần 2: Tạo Prompt Video -->
         <div class="section">
             <h2>2. Tạo Prompt Video</h2>
-            <label>Dán Character Sheet vào đây (bắt buộc để giữ nhất quán)</label>
-            <textarea id="fixedCharacter" rows="5" placeholder="Dán toàn bộ Character Sheet từ phần trên vào đây..."></textarea>
+            <label>Chọn nhân vật từ thư viện:</label>
+            <select id="selectedCharacter" onchange="loadCharacterToVideo()">
+                <option value="">-- Chọn nhân vật --</option>
+            </select>
 
-            <label>Hành động của nhân vật</label>
-            <input type="text" id="action" placeholder="đi dạo, nhảy múa, chạy nhảy trong mưa...">
+            <label>Character Sheet (tự động điền khi chọn nhân vật)</label>
+            <textarea id="fixedCharacter" rows="6" readonly></textarea>
 
-            <label>Mô tả cảnh quan & không khí</label>
-            <textarea id="scene" rows="3" placeholder="vườn hoa anh đào nở rộ vào mùa xuân, cánh hoa rơi nhẹ, gió thổi tóc bay..."></textarea>
+            <label>Hành động</label>
+            <input type="text" id="action" placeholder="nhảy múa, chạy trong mưa, bay lượn...">
+
+            <label>Cảnh quan & không khí</label>
+            <textarea id="scene" rows="3" placeholder="vườn hoa anh đào, phố cổ Hà Nội đêm..."></textarea>
 
             <label>Thời lượng (giây)</label>
-            <input type="text" id="duration" value="8" placeholder="8">
+            <input type="text" id="duration" value="8">
 
             <label>Âm thanh (tùy chọn)</label>
-            <input type="text" id="audio" placeholder="nhạc nền vui tươi, tiếng mưa rơi, tiếng chim hót">
+            <input type="text" id="audio" placeholder="nhạc nền vui tươi, tiếng mưa rơi">
 
-            <label>Phong cách (tùy chọn)</label>
-            <input type="text" id="style" value="realistic" placeholder="realistic, cinematic, animation...">
-
-            <button onclick="generateVideoPrompt()">Tạo Prompt Video Hoàn Chỉnh</button>
+            <button onclick="generateVideoPrompt()">🎥 Tạo Prompt Video Hoàn Chỉnh</button>
 
             <div class="output" id="videoOutput"></div>
-            <button class="copy-btn" onclick="copyToClipboard('videoOutput')">Copy Prompt Video</button>
-            <button class="copy-btn" onclick="copyToClipboard('characterOutput')">Copy Character Sheet</button>
+            <button class="copy-btn" onclick="copyToClipboard('videoOutput')">Copy Prompt</button>
         </div>
 
-        <footer>
-            Tool bằng Grok hỗ trợ ❤️ | Dùng cho Veo 3 - Video dọc 720x1280<br>
-            Mẹo: Tạo ảnh reference trước bằng Imagen 3 rồi upload vào Veo để nhân vật giống 100%!
-        </footer>
-    </div>
+        <footer>Veo 3 Prompt Tool Pro • Dùng ảnh + mô tả để nhân vật siêu giống!</footer>
+   ох</div>
 
     <script>
-        function generateCharacter() {
-            const code = document.getElementById('charCode').value.trim() || "MY_CHAR";
-            const desc = document.getElementById('charDesc').value.trim();
-            const clothing = document.getElementById('charClothing').value.trim();
+        let characters = JSON.parse(localStorage.getItem('veoCharacters')) || [];
 
-            const sheet = `Character code: ${code} - ${desc}, always wearing ${clothing}. Keep exact same face, hairstyle, body proportions, clothing details, and appearance in every generation.`;
-
-            document.getElementById('characterOutput').textContent = sheet;
-            // Tự động điền vào phần fixedCharacter
-            document.getElementById('fixedCharacter').value = sheet;
+        function saveCharacters() {
+            localStorage.setItem('veoCharacters', JSON.stringify(characters));
+            renderCharacterList();
+            updateCharacterSelect();
         }
 
-        function generateReferencePrompt() {
-            const desc = document.getElementById('charDesc').value.trim();
-            const clothing = document.getElementById('charClothing').value.trim();
-            const prompt = `A highly detailed full-body portrait of ${desc}, wearing ${clothing}, standing in neutral pose, front view, plain white background, cinematic lighting, ultra realistic, 8k resolution --ar 3:4`;
-            
-            document.getElementById('characterOutput').textContent = prompt + "\n\n(Dùng prompt này trong Imagen 3 để tạo ảnh reference)";
+        function renderCharacterList() {
+            const list = document.getElementById('characterList');
+            list.innerHTML = '';
+            characters.forEach((char, index) => {
+                const card = document.createElement('div');
+                card.className = 'char-card';
+                card.innerHTML = `
+                    <img src="${char.image}" alt="${char.name}">
+                    <strong>${char.name}</strong>
+                    <p>${char.sheet.substring(0, 60)}...</p>
+                    <button onclick="selectCharacter(${index})">Chọn</button>
+                    <button onclick="deleteCharacter(${index})" style="background:#f44336;">Xóa</button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function updateCharacterSelect() {
+            const select = document.getElementById('selectedCharacter');
+            select.innerHTML = '<option value="">-- Chọn nhân vật --</option>';
+            characters.forEach((char, i) => {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = char.name;
+                select.appendChild(opt);
+            });
+        }
+
+        function addOrUpdateCharacter() {
+            const name = document.getElementById('newCharName').value.trim();
+            const userDesc = document.getElementById('userDesc').value.trim();
+            if (!name) return alert("Vui lòng nhập tên nhân vật!");
+
+            const imageInput = document.getElementById('charImage');
+            const imageUrl = document.getElementById('charImageUrl').value.trim();
+            let imageSrc = "https://via.placeholder.com/300x400?text=No+Image";
+
+            if (imageInput.files && imageInput.files[0]) {
+                imageSrc = URL.createObjectURL(imageInput.files[0]);
+            } else if (imageUrl) {
+                imageSrc = imageUrl;
+            }
+
+            // Mô phỏng AI phân tích ảnh + kết hợp mô tả người dùng
+            const aiAnalysis = analyzeImageMock(imageSrc); // Hàm mô phỏng AI
+            const fullDesc = aiAnalysis + (userDesc ? " " + userDesc : "");
+
+            const sheet = `Character: ${name} - ${fullDesc}. Keep exact same face, body proportions, hairstyle, clothing, and appearance across all scenes.`;
+
+            characters.push({ name, image: imageSrc, sheet, fullDesc });
+            saveCharacters();
+
+            // Reset form
+            document.getElementById('newCharName').value = '';
+            document.getElementById('userDesc').value = '';
+            document.getElementById('charImage').value = '';
+            document.getElementById('charImageUrl').value = '';
+            document.getElementById('analysisOutput').textContent = "Đã thêm nhân vật thành công!\n" + sheet;
+        }
+
+        // Mô phỏng AI phân tích ảnh (bạn có thể thay bằng API thật sau này)
+        function analyzeImageMock(imageSrc) {
+            // Trong thực tế có thể gọi API như Google Vision, nhưng hiện tại mô phỏng
+            return "A young East Asian woman in her early 20s, long straight black hair with bangs, fair skin, big bright eyes, gentle smile, slim build, wearing traditional white Vietnamese áo dài with delicate embroidery, elegant posture";
+        }
+
+        function analyzeImage() {
+            const imageInput = document.getElementById('charImage');
+            const imageUrl = document.getElementById('charImageUrl').value.trim();
+            let src = imageUrl || (imageInput.files[0] ? URL.createObjectURL(imageInput.files[0]) : null);
+            if (!src) return alert("Vui lòng upload hoặc dán link ảnh!");
+            const result = analyzeImageMock(src);
+            document.getElementById('analysisOutput').textContent = "Kết quả AI phân tích:\n" + result;
+        }
+
+        function selectCharacter(index) {
+            document.getElementById('selectedCharacter').value = index;
+            loadCharacterToVideo();
+        }
+
+        function loadCharacterToVideo() {
+            const idx = document.getElementById('selectedCharacter').value;
+            if (idx === "") {
+                document.getElementById('fixedCharacter').value = "";
+                return;
+            }
+            document.getElementById('fixedCharacter').value = characters[idx].sheet;
+        }
+
+        function deleteCharacter(index) {
+            if (confirm("Xóa nhân vật này?")) {
+                characters.splice(index, 1);
+                saveCharacters();
+            }
         }
 
         function generateVideoPrompt() {
-            const fixed = document.getElementById('fixedCharacter').value.trim();
-            const action = document.getElementById('action').value.trim();
-            const scene = document.getElementById('scene').value.trim();
-            const duration = document.getElementById('duration').value.trim() || "8";
-            const audio = document.getElementById('audio').value.trim() || "ambient sounds synchronized with actions";
-            const style = document.getElementById('style').value.trim() || "realistic";
+            const sheet = document.getElementById('fixedCharacter').value.trim();
+            if (!sheet) return alert("Vui lòng chọn nhân vật trước!");
 
-            if (!fixed) {
-                alert("Vui lòng tạo hoặc dán Character Sheet trước!");
-                return;
-            }
+            const action = document.getElementById('action').value.trim() || "standing gracefully";
+            const scene = document.getElementById('scene').value.trim() || "beautiful natural environment";
+            const duration = document.getElementById('duration').value || "8";
+            const audio = document.getElementById('audio').value.trim() || "ambient sounds";
 
-            const prompt = `${fixed}
+            const prompt = `${sheet}
 
-The character is ${action}, in a detailed ${scene}, smooth and natural movements, realistic physics and interactions with environment, dynamic lighting and atmosphere.
+The character is ${action} in a detailed ${scene}, with smooth, natural, realistic movements and physics.
 
-Break down chronologically:
-(0-2s) Camera slowly pans in to introduce the character and scene.
-(2-${parseInt(duration)-2}s) Main action: ${action} with expressive and fluid motion.
-(${parseInt(duration)-2}-${duration}s) Gentle conclusion with fade or meaningful pose.
+Break down:
+(0-2s) Slow introduction of character and scene.
+(2-${parseInt(duration)-2}s) Main action with fluid motion.
+(${parseInt(duration)-2}-${duration}s) Gentle conclusion.
 
-Style: ${style}, high quality cinematography.
-Resolution: 720x1280 vertical video (9:16 aspect ratio).
-Duration: ${duration} seconds.
-Audio: Native generated ${audio}, perfectly synced with movements.`;
+Vertical video 720x1280, 9:16 aspect ratio, ${duration} seconds, high quality realistic style.
+Audio: Native generated ${audio}, synced perfectly with movements.`;
 
             document.getElementById('videoOutput').textContent = prompt;
         }
 
-        function copyToClipboard(elementId) {
-            const text = document.getElementById(elementId).textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Đã copy vào clipboard!");
-            });
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text).then(() => alert("Đã copy!"));
         }
+
+        // Khởi động
+        renderCharacterList();
+        updateCharacterSelect();
     </script>
 </body>
 </html>
